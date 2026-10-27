@@ -15,7 +15,7 @@ let root: Root
 
 function button(label: string): HTMLButtonElement {
   const el = Array.from(container.querySelectorAll('button')).find((b) =>
-    b.textContent?.trim().startsWith(label),
+    b.textContent?.includes(label),
   )
   if (!el) throw new Error(`button "${label}" not found`)
   return el
@@ -54,6 +54,21 @@ describe('App smoke', () => {
       button('Cài đặt').click()
     })
     expect(container.textContent).toContain('Xuất save')
+    await act(async () => {
+      button('Công pháp').click()
+    })
+    expect(container.textContent).toContain('Dẫn Khí Quyết')
+    await act(async () => {
+      button('Luyện đan').click()
+    })
+    expect(container.textContent).toContain('Đan lô')
+    await act(async () => {
+      button('Túi đồ').click()
+    })
+    expect(container.textContent).toContain('Phường thị')
+    await act(async () => {
+      button('Cài đặt').click()
+    })
     expect(button('Nhập').disabled).toBe(true)
   })
 

@@ -5,6 +5,8 @@ import type { FxEvent } from '@/store/gameStore'
 interface RealmPanelProps {
   realm: RealmStage
   nextRealm: RealmStage | null
+  chance: number
+  pendingBonus: number
   fx: FxEvent | null
 }
 
@@ -13,7 +15,7 @@ const FX_CLASS: Record<FxEvent['kind'], string> = {
   'breakthrough-fail': 'animate-shake',
 }
 
-export function RealmPanel({ realm, nextRealm, fx }: RealmPanelProps) {
+export function RealmPanel({ realm, nextRealm, chance, pendingBonus, fx }: RealmPanelProps) {
   return (
     <section className="relative overflow-hidden rounded-lg border border-gold-500/20 bg-ink-800/70 px-6 py-8 text-center shadow-ink">
       <div
@@ -36,16 +38,15 @@ export function RealmPanel({ realm, nextRealm, fx }: RealmPanelProps) {
         {nextRealm ? (
           <>
             Cảnh giới kế: <span className="text-paper-100">{nextRealm.name}</span>
-            <span className="text-paper-400"> · tỉ lệ {formatPercent(realm.breakthroughChance)}</span>
+            <span className="text-paper-400"> · tỉ lệ </span>
+            <span className={pendingBonus > 0 ? 'text-gold-400' : 'text-paper-400'}>{formatPercent(chance)}</span>
           </>
         ) : (
           'Đại đạo viên mãn, không còn gì để đột phá.'
         )}
       </p>
       {realm.tribulation && (
-        <p className="relative mt-2 text-xs text-vermilion-400">
-          ⚡ Đột phá lần này sẽ dẫn động Thiên Kiếp
-        </p>
+        <p className="relative mt-2 text-xs text-vermilion-400">⚡ Đột phá lần này sẽ dẫn động Thiên Kiếp</p>
       )}
     </section>
   )

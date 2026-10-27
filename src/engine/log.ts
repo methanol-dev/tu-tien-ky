@@ -1,4 +1,4 @@
-import { LOG_LIMIT } from './state'
+import { LOG_LIMIT } from './constants'
 import type { GameState, LogKind } from './types'
 
 export function pushLog(state: GameState, text: string, kind: LogKind = 'info'): GameState {

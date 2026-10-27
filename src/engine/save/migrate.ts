@@ -1,4 +1,4 @@
-import { SAVE_VERSION } from '../state'
+import { SAVE_VERSION } from '../constants'
 
 type RawSave = Record<string, unknown>
 type Migration = (raw: RawSave) => RawSave
@@ -15,6 +15,23 @@ export const MIGRATIONS: Record<number, Migration> = {
       ...raw,
       version: 1,
       stats: { breakthroughs: 0, breakthroughFailures: 0, qiTotal: 0, ...stats },
+    }
+  },
+  // 1 -> 2: economy, techniques, inventory, alchemy (Phase 3).
+  1: (raw) => {
+    const stats = (raw.stats as RawSave | undefined) ?? {}
+    return {
+      ...raw,
+      version: 2,
+      lifespanBonusYears: 0,
+      stones: 0,
+      techniques: {},
+      inventory: {},
+      buffs: [],
+      pendingBreakthroughBonus: 0,
+      alchemy: null,
+      gatherReadyAtMs: 0,
+      stats: { stonesTotal: 0, pillsUsed: 0, alchemyCrafted: 0, ...stats },
     }
   },
 }

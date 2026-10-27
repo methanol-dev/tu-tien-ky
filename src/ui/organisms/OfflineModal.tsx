@@ -28,7 +28,8 @@ export function OfflineModal({ report, onClose }: OfflineModalProps) {
           </p>
           <p>
             Hấp thu được{' '}
-            <span className="font-han text-xl text-qi-400">{formatNumber(report.qiGained)}</span> linh khí.
+            <span className="font-han text-xl text-qi-400">{formatNumber(report.qiGained)}</span> linh khí, nhặt được{' '}
+            <span className="font-han text-xl text-gold-400">{formatNumber(report.stonesGained)}</span> linh thạch.
           </p>
           {report.capped && (
             <p className="text-xs text-paper-400">

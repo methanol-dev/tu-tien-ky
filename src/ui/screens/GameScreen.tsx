@@ -1,13 +1,18 @@
 import {
   canBreakthrough,
+  canGather,
+  getActiveBuffs,
+  getBreakthroughChance,
   getBreakthroughProgress,
+  getGatherCooldownMs,
   getLifespanDays,
   getNextRealm,
   getQiRate,
   getRealm,
+  getStoneRate,
   isLifespanExceeded,
 } from '@/engine'
-import { formatAge, formatRate } from '@/lib/format'
+import { formatAge, formatDurationMs, formatRate } from '@/lib/format'
 import { useGameStore } from '@/store/gameStore'
 import { Button } from '@/ui/atoms/Button'
 import { QiBar } from '@/ui/molecules/QiBar'
@@ -20,16 +25,25 @@ export function GameScreen() {
   const fx = useGameStore((s) => s.fx)
   const meditate = useGameStore((s) => s.meditate)
   const breakthrough = useGameStore((s) => s.breakthrough)
+  const gather = useGameStore((s) => s.gather)
 
   const realm = getRealm(state)
   const nextRealm = getNextRealm(state)
   const ready = canBreakthrough(state)
   const expired = isLifespanExceeded(state)
+  const gatherCd = getGatherCooldownMs(state)
+  const buffs = getActiveBuffs(state)
 
   return (
     <div className="grid gap-6 md:grid-cols-[1.25fr_1fr]">
       <section className="space-y-5">
-        <RealmPanel realm={realm} nextRealm={nextRealm} fx={fx} />
+        <RealmPanel
+          realm={realm}
+          nextRealm={nextRealm}
+          chance={getBreakthroughChance(state)}
+          pendingBonus={state.pendingBreakthroughBonus}
+          fx={fx}
+        />
 
         <QiBar
           qi={state.qi}
@@ -37,6 +51,16 @@ export function GameScreen() {
           progress={getBreakthroughProgress(state)}
           terminal={realm.terminal}
         />
+
+        {buffs.length > 0 && (
+          <ul className="flex flex-wrap gap-2 text-xs">
+            {buffs.map((b) => (
+              <li key={b.id} className="rounded-full border border-jade-500/40 px-3 py-1 text-jade-400 tabular-nums">
+                {b.name} x{b.qiRateMult} · {formatDurationMs(b.expiresAtMs - state.playedMs)}
+              </li>
+            ))}
+          </ul>
+        )}
 
         <div className="grid grid-cols-2 gap-3">
           <Button variant="secondary" onClick={meditate} disabled={expired} className="py-4 text-lg">
@@ -50,6 +74,14 @@ export function GameScreen() {
           >
             Đột phá
           </Button>
+          <Button
+            variant="ghost"
+            onClick={gather}
+            disabled={!canGather(state)}
+            className="col-span-2 border border-paper-400/15"
+          >
+            {gatherCd > 0 ? `Hái thuốc · ${formatDurationMs(gatherCd)}` : 'Hái thuốc'}
+          </Button>
         </div>
 
         {expired && (
@@ -61,9 +93,9 @@ export function GameScreen() {
         <StatRow
           stats={[
             { label: 'Tốc độ', value: formatRate(getQiRate(state)), hint: 'Linh khí mỗi giây' },
+            { label: 'Linh thạch', value: formatRate(getStoneRate(state)), hint: 'Linh thạch mỗi giây' },
             { label: 'Tuổi', value: formatAge(state.ageDays), tone: expired ? 'warn' : 'default' },
             { label: 'Thọ nguyên', value: `${getLifespanDays(state) / 360} năm` },
-            { label: 'Đột phá', value: `${state.stats.breakthroughs} / ${state.stats.breakthroughFailures} bại` },
           ]}
         />
       </section>

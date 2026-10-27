@@ -7,21 +7,50 @@ const logEntrySchema = z.object({
   text: z.string().max(500),
 })
 
+const countMap = z.record(z.string().max(64), z.number().int().nonnegative()).refine(
+  (m) => Object.keys(m).length <= 200,
+  'quá nhiều mục',
+)
+
+const buffSchema = z.object({
+  id: z.string().max(64),
+  name: z.string().max(100),
+  qiRateMult: z.number().positive().max(1000),
+  expiresAtMs: z.number().nonnegative(),
+})
+
+const alchemyJobSchema = z.object({
+  recipeId: z.string().max(64),
+  startedAtMs: z.number().nonnegative(),
+  finishAtMs: z.number().nonnegative(),
+})
+
 /** Schema for the CURRENT save version. Older versions go through migrations first. */
 export const gameStateSchema = z.object({
-  version: z.literal(1),
+  version: z.literal(2),
   createdAt: z.number().int().nonnegative(),
   lastSavedAt: z.number().int().nonnegative(),
   playedMs: z.number().nonnegative(),
   realmIndex: z.number().int().nonnegative(),
   qi: z.number().nonnegative().finite(),
   ageDays: z.number().nonnegative().finite(),
+  lifespanBonusYears: z.number().nonnegative().finite(),
+  stones: z.number().nonnegative().finite(),
+  techniques: countMap,
+  inventory: countMap,
+  buffs: z.array(buffSchema).max(50),
+  pendingBreakthroughBonus: z.number().min(0).max(1),
+  alchemy: alchemyJobSchema.nullable(),
+  gatherReadyAtMs: z.number().nonnegative(),
   nextLogId: z.number().int().positive(),
   log: z.array(logEntrySchema).max(100),
   stats: z.object({
     breakthroughs: z.number().int().nonnegative(),
     breakthroughFailures: z.number().int().nonnegative(),
     qiTotal: z.number().nonnegative().finite(),
+    stonesTotal: z.number().nonnegative().finite(),
+    pillsUsed: z.number().int().nonnegative(),
+    alchemyCrafted: z.number().int().nonnegative(),
   }),
   settings: z.object({
     timeScale: z.number().positive().max(1000),

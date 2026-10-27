@@ -132,11 +132,12 @@ Mỗi cảnh giới: `qiRequired`, `qiRateMultiplier`, `lifespanBonus`, `breakth
 - **Verify**: Chơi tay 10 phút lên được Trúc Cơ; tắt tab mở lại thấy popup offline; Lighthouse ≥ 90.
 - **🏁 MVP checkpoint — commit tag `v0.1.0`**
 
-### Phase 3 — Kinh tế & Công pháp `[P3]`
+### Phase 3 — Kinh tế & Công pháp `[P3]` ✅ (2026-10-28, 69 test)
 - `P3-01` Linh thạch, drop từ tu luyện/đột phá.
 - `P3-02` Công pháp: 6–8 công pháp, cây nâng cấp, multiplier.
 - `P3-03` Túi đồ + item type (đan dược, linh thảo, pháp bảo).
 - `P3-04` Luyện đan: 5 recipe, timer, tỉ lệ thành công.
+- `P3-05` (thêm) Hái thuốc (cooldown 60s, rơi theo tier cảnh giới) + Phường thị mua dược liệu, để luyện đan có nguồn nguyên liệu ngay từ đầu.
 - **Verify**: Test công thức multiplier; UI tab Công pháp / Túi đồ / Luyện đan.
 
 ### Phase 4 — Sự kiện RPG `[P4]`

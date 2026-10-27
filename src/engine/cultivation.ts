@@ -1,10 +1,14 @@
 import { REALMS, type RealmStage } from '@/content/realms'
+import {
+  BREAKTHROUGH_STONE_FACTOR,
+  DAYS_PER_YEAR,
+  FAIL_PENALTY_MAX,
+  FAIL_PENALTY_MIN,
+  MAX_BREAKTHROUGH_CHANCE,
+} from './constants'
 import { pushLog } from './log'
-import { DAYS_PER_YEAR } from './state'
+import { getModifiers } from './modifiers'
 import type { GameState, Rng } from './types'
-
-export const FAIL_PENALTY_MIN = 0.1
-export const FAIL_PENALTY_MAX = 0.3
 
 export function getRealm(state: GameState): RealmStage {
   return REALMS[Math.min(state.realmIndex, REALMS.length - 1)]
@@ -15,17 +19,28 @@ export function getNextRealm(state: GameState): RealmStage | null {
 }
 
 export function getLifespanDays(state: GameState): number {
-  return getRealm(state).lifespanYears * DAYS_PER_YEAR
+  return (getRealm(state).lifespanYears + state.lifespanBonusYears) * DAYS_PER_YEAR
 }
 
 export function isLifespanExceeded(state: GameState): boolean {
   return state.ageDays >= getLifespanDays(state)
 }
 
-/** Qi per real second. Multipliers from techniques/items plug in here (Phase 3). */
+/** Qi per real second after techniques and buffs. */
 export function getQiRate(state: GameState): number {
   if (isLifespanExceeded(state)) return 0
-  return getRealm(state).qiRate
+  return getRealm(state).qiRate * getModifiers(state).qiRateMult
+}
+
+/** Effective success chance for the next attempt, including techniques and pending pill bonus. */
+export function getBreakthroughChance(state: GameState): number {
+  const realm = getRealm(state)
+  if (realm.terminal) return 0
+  if (realm.breakthroughChance >= 1) return 1
+  return Math.min(
+    MAX_BREAKTHROUGH_CHANCE,
+    realm.breakthroughChance + getModifiers(state).breakthroughBonus + state.pendingBreakthroughBonus,
+  )
 }
 
 export function getBreakthroughProgress(state: GameState): number {
@@ -45,32 +60,45 @@ export interface BreakthroughResult {
   from: RealmStage
   to: RealmStage | null
   qiLost: number
+  stonesGained: number
 }
 
 export function attemptBreakthrough(state: GameState, rng: Rng): BreakthroughResult {
   const from = getRealm(state)
   if (!canBreakthrough(state)) {
-    return { state, success: false, from, to: null, qiLost: 0 }
+    return { state, success: false, from, to: null, qiLost: 0, stonesGained: 0 }
   }
   const to = REALMS[state.realmIndex + 1]
+  const chance = getBreakthroughChance(state)
+  const mods = getModifiers(state)
   const roll = rng()
-  if (roll < from.breakthroughChance) {
+  // The pill bonus is spent whether or not the attempt succeeds.
+  const base: GameState = { ...state, pendingBreakthroughBonus: 0 }
+
+  if (roll < chance) {
+    const stonesGained = Math.round(from.qiRequired * BREAKTHROUGH_STONE_FACTOR)
     let next: GameState = {
-      ...state,
+      ...base,
       realmIndex: state.realmIndex + 1,
       qi: 0,
-      stats: { ...state.stats, breakthroughs: state.stats.breakthroughs + 1 },
+      stones: state.stones + stonesGained,
+      stats: {
+        ...state.stats,
+        breakthroughs: state.stats.breakthroughs + 1,
+        stonesTotal: state.stats.stonesTotal + stonesGained,
+      },
     }
-    next = pushLog(next, `Đột phá thành công! Tiến vào ${to.name}.`, 'success')
+    next = pushLog(next, `Đột phá thành công! Tiến vào ${to.name}. Nhặt được ${stonesGained} linh thạch.`, 'success')
     if (to.firstOfMajor) {
       next = pushLog(next, `Thọ nguyên tăng lên ${to.lifespanYears} năm.`, 'info')
     }
-    return { state: next, success: true, from, to, qiLost: 0 }
+    return { state: next, success: true, from, to, qiLost: 0, stonesGained }
   }
-  const penalty = FAIL_PENALTY_MIN + rng() * (FAIL_PENALTY_MAX - FAIL_PENALTY_MIN)
+
+  const penalty = (FAIL_PENALTY_MIN + rng() * (FAIL_PENALTY_MAX - FAIL_PENALTY_MIN)) * mods.failPenaltyMult
   const qiLost = state.qi * penalty
   let next: GameState = {
-    ...state,
+    ...base,
     qi: state.qi - qiLost,
     stats: { ...state.stats, breakthroughFailures: state.stats.breakthroughFailures + 1 },
   }
@@ -79,15 +107,12 @@ export function attemptBreakthrough(state: GameState, rng: Rng): BreakthroughRes
     `Đột phá thất bại, linh khí tản mất ${Math.round(penalty * 100)}%. Cần tĩnh tâm tu luyện lại.`,
     'danger',
   )
-  return { state: next, success: false, from, to: null, qiLost }
+  return { state: next, success: false, from, to: null, qiLost, stonesGained: 0 }
 }
 
-/** Seconds' worth of passive qi granted by one active "Tu luyện" tap. */
-export const MEDITATE_BONUS_SECONDS = 2
-
-/** Active play: a tap grants a small burst of qi so early game is not pure waiting. */
+/** Active play: a tap grants a burst of qi so early game is not pure waiting. */
 export function meditate(state: GameState): GameState {
-  const gain = getQiRate(state) * MEDITATE_BONUS_SECONDS
+  const gain = getQiRate(state) * getModifiers(state).meditateSeconds
   if (gain <= 0) return state
   return {
     ...state,
