@@ -24,6 +24,8 @@ export default defineConfig([
     // Engine layer must stay framework-agnostic (see docs/PLAN section 6).
     files: ['src/engine/**/*.ts', 'src/content/**/*.ts'],
     rules: {
+      // Engine functions like usePill() are not React hooks.
+      'react-hooks/rules-of-hooks': 'off',
       'no-restricted-imports': [
         'error',
         {

@@ -17,6 +17,17 @@ export const MIGRATIONS: Record<number, Migration> = {
       stats: { breakthroughs: 0, breakthroughFailures: 0, qiTotal: 0, ...stats },
     }
   },
+  // 4 -> 5: tribulation + legacy (Phase 6).
+  4: (raw) => {
+    const stats = (raw.stats as RawSave | undefined) ?? {}
+    return {
+      ...raw,
+      version: 5,
+      tribulation: null,
+      legacy: { daoVan: 0, lives: 1, upgrades: {}, bestRealmIndex: 0 },
+      stats: { tribulationsPassed: 0, tribulationsFailed: 0, ...stats },
+    }
+  },
   // 3 -> 4: expeditions (Phase 5).
   3: (raw) => {
     const stats = (raw.stats as RawSave | undefined) ?? {}

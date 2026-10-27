@@ -17,8 +17,8 @@ describe('techniques', () => {
   it('cost grows geometrically per level', () => {
     const def = TECHNIQUE_BY_ID['dan-khi-quyet']
     expect(getTechniqueCost(def, 0)).toBe(50)
-    expect(getTechniqueCost(def, 1)).toBe(80)
-    expect(getTechniqueCost(def, 2)).toBe(128)
+    expect(getTechniqueCost(def, 1)).toBe(95)
+    expect(getTechniqueCost(def, 2)).toBe(181)
   })
 
   it('is locked below the required realm and refused without stones', () => {

@@ -5,6 +5,11 @@ import {
   attemptBreakthrough,
   type BreakthroughResult,
   buyItem as engineBuyItem,
+  buyLegacyUpgrade as engineBuyLegacyUpgrade,
+  type BoltResult,
+  reincarnate as engineReincarnate,
+  resolveBolt as engineResolveBolt,
+  type TribulationAction,
   collectAlchemy as engineCollectAlchemy,
   completeExpedition as engineCompleteExpedition,
   createInitialState,
@@ -34,7 +39,14 @@ import {
   usePill as engineUsePill,
 } from '@/engine'
 
-export type Screen = 'cultivate' | 'techniques' | 'inventory' | 'alchemy' | 'expedition' | 'settings'
+export type Screen =
+  | 'cultivate'
+  | 'techniques'
+  | 'inventory'
+  | 'alchemy'
+  | 'expedition'
+  | 'legacy'
+  | 'settings'
 
 export interface FxEvent {
   id: number
@@ -58,6 +70,8 @@ export interface GameStore {
   eventResult: EventResolution | null
   /** Report of the last finished expedition, shown until dismissed. */
   expeditionReport: ExpeditionReport | null
+  /** Last bolt outcome, for the tribulation dialog's final screen. */
+  tribulationResult: BoltResult | null
   hydrate: (now?: number) => void
   tick: (dtMs: number) => void
   resume: (now?: number) => void
@@ -75,6 +89,10 @@ export interface GameStore {
   startExpedition: (dungeonId: string) => boolean
   completeExpedition: () => boolean
   dismissExpeditionReport: () => void
+  resolveBolt: (action: TribulationAction) => boolean
+  dismissTribulationResult: () => void
+  reincarnate: () => boolean
+  buyLegacyUpgrade: (id: string) => boolean
   save: (now?: number) => void
   dismissOffline: () => void
   notify: (text: string, kind?: Notice['kind']) => void
@@ -124,6 +142,7 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       notice: null,
       eventResult: null,
       expeditionReport: null,
+      tribulationResult: null,
 
       hydrate: (now = Date.now()) => {
         const raw = storage.load()
@@ -216,6 +235,32 @@ export function createGameStore(deps: GameStoreDeps = {}) {
         return true
       },
       dismissExpeditionReport: () => set({ expeditionReport: null }),
+
+      resolveBolt: (action) => {
+        const r = engineResolveBolt(get().state, action, rng)
+        if (!r.ok) return apply(r)
+        fxCounter += 1
+        set({
+          state: r.state.state,
+          tribulationResult: r.state.finished ? r.state : null,
+          fx: r.state.finished
+            ? { id: fxCounter, kind: r.state.success ? 'breakthrough-success' : 'breakthrough-fail' }
+            : get().fx,
+        })
+        if (r.state.finished) get().save()
+        return true
+      },
+      dismissTribulationResult: () => set({ tribulationResult: null }),
+
+      reincarnate: () => {
+        const r = engineReincarnate(get().state, Date.now())
+        if (!r.ok) return apply(r)
+        set({ state: r.state, offlineReport: null, eventResult: null, expeditionReport: null, screen: 'cultivate' })
+        get().save()
+        get().notify('Chuyển thế thành công. Một kiếp mới bắt đầu.', 'success')
+        return true
+      },
+      buyLegacyUpgrade: (id) => apply(engineBuyLegacyUpgrade(get().state, id)),
       setPauseOnEvent: (value) =>
         set((s) => ({ state: { ...s.state, settings: { ...s.state.settings, pauseOnEvent: value } } })),
 

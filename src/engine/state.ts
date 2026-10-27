@@ -18,6 +18,8 @@ export function createInitialState(now: number = Date.now()): GameState {
     pendingBreakthroughBonus: 0,
     alchemy: null,
     expedition: null,
+    tribulation: null,
+    legacy: { daoVan: 0, lives: 1, upgrades: {}, bestRealmIndex: 0 },
     pendingEvent: null,
     nextEventAtMs: FIRST_EVENT_AT_MS,
     eventCooldowns: {},
@@ -35,6 +37,8 @@ export function createInitialState(now: number = Date.now()): GameState {
       eventsResolved: 0,
       expeditions: 0,
       expeditionWins: 0,
+      tribulationsPassed: 0,
+      tribulationsFailed: 0,
     },
     settings: { timeScale: 1, pauseOnEvent: false },
   }

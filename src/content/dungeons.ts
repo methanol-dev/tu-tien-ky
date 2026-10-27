@@ -56,7 +56,7 @@ export const DUNGEONS: readonly DungeonDef[] = [
     durationMs: 3 * MIN,
     enemies: [mob('Lang yêu', R['luyen-khi-1']), mob('Lang yêu', R['luyen-khi-1']), boss('Hùng yêu', R['luyen-khi-1'], 1.1, 0.95, 0.5)],
     loot: [{ itemId: 'linh-thao', chance: 1, min: 3, max: 6 }, { itemId: 'huyet-tinh-chi', chance: 0.3, min: 1, max: 1 }],
-    stonesSeconds: 300,
+    stonesSeconds: 150,
     bossLoot: { itemId: 'thiet-kiem', chance: 0.1 },
   },
   {
@@ -67,7 +67,7 @@ export const DUNGEONS: readonly DungeonDef[] = [
     durationMs: 5 * MIN,
     enemies: [mob('Bức yêu', R['luyen-khi-4'], 0.3, 0.5, 0.2), mob('Độc xà', R['luyen-khi-4'], 0.4, 0.55, 0.3), boss('Hắc Phong Ma Tu', R['luyen-khi-4'], 1.15, 0.9, 0.5)],
     loot: [{ itemId: 'huyet-tinh-chi', chance: 1, min: 2, max: 4 }, { itemId: 'tu-linh-chi', chance: 0.25, min: 1, max: 1 }, { itemId: 'tu-khi-dan', chance: 0.3, min: 1, max: 1 }],
-    stonesSeconds: 500,
+    stonesSeconds: 250,
     bossLoot: { itemId: 'huyen-quy-giap', chance: 0.08 },
   },
   {
@@ -78,7 +78,7 @@ export const DUNGEONS: readonly DungeonDef[] = [
     durationMs: 8 * MIN,
     enemies: [mob('Khô lâu binh', R['luyen-khi-7']), mob('Khô lâu binh', R['luyen-khi-7']), mob('Khô lâu tướng', R['luyen-khi-7'], 0.5, 0.5, 0.4), boss('Thi Vương', R['luyen-khi-7'], 1.2, 0.8, 0.55)],
     loot: [{ itemId: 'tu-linh-chi', chance: 1, min: 1, max: 3 }, { itemId: 'pha-canh-dan', chance: 0.2, min: 1, max: 1 }],
-    stonesSeconds: 700,
+    stonesSeconds: 350,
     bossLoot: { itemId: 'ngung-than-phu', chance: 0.08 },
   },
   {
@@ -89,7 +89,7 @@ export const DUNGEONS: readonly DungeonDef[] = [
     durationMs: 10 * MIN,
     enemies: [mob('Băng lang', R['truc-co-1']), mob('Tuyết yêu', R['truc-co-1'], 0.45, 0.5, 0.4), boss('Băng Giao', R['truc-co-1'], 1.15, 0.8, 0.6)],
     loot: [{ itemId: 'thien-tam-lien', chance: 0.8, min: 1, max: 2 }, { itemId: 'tu-linh-chi', chance: 1, min: 2, max: 3 }, { itemId: 'ngung-than-dan', chance: 0.3, min: 1, max: 1 }],
-    stonesSeconds: 900,
+    stonesSeconds: 450,
     bossLoot: { itemId: 'bang-tam-chau', chance: 0.07 },
   },
   {
@@ -100,7 +100,7 @@ export const DUNGEONS: readonly DungeonDef[] = [
     durationMs: 12 * MIN,
     enemies: [mob('Hỏa lân', R['truc-co-3'], 0.4, 0.55, 0.3), mob('Hỏa lân', R['truc-co-3'], 0.4, 0.55, 0.3), boss('Viêm Long Tử', R['truc-co-3'], 1.2, 0.8, 0.55)],
     loot: [{ itemId: 'thien-tam-lien', chance: 1, min: 1, max: 3 }, { itemId: 'tang-tho-dan', chance: 0.15, min: 1, max: 1 }],
-    stonesSeconds: 1200,
+    stonesSeconds: 600,
     bossLoot: { itemId: 'phi-kiem-tu-vi', chance: 0.06 },
   },
   {
@@ -111,7 +111,7 @@ export const DUNGEONS: readonly DungeonDef[] = [
     durationMs: 15 * MIN,
     enemies: [mob('Ma binh', R['kim-dan-1']), mob('Ma binh', R['kim-dan-1']), mob('Ma tướng', R['kim-dan-1'], 0.45, 0.5, 0.35), boss('Thiên Ma Tướng', R['kim-dan-1'], 1.2, 0.8, 0.55)],
     loot: [{ itemId: 'cuu-chuyen-can', chance: 0.6, min: 1, max: 1 }, { itemId: 'thien-tam-lien', chance: 1, min: 2, max: 4 }, { itemId: 'kim-nguyen-dan', chance: 0.15, min: 1, max: 1 }],
-    stonesSeconds: 1800,
+    stonesSeconds: 900,
     bossLoot: { itemId: 'thien-ma-giap', chance: 0.05 },
   },
 ]

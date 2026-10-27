@@ -86,7 +86,7 @@ export function GameScreen() {
 
         {expired && (
           <p className="rounded-md border border-vermilion-500/40 bg-vermilion-500/10 px-4 py-3 text-sm text-vermilion-400">
-            Thọ nguyên đã cạn. Linh khí không còn tụ lại được nữa. (Chuyển thế sẽ mở ở phiên bản sau.)
+            Thọ nguyên đã cạn. Linh khí không còn tụ lại được nữa. Qua tab Luân hồi để chuyển thế.
           </p>
         )}
 

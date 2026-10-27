@@ -152,11 +152,13 @@ Mỗi cảnh giới: `qiRequired`, `qiRateMultiplier`, `lifespanBonus`, `breakth
 - `P5-03` Loot table, boss cuối bí cảnh.
 - **Verify**: Test combat deterministic với seeded RNG; cân bằng không one-shot.
 
-### Phase 6 — Thiên kiếp, Chuyển thế, Balance `[P6]`
+### Phase 6 — Thiên kiếp, Chuyển thế, Balance `[P6]` ✅ (2026-10-28, 106 test)
 - `P6-01` Thiên kiếp ở Kim Đan/Nguyên Anh/… — mini-event nhiều lượt.
 - `P6-02` Chuyển thế: Đạo Vận, shop bonus vĩnh viễn, giữ công pháp đã ngộ.
 - `P6-03` Balance pass: script mô phỏng 1 run bằng engine (headless), vẽ đường cong tiến độ, chỉnh số.
 - **Verify**: Headless sim 24h game < 2s, run đầu lên Kim Đan trong ~2–3h thực.
+- **Kết quả sim** (`pnpm sim 24 1` active / `pnpm sim 24 2 passive`): 24h chạy ~0.5s. Active: Trúc Cơ 22 phút, Kim Đan 3.8h, Nguyên Anh 10.8h. Passive: Trúc Cơ 30 phút, Kim Đan 4.7h, Nguyên Anh 20h. Chưa tới Hóa Thần trong ngày đầu. Guardrail trong `tests/sim.test.ts`.
+- **Đã sửa khi cân bằng**: tap Tu luyện giảm từ 2s→1s (+0.25s/tầng Ngự Khí) vì 12s/tap làm active nhanh gấp 13 lần; linh thạch đổi sang √(tốc độ) thay vì tuyến tính để giá cố định còn ý nghĩa; thưởng đột phá = 10 phút thu nhập; ngưỡng cảnh giới ×2.5 (Luyện Khí) và ×8 (Trúc Cơ trở lên) để bù nhân tốc độ chồng; giá công pháp dốc hơn; linh thạch bí cảnh giảm nửa; độ kiếp thất bại mất 30% thay vì 50%.
 
 ### Phase 7 — Polish `[P7]`
 - `P7-01` Hiệu ứng thủy mặc: nét mực loang khi đột phá, chữ Hán mờ nền, SVG linh khí.

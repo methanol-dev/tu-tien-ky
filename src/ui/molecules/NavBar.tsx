@@ -6,6 +6,7 @@ const TABS: { id: Screen; label: string; glyph: string }[] = [
   { id: 'inventory', label: 'Túi đồ', glyph: '囊' },
   { id: 'alchemy', label: 'Luyện đan', glyph: '丹' },
   { id: 'expedition', label: 'Bí cảnh', glyph: '境' },
+  { id: 'legacy', label: 'Luân hồi', glyph: '輪' },
   { id: 'settings', label: 'Cài đặt', glyph: '設' },
 ]
 
@@ -14,9 +15,10 @@ interface NavBarProps {
   onChange: (s: Screen) => void
   alchemyReady?: boolean
   expeditionReady?: boolean
+  legacyAlert?: boolean
 }
 
-export function NavBar({ current, onChange, alchemyReady, expeditionReady }: NavBarProps) {
+export function NavBar({ current, onChange, alchemyReady, expeditionReady, legacyAlert }: NavBarProps) {
   return (
     <nav
       aria-label="Điều hướng"
@@ -31,15 +33,15 @@ export function NavBar({ current, onChange, alchemyReady, expeditionReady }: Nav
                 type="button"
                 onClick={() => onChange(t.id)}
                 aria-current={active ? 'page' : undefined}
-                className={`flex min-h-14 min-w-12 flex-col items-center justify-center gap-0.5 px-2 transition-colors md:min-h-11 md:flex-row md:gap-2 md:rounded-md md:px-3 ${
+                className={`flex min-h-14 min-w-11 flex-col items-center justify-center gap-0.5 px-2 transition-colors md:min-h-11 md:flex-row md:gap-2 md:rounded-md md:px-3 ${
                   active ? 'text-gold-400 md:bg-ink-700' : 'text-paper-400 hover:text-paper-100'
                 }`}
               >
                 <span aria-hidden className="font-han text-xl leading-none md:text-base">
                   {t.glyph}
                 </span>
-                <span className="text-[11px] md:text-sm">{t.label}</span>
-                {((t.id === 'alchemy' && alchemyReady) || (t.id === 'expedition' && expeditionReady)) && (
+                <span className="text-[10px] md:text-sm">{t.label}</span>
+                {((t.id === 'alchemy' && alchemyReady) || (t.id === 'expedition' && expeditionReady) || (t.id === 'legacy' && legacyAlert)) && (
                   <span
                     aria-label="Sẵn sàng"
                     className="absolute top-2 right-3 h-2 w-2 animate-pulse rounded-full bg-gold-400 md:top-1 md:right-1"

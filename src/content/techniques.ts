@@ -29,7 +29,7 @@ export const TECHNIQUES: readonly TechniqueDef[] = [
     perLevel: 0.1,
     maxLevel: 10,
     baseCost: 50,
-    costGrowth: 1.6,
+    costGrowth: 1.9,
     minRealmIndex: REALM_INDEX_BY_ID['luyen-khi-1'],
   },
   {
@@ -37,10 +37,10 @@ export const TECHNIQUES: readonly TechniqueDef[] = [
     name: 'Ngự Khí Thuật',
     description: 'Mỗi lần vận công chủ động hấp thu được nhiều linh khí hơn.',
     effect: 'meditateSeconds',
-    perLevel: 1,
+    perLevel: 0.25,
     maxLevel: 10,
     baseCost: 150,
-    costGrowth: 1.6,
+    costGrowth: 1.8,
     minRealmIndex: REALM_INDEX_BY_ID['luyen-khi-2'],
   },
   {
@@ -51,7 +51,7 @@ export const TECHNIQUES: readonly TechniqueDef[] = [
     perLevel: 1,
     maxLevel: 8,
     baseCost: 200,
-    costGrowth: 1.8,
+    costGrowth: 2.0,
     minRealmIndex: REALM_INDEX_BY_ID['luyen-khi-3'],
   },
   {
@@ -62,7 +62,7 @@ export const TECHNIQUES: readonly TechniqueDef[] = [
     perLevel: 0.02,
     maxLevel: 10,
     baseCost: 300,
-    costGrowth: 1.7,
+    costGrowth: 1.9,
     minRealmIndex: REALM_INDEX_BY_ID['luyen-khi-5'],
   },
   {
@@ -73,7 +73,7 @@ export const TECHNIQUES: readonly TechniqueDef[] = [
     perLevel: 0.15,
     maxLevel: 10,
     baseCost: 1_500,
-    costGrowth: 1.7,
+    costGrowth: 1.9,
     minRealmIndex: REALM_INDEX_BY_ID['truc-co-1'],
   },
   {
@@ -84,7 +84,7 @@ export const TECHNIQUES: readonly TechniqueDef[] = [
     perLevel: 0.05,
     maxLevel: 10,
     baseCost: 2_000,
-    costGrowth: 1.8,
+    costGrowth: 2.0,
     minRealmIndex: REALM_INDEX_BY_ID['truc-co-2'],
   },
   {
@@ -95,7 +95,7 @@ export const TECHNIQUES: readonly TechniqueDef[] = [
     perLevel: 0.25,
     maxLevel: 10,
     baseCost: 50_000,
-    costGrowth: 2.0,
+    costGrowth: 2.4,
     minRealmIndex: REALM_INDEX_BY_ID['kim-dan-1'],
   },
 ]

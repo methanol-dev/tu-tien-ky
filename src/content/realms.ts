@@ -62,15 +62,15 @@ const KY_4 = ['Sơ kỳ', 'Trung kỳ', 'Hậu kỳ', 'Viên mãn']
 
 export const MAJOR_REALM_DEFS: readonly MajorRealmDef[] = [
   { id: 'pham-nhan', name: 'Phàm Nhân', stages: [null], baseRate: 1, baseReq: 50, rateGrowth: 1, reqGrowth: 1, chanceStart: 1, chanceEnd: 1, lifespanYears: 80 },
-  { id: 'luyen-khi', name: 'Luyện Khí', stages: TANG_9, baseRate: 2, baseReq: 100, rateGrowth: 1.35, reqGrowth: 1.5, chanceStart: 0.95, chanceEnd: 0.75, lifespanYears: 120 },
-  { id: 'truc-co', name: 'Trúc Cơ', stages: KY_4, baseRate: 40, baseReq: 5_000, rateGrowth: 1.6, reqGrowth: 2.0, chanceStart: 0.7, chanceEnd: 0.5, lifespanYears: 250 },
-  { id: 'kim-dan', name: 'Kim Đan', stages: KY_4, baseRate: 400, baseReq: 150_000, rateGrowth: 1.7, reqGrowth: 2.2, chanceStart: 0.6, chanceEnd: 0.4, lifespanYears: 500, tribulationOnEnter: true },
-  { id: 'nguyen-anh', name: 'Nguyên Anh', stages: KY_4, baseRate: 5_000, baseReq: 4_000_000, rateGrowth: 1.8, reqGrowth: 2.4, chanceStart: 0.55, chanceEnd: 0.35, lifespanYears: 1_000, tribulationOnEnter: true },
-  { id: 'hoa-than', name: 'Hóa Thần', stages: KY_4, baseRate: 80_000, baseReq: 1.5e8, rateGrowth: 1.9, reqGrowth: 2.5, chanceStart: 0.5, chanceEnd: 0.3, lifespanYears: 2_000, tribulationOnEnter: true },
-  { id: 'luyen-hu', name: 'Luyện Hư', stages: KY_4, baseRate: 1.5e6, baseReq: 6e9, rateGrowth: 2.0, reqGrowth: 2.6, chanceStart: 0.45, chanceEnd: 0.28, lifespanYears: 4_000, tribulationOnEnter: true },
-  { id: 'hop-the', name: 'Hợp Thể', stages: KY_4, baseRate: 3e7, baseReq: 3e11, rateGrowth: 2.0, reqGrowth: 2.7, chanceStart: 0.4, chanceEnd: 0.25, lifespanYears: 8_000, tribulationOnEnter: true },
-  { id: 'dai-thua', name: 'Đại Thừa', stages: KY_4, baseRate: 7e8, baseReq: 1.5e13, rateGrowth: 2.1, reqGrowth: 2.8, chanceStart: 0.35, chanceEnd: 0.2, lifespanYears: 16_000, tribulationOnEnter: true },
-  { id: 'do-kiep', name: 'Độ Kiếp', stages: [null], baseRate: 2e10, baseReq: 1e15, rateGrowth: 1, reqGrowth: 1, chanceStart: 0.15, chanceEnd: 0.15, lifespanYears: 30_000, tribulationOnEnter: true },
+  { id: 'luyen-khi', name: 'Luyện Khí', stages: TANG_9, baseRate: 2, baseReq: 300, rateGrowth: 1.35, reqGrowth: 1.65, chanceStart: 0.95, chanceEnd: 0.75, lifespanYears: 120 },
+  { id: 'truc-co', name: 'Trúc Cơ', stages: KY_4, baseRate: 40, baseReq: 192_000, rateGrowth: 1.6, reqGrowth: 2.18, chanceStart: 0.7, chanceEnd: 0.5, lifespanYears: 250 },
+  { id: 'kim-dan', name: 'Kim Đan', stages: KY_4, baseRate: 400, baseReq: 8.6e6, rateGrowth: 1.7, reqGrowth: 2.38, chanceStart: 0.6, chanceEnd: 0.4, lifespanYears: 500, tribulationOnEnter: true },
+  { id: 'nguyen-anh', name: 'Nguyên Anh', stages: KY_4, baseRate: 5_000, baseReq: 5.8e8, rateGrowth: 1.8, reqGrowth: 2.45, chanceStart: 0.55, chanceEnd: 0.35, lifespanYears: 1_000, tribulationOnEnter: true },
+  { id: 'hoa-than', name: 'Hóa Thần', stages: KY_4, baseRate: 80_000, baseReq: 3.7e10, rateGrowth: 1.9, reqGrowth: 2.6, chanceStart: 0.5, chanceEnd: 0.3, lifespanYears: 2_000, tribulationOnEnter: true },
+  { id: 'luyen-hu', name: 'Luyện Hư', stages: KY_4, baseRate: 1.5e6, baseReq: 3.1e12, rateGrowth: 2.0, reqGrowth: 2.7, chanceStart: 0.45, chanceEnd: 0.28, lifespanYears: 4_000, tribulationOnEnter: true },
+  { id: 'hop-the', name: 'Hợp Thể', stages: KY_4, baseRate: 3e7, baseReq: 2.1e14, rateGrowth: 2.0, reqGrowth: 2.7, chanceStart: 0.4, chanceEnd: 0.25, lifespanYears: 8_000, tribulationOnEnter: true },
+  { id: 'dai-thua', name: 'Đại Thừa', stages: KY_4, baseRate: 7e8, baseReq: 1.4e16, rateGrowth: 2.1, reqGrowth: 2.8, chanceStart: 0.35, chanceEnd: 0.2, lifespanYears: 16_000, tribulationOnEnter: true },
+  { id: 'do-kiep', name: 'Độ Kiếp', stages: [null], baseRate: 2e10, baseReq: 1.3e18, rateGrowth: 1, reqGrowth: 1, chanceStart: 0.15, chanceEnd: 0.15, lifespanYears: 30_000, tribulationOnEnter: true },
   { id: 'phi-thang', name: 'Phi Thăng', stages: [null], baseRate: 1e12, baseReq: 0, rateGrowth: 1, reqGrowth: 1, chanceStart: 0, chanceEnd: 0, lifespanYears: 1_000_000, tribulationOnEnter: true, terminal: true },
 ]
 

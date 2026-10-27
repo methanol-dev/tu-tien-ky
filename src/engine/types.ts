@@ -27,6 +27,8 @@ export interface GameStats {
   eventsResolved: number
   expeditions: number
   expeditionWins: number
+  tribulationsPassed: number
+  tribulationsFailed: number
 }
 
 /** Temporary multiplier. Timed against `playedMs` so it also runs down during offline progress. */
@@ -46,6 +48,26 @@ export interface ExpeditionJob {
   dungeonId: string
   startedAtMs: number
   finishAtMs: number
+}
+
+export interface TribulationState {
+  toRealmIndex: number
+  bolts: number
+  /** Index of the next bolt (0-based). */
+  current: number
+  hp: number
+  maxHp: number
+  /** Damage reduction applied to every bolt (0..0.5). */
+  reduction: number
+  log: string[]
+}
+
+/** Carried across lives. */
+export interface Legacy {
+  daoVan: number
+  lives: number
+  upgrades: Record<string, number>
+  bestRealmIndex: number
 }
 
 export interface AlchemyJob {
@@ -80,6 +102,8 @@ export interface GameState {
   pendingBreakthroughBonus: number
   alchemy: AlchemyJob | null
   expedition: ExpeditionJob | null
+  tribulation: TribulationState | null
+  legacy: Legacy
   /** Random event awaiting a choice, if any. */
   pendingEvent: PendingEvent | null
   /** playedMs at which the next random event may fire. */

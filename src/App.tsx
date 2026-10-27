@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { getPendingEvent, isAlchemyReady, isExpeditionReady } from '@/engine'
+import { getPendingEvent, isAlchemyReady, isExpeditionReady, isReincarnationForced } from '@/engine'
 import { formatNumber } from '@/lib/format'
 import { startGameLoop } from '@/store/gameLoop'
 import { useGameStore } from '@/store/gameStore'
@@ -7,11 +7,13 @@ import { NavBar } from '@/ui/molecules/NavBar'
 import { Toast } from '@/ui/molecules/Toast'
 import { EventModal } from '@/ui/organisms/EventModal'
 import { ExpeditionReportModal } from '@/ui/organisms/ExpeditionReportModal'
+import { TribulationModal } from '@/ui/organisms/TribulationModal'
 import { OfflineModal } from '@/ui/organisms/OfflineModal'
 import { AlchemyScreen } from '@/ui/screens/AlchemyScreen'
 import { ExpeditionScreen } from '@/ui/screens/ExpeditionScreen'
 import { GameScreen } from '@/ui/screens/GameScreen'
 import { InventoryScreen } from '@/ui/screens/InventoryScreen'
+import { LegacyScreen } from '@/ui/screens/LegacyScreen'
 import { SettingsScreen } from '@/ui/screens/SettingsScreen'
 import { TechniquesScreen } from '@/ui/screens/TechniquesScreen'
 
@@ -21,6 +23,7 @@ const SCREENS = {
   inventory: InventoryScreen,
   alchemy: AlchemyScreen,
   expedition: ExpeditionScreen,
+  legacy: LegacyScreen,
   settings: SettingsScreen,
 } as const
 
@@ -31,6 +34,10 @@ export default function App() {
   const stones = useGameStore((s) => s.state.stones)
   const alchemyReady = useGameStore((s) => isAlchemyReady(s.state))
   const expeditionReady = useGameStore((s) => isExpeditionReady(s.state))
+  const legacyAlert = useGameStore((s) => isReincarnationForced(s.state))
+  const tribulationResult = useGameStore((s) => s.tribulationResult)
+  const resolveBolt = useGameStore((s) => s.resolveBolt)
+  const dismissTribulationResult = useGameStore((s) => s.dismissTribulationResult)
   const expeditionReport = useGameStore((s) => s.expeditionReport)
   const dismissExpeditionReport = useGameStore((s) => s.dismissExpeditionReport)
   const offlineReport = useGameStore((s) => s.offlineReport)
@@ -71,7 +78,7 @@ export default function App() {
             {formatNumber(stones)}
           </p>
           <div className="hidden md:block">
-            <NavBar current={screen} onChange={setScreen} alchemyReady={alchemyReady} expeditionReady={expeditionReady} />
+            <NavBar current={screen} onChange={setScreen} alchemyReady={alchemyReady} expeditionReady={expeditionReady} legacyAlert={legacyAlert} />
           </div>
         </div>
       </header>
@@ -81,11 +88,12 @@ export default function App() {
       </main>
 
       <div className="md:hidden">
-        <NavBar current={screen} onChange={setScreen} alchemyReady={alchemyReady} expeditionReady={expeditionReady} />
+        <NavBar current={screen} onChange={setScreen} alchemyReady={alchemyReady} expeditionReady={expeditionReady} legacyAlert={legacyAlert} />
       </div>
 
       <OfflineModal report={offlineReport} onClose={dismissOffline} />
       <ExpeditionReportModal report={expeditionReport} onClose={dismissExpeditionReport} />
+      <TribulationModal state={state} result={tribulationResult} onAct={resolveBolt} onDismissResult={dismissTribulationResult} />
       {!offlineReport && !expeditionReport && (
         <EventModal
           event={pendingEvent}

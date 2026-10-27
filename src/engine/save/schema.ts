@@ -27,7 +27,7 @@ const alchemyJobSchema = z.object({
 
 /** Schema for the CURRENT save version. Older versions go through migrations first. */
 export const gameStateSchema = z.object({
-  version: z.literal(4),
+  version: z.literal(5),
   createdAt: z.number().int().nonnegative(),
   lastSavedAt: z.number().int().nonnegative(),
   playedMs: z.number().nonnegative(),
@@ -41,6 +41,23 @@ export const gameStateSchema = z.object({
   buffs: z.array(buffSchema).max(50),
   pendingBreakthroughBonus: z.number().min(0).max(1),
   alchemy: alchemyJobSchema.nullable(),
+  tribulation: z
+    .object({
+      toRealmIndex: z.number().int().nonnegative(),
+      bolts: z.number().int().min(1).max(20),
+      current: z.number().int().nonnegative(),
+      hp: z.number().nonnegative(),
+      maxHp: z.number().positive(),
+      reduction: z.number().min(0).max(1),
+      log: z.array(z.string().max(300)).max(40),
+    })
+    .nullable(),
+  legacy: z.object({
+    daoVan: z.number().nonnegative(),
+    lives: z.number().int().positive(),
+    upgrades: z.record(z.string().max(64), z.number().int().nonnegative()),
+    bestRealmIndex: z.number().int().nonnegative(),
+  }),
   expedition: z.object({ dungeonId: z.string().max(64), startedAtMs: z.number().nonnegative(), finishAtMs: z.number().nonnegative() }).nullable(),
   pendingEvent: z.object({ eventId: z.string().max(64), triggeredAtMs: z.number().nonnegative() }).nullable(),
   nextEventAtMs: z.number().nonnegative(),
@@ -59,6 +76,8 @@ export const gameStateSchema = z.object({
     eventsResolved: z.number().int().nonnegative(),
     expeditions: z.number().int().nonnegative(),
     expeditionWins: z.number().int().nonnegative(),
+    tribulationsPassed: z.number().int().nonnegative(),
+    tribulationsFailed: z.number().int().nonnegative(),
   }),
   settings: z.object({
     timeScale: z.number().positive().max(1000),

@@ -1,4 +1,5 @@
 import { TREASURES } from '@/content/items'
+import { LEGACY_BY_ID } from '@/content/legacy'
 import { TECHNIQUE_BY_ID } from '@/content/techniques'
 import { DEFAULT_OFFLINE_CAP_MS, MEDITATE_BONUS_SECONDS } from './constants'
 import type { GameState } from './types'
@@ -10,6 +11,7 @@ export interface Modifiers {
   failPenaltyMult: number
   meditateSeconds: number
   offlineCapMs: number
+  lifespanBonusYears: number
 }
 
 const HOUR = 3_600_000
@@ -25,6 +27,16 @@ export function getModifiers(state: GameState): Modifiers {
     failPenaltyMult: 1,
     meditateSeconds: MEDITATE_BONUS_SECONDS,
     offlineCapMs: DEFAULT_OFFLINE_CAP_MS,
+    lifespanBonusYears: 0,
+  }
+
+  for (const [id, level] of Object.entries(state.legacy.upgrades)) {
+    const def = LEGACY_BY_ID[id]
+    if (!def || level <= 0) continue
+    const v = def.perLevel * level
+    if (def.effect === 'qiRateMult') qiAdd += v
+    else if (def.effect === 'breakthroughBonus') mods.breakthroughBonus += v
+    else if (def.effect === 'lifespanYears') mods.lifespanBonusYears += v
   }
 
   for (const [id, level] of Object.entries(state.techniques)) {
