@@ -1,6 +1,6 @@
 # PLAN: Tu Tiên Ký — Game Idle Tu Tiên + Sự kiện RPG trên Web
 
-> **Trạng thái**: 🟢 Đã duyệt 2026-10-27 — React/DOM first, Phaser đẩy xuống Phase 7 (optional). Tên tạm "Tu Tiên Ký", 1s thực = 1 ngày game.
+> **Trạng thái**: ✅ Hoàn thành Phase 0–8 (2026-10-28). React/DOM, Phaser bỏ. Tên "Tu Tiên Ký", 1s thực = 1 ngày game. Xem `docs/walkthrough.md`.
 > **Ngày lập**: 2026-10-27
 > **Scope**: Single-player, offline, lưu localStorage, deploy static (GitHub Pages / Vercel).
 
@@ -168,10 +168,10 @@ Mỗi cảnh giới: `qiRequired`, `qiRateMultiplier`, `lifespanBonus`, `breakth
 - `P7-04` ~~Âm thanh~~ Hoãn: cần asset âm thanh thật, tổng hợp WebAudio nghe rẻ tiền. Làm khi có asset.
 - **Verify**: Lighthouse PWA pass; animation không drop frame trên mobile tầm trung.
 
-### Phase 8 — Audit & Deploy `[P8]`
-- `P8-01` `/audit`, `/security` (không có backend nên chủ yếu XSS từ import save, dependency scan).
-- `P8-02` GitHub Actions build → Pages. **Chỉ push khi mày lệnh.**
-- `P8-03` `walkthrough.md`.
+### Phase 8 — Audit & Deploy `[P8]` ✅ (2026-10-28)
+- `P8-01` Audit: `pnpm audit` prod+dev sạch; không `dangerouslySetInnerHTML`/`eval`/`innerHTML`; không URL ngoài; import save qua migrate → zod → kiểm tra realmIndex.
+- `P8-02` `.github/workflows/ci.yml`: lint+test+build mọi push/PR, deploy Pages khi push `main`, `BASE_PATH` theo tên repo. **Chưa push, chờ lệnh.**
+- `P8-03` `docs/walkthrough.md` + README cập nhật.
 
 ---
 
