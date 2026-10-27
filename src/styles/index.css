@@ -1,5 +1,11 @@
 @import 'tailwindcss';
 
+/* Self-hosted fonts (unicode-range chunked; browsers fetch only the glyph ranges they render). */
+@import '@fontsource/noto-serif-sc/400.css';
+@import '@fontsource/noto-serif-sc/900.css';
+@import '@fontsource/noto-serif/400.css';
+@import '@fontsource/noto-serif/600.css';
+
 /* Ink-wash (thủy mặc) design tokens. Dark "ink" surface by default. */
 @theme {
   --color-ink-950: #0a0b0e;
@@ -43,6 +49,7 @@ body {
   background-image:
     radial-gradient(ellipse at 20% 10%, rgb(63 127 110 / 0.08), transparent 55%),
     radial-gradient(ellipse at 80% 90%, rgb(179 38 30 / 0.07), transparent 55%);
+  background-attachment: fixed;
 }
 
 /* Motion tokens */
@@ -113,5 +120,85 @@ body {
   .animate-shake,
   .animate-pulse {
     animation: none;
+  }
+}
+
+/* Paper grain: an SVG turbulence filter, fixed to the viewport, very faint. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.06;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+/* Ink splash on breakthrough: a blot that blooms and fades. */
+@keyframes ink-splash {
+  0% {
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 0.85;
+  }
+  60% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(3.2);
+    opacity: 0;
+  }
+}
+.ink-splash {
+  position: fixed;
+  left: 50%;
+  top: 40%;
+  width: 40vmin;
+  height: 40vmin;
+  pointer-events: none;
+  z-index: 45;
+  border-radius: 48% 52% 55% 45% / 52% 44% 56% 48%;
+  background: radial-gradient(circle at 50% 50%, rgb(224 191 74 / 0.9) 0%, rgb(201 162 39 / 0.5) 30%, rgb(10 11 14 / 0.9) 62%, transparent 72%);
+  filter: blur(2px);
+  animation: ink-splash 1.4s ease-out both;
+}
+.ink-splash--fail {
+  background: radial-gradient(circle at 50% 50%, rgb(209 68 59 / 0.9) 0%, rgb(179 38 30 / 0.5) 30%, rgb(10 11 14 / 0.9) 62%, transparent 72%);
+}
+
+/* Qi motes orbiting the realm panel. */
+@keyframes orbit {
+  from {
+    transform: rotate(0deg) translateX(var(--orbit-r)) rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg) translateX(var(--orbit-r)) rotate(-360deg);
+  }
+}
+.qi-mote {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 9999px;
+  background: rgb(169 204 255);
+  box-shadow: 0 0 10px 2px rgb(127 179 255 / 0.6);
+  animation: orbit var(--orbit-t) linear infinite;
+  animation-delay: var(--orbit-d);
+  opacity: 0.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ink-splash,
+  .qi-mote {
+    animation: none;
+    display: none;
   }
 }

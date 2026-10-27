@@ -42,6 +42,7 @@ export function GameScreen() {
           nextRealm={nextRealm}
           chance={getBreakthroughChance(state)}
           pendingBonus={state.pendingBreakthroughBonus}
+          progress={getBreakthroughProgress(state)}
           fx={fx}
         />
 

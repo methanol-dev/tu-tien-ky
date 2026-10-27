@@ -1,12 +1,14 @@
 import type { RealmStage } from '@/content/realms'
 import { formatPercent } from '@/lib/format'
 import type { FxEvent } from '@/store/gameStore'
+import { QiMotes } from '@/ui/atoms/QiMotes'
 
 interface RealmPanelProps {
   realm: RealmStage
   nextRealm: RealmStage | null
   chance: number
   pendingBonus: number
+  progress: number
   fx: FxEvent | null
 }
 
@@ -15,7 +17,7 @@ const FX_CLASS: Record<FxEvent['kind'], string> = {
   'breakthrough-fail': 'animate-shake',
 }
 
-export function RealmPanel({ realm, nextRealm, chance, pendingBonus, fx }: RealmPanelProps) {
+export function RealmPanel({ realm, nextRealm, chance, pendingBonus, progress, fx }: RealmPanelProps) {
   return (
     <section className="relative overflow-hidden rounded-lg border border-gold-500/20 bg-ink-800/70 px-6 py-8 text-center shadow-ink">
       <div
@@ -24,6 +26,7 @@ export function RealmPanel({ realm, nextRealm, chance, pendingBonus, fx }: Realm
       >
         道
       </div>
+      <QiMotes progress={progress} />
       <p className="relative text-xs tracking-[0.4em] text-paper-400 uppercase">Cảnh giới</p>
       <h2
         key={fx?.id ?? 'static'}

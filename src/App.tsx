@@ -3,6 +3,7 @@ import { getPendingEvent, isAlchemyReady, isExpeditionReady, isReincarnationForc
 import { formatNumber } from '@/lib/format'
 import { startGameLoop } from '@/store/gameLoop'
 import { useGameStore } from '@/store/gameStore'
+import { InkSplash } from '@/ui/atoms/InkSplash'
 import { NavBar } from '@/ui/molecules/NavBar'
 import { Toast } from '@/ui/molecules/Toast'
 import { EventModal } from '@/ui/organisms/EventModal'
@@ -43,6 +44,7 @@ export default function App() {
   const offlineReport = useGameStore((s) => s.offlineReport)
   const dismissOffline = useGameStore((s) => s.dismissOffline)
   const notice = useGameStore((s) => s.notice)
+  const fx = useGameStore((s) => s.fx)
   const dismissNotice = useGameStore((s) => s.dismissNotice)
   const state = useGameStore((s) => s.state)
   const pendingEvent = useGameStore((s) => getPendingEvent(s.state))
@@ -104,6 +106,7 @@ export default function App() {
         />
       )}
       <Toast notice={notice} onDismiss={dismissNotice} />
+      <InkSplash fx={fx} />
     </div>
   )
 }

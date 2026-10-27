@@ -5,6 +5,8 @@ export interface GameLoopOptions {
   autosaveMs?: number
   /** Frames longer than this are treated as a pause and routed through offline catch-up. */
   maxFrameMs?: number
+  /** Publish engine ticks to the store at most this often (keeps React re-renders ~10Hz). */
+  minFrameMs?: number
 }
 
 /**
@@ -15,6 +17,7 @@ export interface GameLoopOptions {
 export function startGameLoop(store: GameStoreApi, opts: GameLoopOptions = {}): () => void {
   const autosaveMs = opts.autosaveMs ?? 30_000
   const maxFrameMs = opts.maxFrameMs ?? 1_000
+  const minFrameMs = opts.minFrameMs ?? 100
   let last = performance.now()
   let rafId = 0
   let running = true
@@ -22,10 +25,11 @@ export function startGameLoop(store: GameStoreApi, opts: GameLoopOptions = {}): 
   const frame = (now: number) => {
     if (!running) return
     const dt = now - last
-    last = now
     if (dt > maxFrameMs) {
+      last = now
       store.getState().resume()
-    } else if (dt > 0) {
+    } else if (dt >= minFrameMs) {
+      last = now
       store.getState().tick(dt)
     }
     rafId = requestAnimationFrame(frame)

@@ -160,11 +160,12 @@ Mỗi cảnh giới: `qiRequired`, `qiRateMultiplier`, `lifespanBonus`, `breakth
 - **Kết quả sim** (`pnpm sim 24 1` active / `pnpm sim 24 2 passive`): 24h chạy ~0.5s. Active: Trúc Cơ 22 phút, Kim Đan 3.8h, Nguyên Anh 10.8h. Passive: Trúc Cơ 30 phút, Kim Đan 4.7h, Nguyên Anh 20h. Chưa tới Hóa Thần trong ngày đầu. Guardrail trong `tests/sim.test.ts`.
 - **Đã sửa khi cân bằng**: tap Tu luyện giảm từ 2s→1s (+0.25s/tầng Ngự Khí) vì 12s/tap làm active nhanh gấp 13 lần; linh thạch đổi sang √(tốc độ) thay vì tuyến tính để giá cố định còn ý nghĩa; thưởng đột phá = 10 phút thu nhập; ngưỡng cảnh giới ×2.5 (Luyện Khí) và ×8 (Trúc Cơ trở lên) để bù nhân tốc độ chồng; giá công pháp dốc hơn; linh thạch bí cảnh giảm nửa; độ kiếp thất bại mất 30% thay vì 50%.
 
-### Phase 7 — Polish `[P7]`
+### Phase 7 — Polish `[P7]` ✅ (2026-10-28)
 - `P7-01` Hiệu ứng thủy mặc: nét mực loang khi đột phá, chữ Hán mờ nền, SVG linh khí.
-- `P7-02` (Optional) Phaser scene "Động phủ" nếu CSS/SVG không đủ.
-- `P7-03` PWA (manifest + service worker) để cài về máy chơi offline thật sự.
-- `P7-04` Âm thanh toggle (sau).
+- `P7-02` ~~Phaser~~ Bỏ hẳn: CSS/SVG (mực loang, hạt linh khí quỹ đạo, nền giấy dó) đủ "wow", thêm Phaser chỉ tốn 400KB bundle.
+- `P7-03` PWA (manifest + service worker) để cài về máy chơi offline thật sự. Font self-host (fontsource, chunk theo unicode-range, cache khi dùng). Icon PNG sinh bằng `scripts/gen-icons.ts` không cần thư viện ảnh.
+- `P7-05` (thêm) Game loop publish state 10Hz thay vì 60Hz để React không re-render mỗi frame.
+- `P7-04` ~~Âm thanh~~ Hoãn: cần asset âm thanh thật, tổng hợp WebAudio nghe rẻ tiền. Làm khi có asset.
 - **Verify**: Lighthouse PWA pass; animation không drop frame trên mobile tầm trung.
 
 ### Phase 8 — Audit & Deploy `[P8]`
