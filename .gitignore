@@ -2,3 +2,10 @@
 # Skillpack (local tooling, not committed)
 .agent/
 ERRORS.md
+
+# Build / deps
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.vite/

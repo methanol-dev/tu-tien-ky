@@ -1,0 +1,46 @@
+@import 'tailwindcss';
+
+/* Ink-wash (thủy mặc) design tokens. Dark "ink" surface by default. */
+@theme {
+  --color-ink-950: #0a0b0e;
+  --color-ink-900: #0f1115;
+  --color-ink-800: #1a1d24;
+  --color-ink-700: #272b35;
+  --color-ink-600: #3a3f4b;
+
+  --color-paper-100: #f3ead7;
+  --color-paper-200: #e8dcc2;
+  --color-paper-300: #d7c7a4;
+  --color-paper-400: #bfae88;
+
+  --color-vermilion-500: #b3261e;
+  --color-vermilion-400: #d1443b;
+  --color-gold-500: #c9a227;
+  --color-gold-400: #e0bf4a;
+  --color-jade-500: #3f7f6e;
+  --color-jade-400: #5aa391;
+  --color-qi-500: #7fb3ff;
+  --color-qi-400: #a9ccff;
+
+  --font-han: 'Noto Serif SC', 'Noto Serif', Georgia, 'Times New Roman', serif;
+  --font-body: 'Noto Serif', Georgia, 'Times New Roman', serif;
+
+  --shadow-ink: 0 10px 40px -10px rgb(0 0 0 / 0.6);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  min-height: 100dvh;
+}
+
+body {
+  @apply bg-ink-900 text-paper-200 font-body antialiased;
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgb(63 127 110 / 0.08), transparent 55%),
+    radial-gradient(ellipse at 80% 90%, rgb(179 38 30 / 0.07), transparent 55%);
+}

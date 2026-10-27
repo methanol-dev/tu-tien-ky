@@ -1,6 +1,6 @@
 # PLAN: Tu Tiên Ký — Game Idle Tu Tiên + Sự kiện RPG trên Web
 
-> **Trạng thái**: 🟡 Chờ duyệt
+> **Trạng thái**: 🟢 Đã duyệt 2026-10-27 — React/DOM first, Phaser đẩy xuống Phase 7 (optional). Tên tạm "Tu Tiên Ký", 1s thực = 1 ngày game.
 > **Ngày lập**: 2026-10-27
 > **Scope**: Single-player, offline, lưu localStorage, deploy static (GitHub Pages / Vercel).
 
