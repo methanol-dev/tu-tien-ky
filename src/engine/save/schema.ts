@@ -27,7 +27,7 @@ const alchemyJobSchema = z.object({
 
 /** Schema for the CURRENT save version. Older versions go through migrations first. */
 export const gameStateSchema = z.object({
-  version: z.literal(2),
+  version: z.literal(3),
   createdAt: z.number().int().nonnegative(),
   lastSavedAt: z.number().int().nonnegative(),
   playedMs: z.number().nonnegative(),
@@ -41,6 +41,10 @@ export const gameStateSchema = z.object({
   buffs: z.array(buffSchema).max(50),
   pendingBreakthroughBonus: z.number().min(0).max(1),
   alchemy: alchemyJobSchema.nullable(),
+  pendingEvent: z.object({ eventId: z.string().max(64), triggeredAtMs: z.number().nonnegative() }).nullable(),
+  nextEventAtMs: z.number().nonnegative(),
+  eventCooldowns: z.record(z.string().max(64), z.number().nonnegative()),
+  flags: z.record(z.string().max(80), z.boolean()),
   gatherReadyAtMs: z.number().nonnegative(),
   nextLogId: z.number().int().positive(),
   log: z.array(logEntrySchema).max(100),
@@ -51,9 +55,11 @@ export const gameStateSchema = z.object({
     stonesTotal: z.number().nonnegative().finite(),
     pillsUsed: z.number().int().nonnegative(),
     alchemyCrafted: z.number().int().nonnegative(),
+    eventsResolved: z.number().int().nonnegative(),
   }),
   settings: z.object({
     timeScale: z.number().positive().max(1000),
+    pauseOnEvent: z.boolean(),
   }),
 })
 

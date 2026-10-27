@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { EVENTS } from '@/content/events'
 import { REALMS } from '@/content/realms'
 import { createMemoryStorage, createSeededRng, serialize, createInitialState } from '@/engine'
 import { createGameStore } from '@/store/gameStore'
@@ -68,5 +69,26 @@ describe('game store', () => {
     store.getState().resetGame(20_000)
     expect(store.getState().state.qi).toBe(0)
     expect(store.getState().state.createdAt).toBe(20_000)
+  })
+})
+
+describe('game store events', () => {
+  it('rolls an event after the first interval and resolves it through the store', () => {
+    const store = createGameStore({ storage: createMemoryStorage(), rng: createSeededRng(7) })
+    store.getState().hydrate(0)
+    store.getState().tick(89_999)
+    expect(store.getState().state.pendingEvent).toBeNull()
+    store.getState().tick(1)
+    const pending = store.getState().state.pendingEvent
+    expect(pending).not.toBeNull()
+    expect(store.getState().resolveEvent('khong-ton-tai')).toBe(false)
+    expect(store.getState().notice?.kind).toBe('error')
+    const choices = EVENTS.find((e) => e.id === pending!.eventId)!.choices
+    const choice = choices.find((c) => !c.requires) ?? choices[0]
+    expect(store.getState().resolveEvent(choice.id)).toBe(true)
+    expect(store.getState().state.pendingEvent).toBeNull()
+    expect(store.getState().eventResult?.event.id).toBe(pending!.eventId)
+    store.getState().dismissEventResult()
+    expect(store.getState().eventResult).toBeNull()
   })
 })

@@ -16,7 +16,11 @@ import {
   importSave as engineImportSave,
   meditate as engineMeditate,
   MIN_OFFLINE_REPORT_MS,
+  type EventResolution,
   type OfflineReport,
+  resolveEvent as engineResolveEvent,
+  rollEvent,
+  shouldRollEvent,
   pushLog,
   type Rng,
   type SaveStorage,
@@ -47,6 +51,8 @@ export interface GameStore {
   screen: Screen
   fx: FxEvent | null
   notice: Notice | null
+  /** Outcome of the last resolved event, shown until dismissed. */
+  eventResult: EventResolution | null
   hydrate: (now?: number) => void
   tick: (dtMs: number) => void
   resume: (now?: number) => void
@@ -58,6 +64,9 @@ export interface GameStore {
   buyItem: (id: string, qty?: number) => boolean
   startAlchemy: (recipeId: string) => boolean
   collectAlchemy: () => boolean
+  resolveEvent: (choiceId: string) => boolean
+  dismissEventResult: () => void
+  setPauseOnEvent: (value: boolean) => void
   save: (now?: number) => void
   dismissOffline: () => void
   notify: (text: string, kind?: Notice['kind']) => void
@@ -105,6 +114,7 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       screen: 'cultivate',
       fx: null,
       notice: null,
+      eventResult: null,
 
       hydrate: (now = Date.now()) => {
         const raw = storage.load()
@@ -128,7 +138,11 @@ export function createGameStore(deps: GameStoreDeps = {}) {
         })
       },
 
-      tick: (dtMs) => set((s) => ({ state: engineTick(s.state, dtMs) })),
+      tick: (dtMs) =>
+        set((s) => {
+          const ticked = engineTick(s.state, dtMs)
+          return { state: shouldRollEvent(ticked) ? rollEvent(ticked, rng) : ticked }
+        }),
 
       resume: (now = Date.now()) => {
         const { state, report } = applyOfflineProgress(get().state, now)
@@ -174,6 +188,17 @@ export function createGameStore(deps: GameStoreDeps = {}) {
         )
         return true
       },
+
+      resolveEvent: (choiceId) => {
+        const r = engineResolveEvent(get().state, choiceId, rng)
+        if (!r.ok) return apply(r)
+        set({ state: r.state.state, eventResult: r.state.outcome.text ? r.state : null })
+        get().save()
+        return true
+      },
+      dismissEventResult: () => set({ eventResult: null }),
+      setPauseOnEvent: (value) =>
+        set((s) => ({ state: { ...s.state, settings: { ...s.state.settings, pauseOnEvent: value } } })),
 
       save: (now = Date.now()) => {
         const state = { ...get().state, lastSavedAt: now }

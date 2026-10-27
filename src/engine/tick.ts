@@ -12,6 +12,8 @@ import type { GameState } from './types'
  */
 export function tick(state: GameState, dtMs: number): GameState {
   if (dtMs <= 0) return state
+  // Optional: the world holds its breath while a decision is pending.
+  if (state.pendingEvent && state.settings.pauseOnEvent) return state
   const dtSec = dtMs / 1000
   const qiGain = getQiRate(state) * dtSec
   const stoneGain = getStoneRate(state) * dtSec

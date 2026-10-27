@@ -11,6 +11,8 @@ export interface LogEntry {
 export interface GameSettings {
   /** In-game days elapsed per real second. */
   timeScale: number
+  /** Freeze the simulation while an event awaits a decision. */
+  pauseOnEvent: boolean
 }
 
 export interface GameStats {
@@ -22,6 +24,7 @@ export interface GameStats {
   stonesTotal: number
   pillsUsed: number
   alchemyCrafted: number
+  eventsResolved: number
 }
 
 /** Temporary multiplier. Timed against `playedMs` so it also runs down during offline progress. */
@@ -30,6 +33,11 @@ export interface Buff {
   name: string
   qiRateMult: number
   expiresAtMs: number
+}
+
+export interface PendingEvent {
+  eventId: string
+  triggeredAtMs: number
 }
 
 export interface AlchemyJob {
@@ -63,6 +71,14 @@ export interface GameState {
   /** One-shot bonus consumed by the next breakthrough attempt. */
   pendingBreakthroughBonus: number
   alchemy: AlchemyJob | null
+  /** Random event awaiting a choice, if any. */
+  pendingEvent: PendingEvent | null
+  /** playedMs at which the next random event may fire. */
+  nextEventAtMs: number
+  /** Event id -> playedMs until it may fire again. */
+  eventCooldowns: Record<string, number>
+  /** Story flags set by events; `seen:<id>` marks once-only events. */
+  flags: Record<string, boolean>
   /** playedMs at which the next herb gathering is allowed. */
   gatherReadyAtMs: number
   nextLogId: number

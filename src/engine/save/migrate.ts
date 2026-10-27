@@ -17,6 +17,21 @@ export const MIGRATIONS: Record<number, Migration> = {
       stats: { breakthroughs: 0, breakthroughFailures: 0, qiTotal: 0, ...stats },
     }
   },
+  // 2 -> 3: random events (Phase 4).
+  2: (raw) => {
+    const stats = (raw.stats as RawSave | undefined) ?? {}
+    const settings = (raw.settings as RawSave | undefined) ?? {}
+    return {
+      ...raw,
+      version: 3,
+      pendingEvent: null,
+      nextEventAtMs: typeof raw.playedMs === 'number' ? raw.playedMs + 90_000 : 90_000,
+      eventCooldowns: {},
+      flags: {},
+      stats: { eventsResolved: 0, ...stats },
+      settings: { pauseOnEvent: false, ...settings },
+    }
+  },
   // 1 -> 2: economy, techniques, inventory, alchemy (Phase 3).
   1: (raw) => {
     const stats = (raw.stats as RawSave | undefined) ?? {}

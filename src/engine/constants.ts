@@ -1,4 +1,4 @@
-export const SAVE_VERSION = 2
+export const SAVE_VERSION = 3
 export const LOG_LIMIT = 100
 export const DAYS_PER_YEAR = 360
 export const STARTING_AGE_YEARS = 16
@@ -22,3 +22,8 @@ export const BREAKTHROUGH_STONE_FACTOR = 0.2
 export const GATHER_COOLDOWN_MS = 60_000
 export const GATHER_MIN_COUNT = 1
 export const GATHER_MAX_COUNT = 3
+
+/** Random events: first one soon after start, then every few minutes of played time. */
+export const FIRST_EVENT_AT_MS = 90_000
+export const EVENT_INTERVAL_MIN_MS = 3 * 60_000
+export const EVENT_INTERVAL_MAX_MS = 6 * 60_000

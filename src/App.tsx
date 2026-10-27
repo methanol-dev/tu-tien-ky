@@ -1,10 +1,11 @@
 import { useEffect } from 'react'
-import { isAlchemyReady } from '@/engine'
+import { getPendingEvent, isAlchemyReady } from '@/engine'
 import { formatNumber } from '@/lib/format'
 import { startGameLoop } from '@/store/gameLoop'
 import { useGameStore } from '@/store/gameStore'
 import { NavBar } from '@/ui/molecules/NavBar'
 import { Toast } from '@/ui/molecules/Toast'
+import { EventModal } from '@/ui/organisms/EventModal'
 import { OfflineModal } from '@/ui/organisms/OfflineModal'
 import { AlchemyScreen } from '@/ui/screens/AlchemyScreen'
 import { GameScreen } from '@/ui/screens/GameScreen'
@@ -30,6 +31,11 @@ export default function App() {
   const dismissOffline = useGameStore((s) => s.dismissOffline)
   const notice = useGameStore((s) => s.notice)
   const dismissNotice = useGameStore((s) => s.dismissNotice)
+  const state = useGameStore((s) => s.state)
+  const pendingEvent = useGameStore((s) => getPendingEvent(s.state))
+  const eventResult = useGameStore((s) => s.eventResult)
+  const resolveEvent = useGameStore((s) => s.resolveEvent)
+  const dismissEventResult = useGameStore((s) => s.dismissEventResult)
 
   useEffect(() => {
     useGameStore.getState().hydrate()
@@ -73,6 +79,15 @@ export default function App() {
       </div>
 
       <OfflineModal report={offlineReport} onClose={dismissOffline} />
+      {!offlineReport && (
+        <EventModal
+          event={pendingEvent}
+          result={eventResult}
+          state={state}
+          onChoose={resolveEvent}
+          onDismissResult={dismissEventResult}
+        />
+      )}
       <Toast notice={notice} onDismiss={dismissNotice} />
     </div>
   )

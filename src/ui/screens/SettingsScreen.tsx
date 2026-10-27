@@ -7,6 +7,8 @@ export function SettingsScreen() {
   const exportSave = useGameStore((s) => s.exportSave)
   const importSave = useGameStore((s) => s.importSave)
   const resetGame = useGameStore((s) => s.resetGame)
+  const pauseOnEvent = useGameStore((s) => s.state.settings.pauseOnEvent)
+  const setPauseOnEvent = useGameStore((s) => s.setPauseOnEvent)
 
   const [exported, setExported] = useState('')
   const [copied, setCopied] = useState(false)
@@ -34,6 +36,24 @@ export function SettingsScreen() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
+      <section className="space-y-3">
+        <h2 className="font-han text-xl text-gold-400">Tu luyện</h2>
+        <label className="flex min-h-11 cursor-pointer items-center justify-between gap-4 rounded-md border border-paper-400/15 bg-ink-800/60 px-4 py-2">
+          <span>
+            <span className="block text-paper-100">Dừng tu luyện khi có sự kiện</span>
+            <span className="block text-xs text-paper-400">
+              Bật: thế giới đứng yên cho tới khi ngươi chọn. Tắt (mặc định): linh khí vẫn tích, bế quan offline không bị gián đoạn.
+            </span>
+          </span>
+          <input
+            type="checkbox"
+            className="h-5 w-5 accent-gold-500"
+            checked={pauseOnEvent}
+            onChange={(e) => setPauseOnEvent(e.target.checked)}
+          />
+        </label>
+      </section>
+
       <section className="space-y-3">
         <h2 className="font-han text-xl text-gold-400">Xuất save</h2>
         <p className="text-sm text-paper-300">

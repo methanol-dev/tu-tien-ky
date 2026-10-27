@@ -140,7 +140,7 @@ Mỗi cảnh giới: `qiRequired`, `qiRateMultiplier`, `lifespanBonus`, `breakth
 - `P3-05` (thêm) Hái thuốc (cooldown 60s, rơi theo tier cảnh giới) + Phường thị mua dược liệu, để luyện đan có nguồn nguyên liệu ngay từ đầu.
 - **Verify**: Test công thức multiplier; UI tab Công pháp / Túi đồ / Luyện đan.
 
-### Phase 4 — Sự kiện RPG `[P4]`
+### Phase 4 — Sự kiện RPG `[P4]` ✅ (2026-10-28, 32 sự kiện, 81 test)
 - `P4-01` Event engine: `conditions[]`, `weight`, `cooldown`, `choices[]` với `effects[]`.
 - `P4-02` 30+ sự kiện: kỳ ngộ (nhặt bí tịch), tâm ma (mất linh khí/chọn ý chí), gặp ma tu (đánh/chạy/hối lộ), thương nhân, thiên tài địa bảo, duyên phận…
 - `P4-03` Popup lựa chọn UI, pause tích linh khí khi có sự kiện chờ (tùy chỉnh được).

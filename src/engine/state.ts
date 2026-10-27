@@ -1,4 +1,4 @@
-import { DAYS_PER_YEAR, SAVE_VERSION, STARTING_AGE_YEARS } from './constants'
+import { DAYS_PER_YEAR, FIRST_EVENT_AT_MS, SAVE_VERSION, STARTING_AGE_YEARS } from './constants'
 import type { GameState } from './types'
 
 export function createInitialState(now: number = Date.now()): GameState {
@@ -17,6 +17,10 @@ export function createInitialState(now: number = Date.now()): GameState {
     buffs: [],
     pendingBreakthroughBonus: 0,
     alchemy: null,
+    pendingEvent: null,
+    nextEventAtMs: FIRST_EVENT_AT_MS,
+    eventCooldowns: {},
+    flags: {},
     gatherReadyAtMs: 0,
     nextLogId: 1,
     log: [],
@@ -27,7 +31,8 @@ export function createInitialState(now: number = Date.now()): GameState {
       stonesTotal: 0,
       pillsUsed: 0,
       alchemyCrafted: 0,
+      eventsResolved: 0,
     },
-    settings: { timeScale: 1 },
+    settings: { timeScale: 1, pauseOnEvent: false },
   }
 }

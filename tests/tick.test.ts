@@ -12,7 +12,7 @@ describe('tick', () => {
   })
 
   it('ages the cultivator according to timeScale', () => {
-    const s0 = { ...createInitialState(0), settings: { timeScale: 2 } }
+    const s0 = { ...createInitialState(0), settings: { timeScale: 2, pauseOnEvent: false } }
     const s1 = tick(s0, 5_000)
     expect(s1.ageDays - s0.ageDays).toBeCloseTo(10)
   })
