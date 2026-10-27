@@ -108,13 +108,13 @@ Mỗi cảnh giới: `qiRequired`, `qiRateMultiplier`, `lifespanBonus`, `breakth
 
 ## 4. Lộ trình & Task
 
-### Phase 0 — Scaffold `[P0]`
+### Phase 0 — Scaffold `[P0]` ✅ (2026-10-27)
 - `P0-01` Vite + React + TS, Tailwind 4, ESLint + Prettier, Vitest.
 - `P0-02` Cấu trúc thư mục như mục 2.2, README tiếng Việt.
 - `P0-03` Design tokens thủy mặc: palette (mực đen, giấy dó, đỏ son, vàng kim), font serif Hán tự (Noto Serif TC/SC + fallback), spacing 4/8px.
 - **Verify**: `pnpm dev` chạy, `pnpm test` pass (1 test dummy), `pnpm build` ra `dist/`.
 
-### Phase 1 — Engine lõi `[P1]`
+### Phase 1 — Engine lõi `[P1]` ✅ (2026-10-27, 31 test, coverage 89%)
 - `P1-01` `GameState` + `createInitialState()`.
 - `P1-02` `tick()` thuần, linh khí tích theo dt, tuổi tăng.
 - `P1-03` Bảng realms + `canBreakthrough()` + `attemptBreakthrough(rng)` (inject RNG để test).
