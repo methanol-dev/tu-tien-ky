@@ -16,6 +16,10 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
+env:
+  # Unique per attempt: re-running a job must not leave two same-named artifacts in one run.
+  PAGES_ARTIFACT: github-pages-${{ github.run_attempt }}
+
 jobs:
   check:
     name: Lint, test, build
@@ -40,6 +44,7 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         with:
           path: dist
+          name: ${{ env.PAGES_ARTIFACT }}
 
   deploy:
     name: Deploy to GitHub Pages
@@ -52,3 +57,5 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: ${{ env.PAGES_ARTIFACT }}
