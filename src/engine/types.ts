@@ -25,6 +25,8 @@ export interface GameStats {
   pillsUsed: number
   alchemyCrafted: number
   eventsResolved: number
+  expeditions: number
+  expeditionWins: number
 }
 
 /** Temporary multiplier. Timed against `playedMs` so it also runs down during offline progress. */
@@ -38,6 +40,12 @@ export interface Buff {
 export interface PendingEvent {
   eventId: string
   triggeredAtMs: number
+}
+
+export interface ExpeditionJob {
+  dungeonId: string
+  startedAtMs: number
+  finishAtMs: number
 }
 
 export interface AlchemyJob {
@@ -71,6 +79,7 @@ export interface GameState {
   /** One-shot bonus consumed by the next breakthrough attempt. */
   pendingBreakthroughBonus: number
   alchemy: AlchemyJob | null
+  expedition: ExpeditionJob | null
   /** Random event awaiting a choice, if any. */
   pendingEvent: PendingEvent | null
   /** playedMs at which the next random event may fire. */

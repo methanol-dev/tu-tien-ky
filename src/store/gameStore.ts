@@ -6,6 +6,7 @@ import {
   type BreakthroughResult,
   buyItem as engineBuyItem,
   collectAlchemy as engineCollectAlchemy,
+  completeExpedition as engineCompleteExpedition,
   createInitialState,
   createLocalStorage,
   defaultRng,
@@ -17,6 +18,7 @@ import {
   meditate as engineMeditate,
   MIN_OFFLINE_REPORT_MS,
   type EventResolution,
+  type ExpeditionReport,
   type OfflineReport,
   resolveEvent as engineResolveEvent,
   rollEvent,
@@ -26,12 +28,13 @@ import {
   type SaveStorage,
   serialize,
   startAlchemy as engineStartAlchemy,
+  startExpedition as engineStartExpedition,
   tick as engineTick,
   upgradeTechnique as engineUpgradeTechnique,
   usePill as engineUsePill,
 } from '@/engine'
 
-export type Screen = 'cultivate' | 'techniques' | 'inventory' | 'alchemy' | 'settings'
+export type Screen = 'cultivate' | 'techniques' | 'inventory' | 'alchemy' | 'expedition' | 'settings'
 
 export interface FxEvent {
   id: number
@@ -53,6 +56,8 @@ export interface GameStore {
   notice: Notice | null
   /** Outcome of the last resolved event, shown until dismissed. */
   eventResult: EventResolution | null
+  /** Report of the last finished expedition, shown until dismissed. */
+  expeditionReport: ExpeditionReport | null
   hydrate: (now?: number) => void
   tick: (dtMs: number) => void
   resume: (now?: number) => void
@@ -67,6 +72,9 @@ export interface GameStore {
   resolveEvent: (choiceId: string) => boolean
   dismissEventResult: () => void
   setPauseOnEvent: (value: boolean) => void
+  startExpedition: (dungeonId: string) => boolean
+  completeExpedition: () => boolean
+  dismissExpeditionReport: () => void
   save: (now?: number) => void
   dismissOffline: () => void
   notify: (text: string, kind?: Notice['kind']) => void
@@ -115,6 +123,7 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       fx: null,
       notice: null,
       eventResult: null,
+      expeditionReport: null,
 
       hydrate: (now = Date.now()) => {
         const raw = storage.load()
@@ -197,6 +206,16 @@ export function createGameStore(deps: GameStoreDeps = {}) {
         return true
       },
       dismissEventResult: () => set({ eventResult: null }),
+
+      startExpedition: (dungeonId) => apply(engineStartExpedition(get().state, dungeonId)),
+      completeExpedition: () => {
+        const r = engineCompleteExpedition(get().state, rng)
+        if (!r.ok) return apply(r)
+        set({ state: r.state.state, expeditionReport: r.state.report })
+        get().save()
+        return true
+      },
+      dismissExpeditionReport: () => set({ expeditionReport: null }),
       setPauseOnEvent: (value) =>
         set((s) => ({ state: { ...s.state, settings: { ...s.state.settings, pauseOnEvent: value } } })),
 

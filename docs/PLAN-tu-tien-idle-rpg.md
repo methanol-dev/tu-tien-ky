@@ -146,7 +146,7 @@ Mỗi cảnh giới: `qiRequired`, `qiRateMultiplier`, `lifespanBonus`, `breakth
 - `P4-03` Popup lựa chọn UI, pause tích linh khí khi có sự kiện chờ (tùy chỉnh được).
 - **Verify**: Test weighted RNG, điều kiện realm; sự kiện không lặp spam (cooldown).
 
-### Phase 5 — Bí cảnh `[P5]`
+### Phase 5 — Bí cảnh `[P5]` ✅ (2026-10-28, 6 bí cảnh, 6 pháp bảo, 89 test)
 - `P5-01` Danh sách bí cảnh theo cảnh giới, thời gian thám hiểm.
 - `P5-02` Auto-combat đơn giản (HP/ATK/DEF, log theo lượt), rủi ro trọng thương.
 - `P5-03` Loot table, boss cuối bí cảnh.

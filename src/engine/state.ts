@@ -17,6 +17,7 @@ export function createInitialState(now: number = Date.now()): GameState {
     buffs: [],
     pendingBreakthroughBonus: 0,
     alchemy: null,
+    expedition: null,
     pendingEvent: null,
     nextEventAtMs: FIRST_EVENT_AT_MS,
     eventCooldowns: {},
@@ -32,6 +33,8 @@ export function createInitialState(now: number = Date.now()): GameState {
       pillsUsed: 0,
       alchemyCrafted: 0,
       eventsResolved: 0,
+      expeditions: 0,
+      expeditionWins: 0,
     },
     settings: { timeScale: 1, pauseOnEvent: false },
   }

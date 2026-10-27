@@ -1,4 +1,4 @@
-export const SAVE_VERSION = 3
+export const SAVE_VERSION = 4
 export const LOG_LIMIT = 100
 export const DAYS_PER_YEAR = 360
 export const STARTING_AGE_YEARS = 16
@@ -27,3 +27,8 @@ export const GATHER_MAX_COUNT = 3
 export const FIRST_EVENT_AT_MS = 90_000
 export const EVENT_INTERVAL_MIN_MS = 3 * 60_000
 export const EVENT_INTERVAL_MAX_MS = 6 * 60_000
+
+/** Losing an expedition: qi burned and injury debuff. */
+export const EXPEDITION_DEFEAT_QI_LOSS = 0.1
+export const EXPEDITION_INJURY_MULT = 0.5
+export const EXPEDITION_INJURY_MS = 5 * 60_000

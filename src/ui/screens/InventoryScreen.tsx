@@ -4,6 +4,7 @@ import { describePillEffect, TIER_CLASS } from '@/lib/describe'
 import { formatDurationMs, formatNumber } from '@/lib/format'
 import { useGameStore } from '@/store/gameStore'
 import { Button } from '@/ui/atoms/Button'
+import { TreasureList } from '@/ui/organisms/TreasureList'
 
 export function InventoryScreen() {
   const state = useGameStore((s) => s.state)
@@ -61,6 +62,8 @@ export function InventoryScreen() {
           </ul>
         )}
       </section>
+
+      <TreasureList state={state} />
 
       <section className="space-y-2">
         <h3 className="font-han text-lg text-paper-100">Dược liệu</h3>

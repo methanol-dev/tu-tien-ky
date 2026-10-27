@@ -1,13 +1,15 @@
 import { useEffect } from 'react'
-import { getPendingEvent, isAlchemyReady } from '@/engine'
+import { getPendingEvent, isAlchemyReady, isExpeditionReady } from '@/engine'
 import { formatNumber } from '@/lib/format'
 import { startGameLoop } from '@/store/gameLoop'
 import { useGameStore } from '@/store/gameStore'
 import { NavBar } from '@/ui/molecules/NavBar'
 import { Toast } from '@/ui/molecules/Toast'
 import { EventModal } from '@/ui/organisms/EventModal'
+import { ExpeditionReportModal } from '@/ui/organisms/ExpeditionReportModal'
 import { OfflineModal } from '@/ui/organisms/OfflineModal'
 import { AlchemyScreen } from '@/ui/screens/AlchemyScreen'
+import { ExpeditionScreen } from '@/ui/screens/ExpeditionScreen'
 import { GameScreen } from '@/ui/screens/GameScreen'
 import { InventoryScreen } from '@/ui/screens/InventoryScreen'
 import { SettingsScreen } from '@/ui/screens/SettingsScreen'
@@ -18,6 +20,7 @@ const SCREENS = {
   techniques: TechniquesScreen,
   inventory: InventoryScreen,
   alchemy: AlchemyScreen,
+  expedition: ExpeditionScreen,
   settings: SettingsScreen,
 } as const
 
@@ -27,6 +30,9 @@ export default function App() {
   const setScreen = useGameStore((s) => s.setScreen)
   const stones = useGameStore((s) => s.state.stones)
   const alchemyReady = useGameStore((s) => isAlchemyReady(s.state))
+  const expeditionReady = useGameStore((s) => isExpeditionReady(s.state))
+  const expeditionReport = useGameStore((s) => s.expeditionReport)
+  const dismissExpeditionReport = useGameStore((s) => s.dismissExpeditionReport)
   const offlineReport = useGameStore((s) => s.offlineReport)
   const dismissOffline = useGameStore((s) => s.dismissOffline)
   const notice = useGameStore((s) => s.notice)
@@ -65,7 +71,7 @@ export default function App() {
             {formatNumber(stones)}
           </p>
           <div className="hidden md:block">
-            <NavBar current={screen} onChange={setScreen} alchemyReady={alchemyReady} />
+            <NavBar current={screen} onChange={setScreen} alchemyReady={alchemyReady} expeditionReady={expeditionReady} />
           </div>
         </div>
       </header>
@@ -75,11 +81,12 @@ export default function App() {
       </main>
 
       <div className="md:hidden">
-        <NavBar current={screen} onChange={setScreen} alchemyReady={alchemyReady} />
+        <NavBar current={screen} onChange={setScreen} alchemyReady={alchemyReady} expeditionReady={expeditionReady} />
       </div>
 
       <OfflineModal report={offlineReport} onClose={dismissOffline} />
-      {!offlineReport && (
+      <ExpeditionReportModal report={expeditionReport} onClose={dismissExpeditionReport} />
+      {!offlineReport && !expeditionReport && (
         <EventModal
           event={pendingEvent}
           result={eventResult}

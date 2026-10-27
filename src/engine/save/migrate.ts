@@ -17,6 +17,11 @@ export const MIGRATIONS: Record<number, Migration> = {
       stats: { breakthroughs: 0, breakthroughFailures: 0, qiTotal: 0, ...stats },
     }
   },
+  // 3 -> 4: expeditions (Phase 5).
+  3: (raw) => {
+    const stats = (raw.stats as RawSave | undefined) ?? {}
+    return { ...raw, version: 4, expedition: null, stats: { expeditions: 0, expeditionWins: 0, ...stats } }
+  },
   // 2 -> 3: random events (Phase 4).
   2: (raw) => {
     const stats = (raw.stats as RawSave | undefined) ?? {}

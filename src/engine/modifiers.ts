@@ -1,3 +1,4 @@
+import { TREASURES } from '@/content/items'
 import { TECHNIQUE_BY_ID } from '@/content/techniques'
 import { DEFAULT_OFFLINE_CAP_MS, MEDITATE_BONUS_SECONDS } from './constants'
 import type { GameState } from './types'
@@ -53,6 +54,10 @@ export function getModifiers(state: GameState): Modifiers {
   }
   mods.qiRateMult = 1 + qiAdd
   mods.stoneRateMult = 1 + stoneAdd
+
+  for (const t of TREASURES) {
+    if ((state.inventory[t.id] ?? 0) > 0 && t.passive?.qiRate) mods.qiRateMult *= 1 + t.passive.qiRate
+  }
 
   for (const buff of state.buffs) {
     if (buff.expiresAtMs > state.playedMs) mods.qiRateMult *= buff.qiRateMult
