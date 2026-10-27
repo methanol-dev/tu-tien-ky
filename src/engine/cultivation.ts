@@ -81,3 +81,17 @@ export function attemptBreakthrough(state: GameState, rng: Rng): BreakthroughRes
   )
   return { state: next, success: false, from, to: null, qiLost }
 }
+
+/** Seconds' worth of passive qi granted by one active "Tu luyện" tap. */
+export const MEDITATE_BONUS_SECONDS = 2
+
+/** Active play: a tap grants a small burst of qi so early game is not pure waiting. */
+export function meditate(state: GameState): GameState {
+  const gain = getQiRate(state) * MEDITATE_BONUS_SECONDS
+  if (gain <= 0) return state
+  return {
+    ...state,
+    qi: state.qi + gain,
+    stats: { ...state.stats, qiTotal: state.stats.qiTotal + gain },
+  }
+}

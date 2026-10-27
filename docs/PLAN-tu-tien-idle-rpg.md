@@ -122,11 +122,11 @@ Mỗi cảnh giới: `qiRequired`, `qiRateMultiplier`, `lifespanBonus`, `breakth
 - `P1-05` Offline progress: tính dt khi load, cap 8h (nâng cấp sau).
 - **Verify**: Vitest ≥ 15 test cho công thức, đột phá, offline cap, migration. Coverage engine ≥ 80%.
 
-### Phase 2 — UI MVP `[P2]`
+### Phase 2 — UI MVP `[P2]` ✅ (2026-10-28, tag v0.1.0)
 - `P2-01` Zustand store + game loop rAF, pause khi tab ẩn (dùng timestamp, không dùng interval count).
 - `P2-02` Màn chính: tên cảnh giới, thanh linh khí, tốc độ/s, tuổi/thọ, nút **Đột phá**.
 - `P2-03` Log sự kiện (nhật ký tu luyện) cuộn tự động.
-- `P2-04` Màn Cài đặt: export/import save, reset, tốc độ thời gian.
+- `P2-04` Màn Cài đặt: export/import save, reset. ~~tốc độ thời gian~~ (bỏ khỏi UI: chỉ làm già nhanh hơn, không có lợi cho người chơi; giữ `settings.timeScale` trong state cho hệ thống sự kiện sau).
 - `P2-05` Popup "Trong lúc bế quan..." khi quay lại sau offline.
 - `P2-06` Responsive mobile-first, touch target ≥ 44px.
 - **Verify**: Chơi tay 10 phút lên được Trúc Cơ; tắt tab mở lại thấy popup offline; Lighthouse ≥ 90.

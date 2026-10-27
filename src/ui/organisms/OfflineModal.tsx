@@ -1,0 +1,43 @@
+import type { OfflineReport } from '@/engine'
+import { formatDurationMs, formatNumber } from '@/lib/format'
+import { Button } from '@/ui/atoms/Button'
+import { Modal } from '@/ui/atoms/Modal'
+
+interface OfflineModalProps {
+  report: OfflineReport | null
+  onClose: () => void
+}
+
+export function OfflineModal({ report, onClose }: OfflineModalProps) {
+  return (
+    <Modal
+      open={report !== null}
+      title="Xuất quan"
+      onClose={onClose}
+      footer={
+        <Button variant="primary" onClick={onClose} autoFocus>
+          Tiếp tục tu luyện
+        </Button>
+      }
+    >
+      {report && (
+        <>
+          <p>
+            Ngươi đã bế quan <span className="text-paper-100">{formatDurationMs(report.appliedMs)}</span>
+            {' '}({Math.floor(report.daysPassed)} ngày trong tu tiên giới).
+          </p>
+          <p>
+            Hấp thu được{' '}
+            <span className="font-han text-xl text-qi-400">{formatNumber(report.qiGained)}</span> linh khí.
+          </p>
+          {report.capped && (
+            <p className="text-xs text-paper-400">
+              Thời gian bế quan tối đa hiện là {formatDurationMs(report.appliedMs)}. Rời đi{' '}
+              {formatDurationMs(report.elapsedMs)} nhưng chỉ tính phần trong giới hạn.
+            </p>
+          )}
+        </>
+      )}
+    </Modal>
+  )
+}

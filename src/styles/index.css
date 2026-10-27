@@ -44,3 +44,74 @@ body {
     radial-gradient(ellipse at 20% 10%, rgb(63 127 110 / 0.08), transparent 55%),
     radial-gradient(ellipse at 80% 90%, rgb(179 38 30 / 0.07), transparent 55%);
 }
+
+/* Motion tokens */
+@theme {
+  --animate-rise: rise 0.25s ease-out both;
+  --animate-ink-burst: ink-burst 1.2s ease-out both;
+  --animate-shake: shake 0.4s ease-in-out both;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes ink-burst {
+    0% {
+      text-shadow: 0 0 0 rgb(224 191 74 / 0);
+      transform: scale(1);
+    }
+    30% {
+      text-shadow:
+        0 0 40px rgb(224 191 74 / 0.9),
+        0 0 90px rgb(127 179 255 / 0.6);
+      transform: scale(1.08);
+    }
+    100% {
+      text-shadow: 0 0 0 rgb(224 191 74 / 0);
+      transform: scale(1);
+    }
+  }
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    20%,
+    60% {
+      transform: translateX(-6px);
+    }
+    40%,
+    80% {
+      transform: translateX(6px);
+    }
+  }
+}
+
+.qi-shimmer {
+  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.15) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s linear infinite;
+}
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qi-shimmer,
+  .animate-ink-burst,
+  .animate-shake,
+  .animate-pulse {
+    animation: none;
+  }
+}
