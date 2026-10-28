@@ -1,4 +1,5 @@
 import { AVATARS, type AvatarDef } from '@/content/avatars'
+import { resolveAsset } from '@/lib/assets'
 import { Button } from '@/ui/atoms/Button'
 import { Modal } from '@/ui/atoms/Modal'
 
@@ -53,7 +54,7 @@ export function AvatarModal({
               >
                 <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full border border-gold-500/40">
                   <img
-                    src={a.image}
+                    src={resolveAsset(a.image)}
                     alt={a.name}
                     className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-110"
                   />

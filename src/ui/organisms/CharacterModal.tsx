@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { resolveAsset } from '@/lib/assets'
 import { RARITY_NAME } from '@/content/affixes'
 import { AVATARS, AVATAR_BY_ID } from '@/content/avatars'
 import { CLASSES, CLASS_BY_ID } from '@/content/classes'
@@ -98,7 +99,7 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
                 className="group relative h-16 w-16 shrink-0 cursor-pointer overflow-hidden rounded-full border-2 border-gold-500/50 shadow-ink transition-transform hover:scale-105 hover:border-gold-400"
               >
                 <img
-                  src={avatar.image}
+                  src={resolveAsset(avatar.image)}
                   alt={avatar.name}
                   className="h-full w-full object-cover object-top shadow-ink"
                 />

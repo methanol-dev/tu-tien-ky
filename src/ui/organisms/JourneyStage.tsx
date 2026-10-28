@@ -4,6 +4,7 @@ import { REALMS } from '@/content/realms'
 import { DIFFICULTY_NAMES, STAGES_PER_REGION, type SilhouetteId } from '@/content/regions'
 import { type GameState, getPhaseProgress, getRegion, isRegionUnlocked } from '@/engine'
 import { formatDurationMs, formatNumber } from '@/lib/format'
+import { resolveAsset } from '@/lib/assets'
 import { EnemySilhouette, HeroSilhouette } from '@/ui/silhouettes'
 
 interface Props {
@@ -41,7 +42,7 @@ function EnemyFigure({
   enemy: { id: string; name: string; imageUrl?: string }
   silhouette: SilhouetteId
 }) {
-  const candidateUrl = enemy.imageUrl ?? `/assets/monsters/${enemy.id}.png`
+  const candidateUrl = resolveAsset(enemy.imageUrl ?? `/assets/monsters/${enemy.id}.png`)
   const [prevUrl, setPrevUrl] = useState(candidateUrl)
   const [imgError, setImgError] = useState(false)
 
@@ -122,7 +123,7 @@ export function JourneyStage({ state, compact = false }: Props) {
       {region.backdropUrl && (
         <div
           className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-30 mix-blend-luminosity transition-opacity duration-700"
-          style={{ backgroundImage: `url(${region.backdropUrl})` }}
+          style={{ backgroundImage: `url(${resolveAsset(region.backdropUrl)})` }}
           aria-hidden
         />
       )}
@@ -136,7 +137,7 @@ export function JourneyStage({ state, compact = false }: Props) {
           {/* Góc Trái: Đạo Thân Người Chơi */}
           <div className="flex items-center gap-2 rounded-lg border border-gold-500/30 bg-ink-950/80 p-1.5 pr-3 backdrop-blur-sm shadow-md">
             <img
-              src={avatar.image}
+              src={resolveAsset(avatar.image)}
               alt={avatar.name}
               className="h-9 w-9 rounded-full border border-gold-400 object-cover object-top shadow-sm"
             />
@@ -198,7 +199,7 @@ export function JourneyStage({ state, compact = false }: Props) {
               <div className="flex h-9 w-9 items-center justify-center rounded-full border border-vermilion-500/50 bg-ink-900 text-sm overflow-hidden">
                 {(() => {
                   const tmpl = region.boss.id === mainEnemy.id ? region.boss : region.enemies.find((e) => e.id === mainEnemy.id)
-                  const img = tmpl?.imageUrl ?? mainEnemy.imageUrl ?? `/assets/monsters/${mainEnemy.id}.png`
+                  const img = resolveAsset(tmpl?.imageUrl ?? mainEnemy.imageUrl ?? `/assets/monsters/${mainEnemy.id}.png`)
                   return (
                     <img
                       key={img}
@@ -268,7 +269,7 @@ export function JourneyStage({ state, compact = false }: Props) {
       >
         {!spriteError ? (
           <img
-            src="/assets/characters/hero-sprite.png"
+            src={resolveAsset('/assets/characters/hero-sprite.png')}
             alt={avatar.name}
             className="h-full w-auto max-w-none object-contain pointer-events-none drop-shadow-[0_0_8px_rgba(234,179,8,0.3)]"
             onError={() => setSpriteError(true)}
@@ -297,7 +298,7 @@ export function JourneyStage({ state, compact = false }: Props) {
         const tmpl = region.boss.id === e.id ? region.boss : region.enemies.find((x) => x.id === e.id)
         const enemyWithImg = {
           ...e,
-          imageUrl: tmpl?.imageUrl ?? e.imageUrl ?? `/assets/monsters/${e.id}.png`,
+          imageUrl: resolveAsset(tmpl?.imageUrl ?? e.imageUrl ?? `/assets/monsters/${e.id}.png`),
         }
         return (
           <div

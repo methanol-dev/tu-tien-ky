@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { NPCS, type StoryScene } from '@/content/story'
 import { Button } from '@/ui/atoms/Button'
 import { Modal } from '@/ui/atoms/Modal'
+import { resolveAsset } from '@/lib/assets'
 
 interface StoryModalProps {
   scene: StoryScene | null
@@ -15,7 +16,7 @@ function SpeakerAvatar({ speaker }: { speaker: string }) {
   if (npc?.avatarUrl && !hasError) {
     return (
       <img
-        src={npc.avatarUrl}
+        src={resolveAsset(npc.avatarUrl)}
         alt={npc.name}
         onError={() => setHasError(true)}
         className="h-10 w-10 shrink-0 rounded-full border border-gold-500/50 object-cover shadow-sm"

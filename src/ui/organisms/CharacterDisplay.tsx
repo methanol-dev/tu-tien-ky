@@ -1,4 +1,5 @@
 import { AVATARS, AVATAR_BY_ID, getEvolutionStage } from '@/content/avatars'
+import { resolveAsset } from '@/lib/assets'
 
 export interface CharacterDisplayProps {
   realmIndex: number
@@ -125,7 +126,7 @@ export function CharacterDisplay({
         >
           {/* Bức Tranh Lập Hội Nhân Vật */}
           <img
-            src={displayImage}
+            src={resolveAsset(displayImage)}
             alt={avatar.name}
             className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
           />
