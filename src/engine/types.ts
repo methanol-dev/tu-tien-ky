@@ -17,6 +17,8 @@ export interface GameSettings {
   timeScale: number
   /** Freeze the simulation while an event awaits a decision. */
   pauseOnEvent: boolean
+  /** Selected character avatar ID (defaults to 'tran-binh-an'). */
+  avatarId?: string
 }
 
 export interface GameStats {

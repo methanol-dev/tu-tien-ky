@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { getMartialPunches, getMartialRealm } from '@/content/martialRealms'
 import {
   canBreakthrough,
@@ -19,6 +20,7 @@ import { useGameStore } from '@/store/gameStore'
 import { Button } from '@/ui/atoms/Button'
 import { QiBar } from '@/ui/molecules/QiBar'
 import { StatRow } from '@/ui/molecules/StatRow'
+import { AvatarModal } from '@/ui/organisms/AvatarModal'
 import { CultivationLog } from '@/ui/organisms/CultivationLog'
 import { RealmPanel } from '@/ui/organisms/RealmPanel'
 
@@ -29,6 +31,8 @@ export function GameScreen() {
   const breakthrough = useGameStore((s) => s.breakthrough)
   const gather = useGameStore((s) => s.gather)
   const setCharacterModalOpen = useGameStore((s) => s.setCharacterModalOpen)
+  const setAvatar = useGameStore((s) => s.setAvatar)
+  const [avatarModalOpen, setAvatarModalOpen] = useState(false)
 
   const realm = getRealm(state)
   const nextRealm = getNextRealm(state)
@@ -50,6 +54,10 @@ export function GameScreen() {
           pendingBonus={state.pendingBreakthroughBonus}
           progress={getBreakthroughProgress(state)}
           fx={fx}
+          realmIndex={state.realmIndex}
+          ready={ready}
+          avatarId={state.settings.avatarId}
+          onAvatarClick={() => setAvatarModalOpen(true)}
         />
 
         <QiBar
@@ -169,6 +177,13 @@ export function GameScreen() {
       </section>
 
       <CultivationLog entries={state.log} />
+
+      <AvatarModal
+        open={avatarModalOpen}
+        onClose={() => setAvatarModalOpen(false)}
+        currentAvatarId={state.settings.avatarId ?? 'tran-binh-an'}
+        onSelectAvatar={setAvatar}
+      />
     </div>
   )
 }

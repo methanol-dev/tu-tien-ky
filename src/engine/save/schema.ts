@@ -148,6 +148,7 @@ export const gameStateSchema = z.object({
   settings: z.object({
     timeScale: z.number().positive().max(1000),
     pauseOnEvent: z.boolean(),
+    avatarId: z.string().optional(),
   }),
 })
 

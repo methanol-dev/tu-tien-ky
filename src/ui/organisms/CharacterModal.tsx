@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { RARITY_NAME } from '@/content/affixes'
+import { AVATARS, AVATAR_BY_ID } from '@/content/avatars'
 import { GEAR_SLOTS, SLOT_NAME } from '@/content/gear'
 import {
   MARTIAL_STAGES,
@@ -27,8 +28,10 @@ import {
 import { describeAffix, RARITY_BG, RARITY_CLASS } from '@/lib/gearUi'
 import { describeTechniqueEffect } from '@/lib/describe'
 import { formatAge, formatDurationMs, formatNumber, formatPercent, formatRate } from '@/lib/format'
+import { useGameStore } from '@/store/gameStore'
 import { Button } from '@/ui/atoms/Button'
 import { Modal } from '@/ui/atoms/Modal'
+import { AvatarModal } from './AvatarModal'
 
 interface CharacterModalProps {
   open: boolean
@@ -40,6 +43,8 @@ type Tab = 'combat' | 'cultivation' | 'martial' | 'gear'
 
 export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
   const [tab, setTab] = useState<Tab>('combat')
+  const [avatarModalOpen, setAvatarModalOpen] = useState(false)
+  const setAvatar = useGameStore((s) => s.setAvatar)
 
   if (!open) return null
 
@@ -63,36 +68,50 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
     .map(([id, lvl]) => ({ def: TECHNIQUE_BY_ID[id], lvl }))
     .filter((t) => t.def !== undefined)
 
+  const avatar = AVATAR_BY_ID[state.settings.avatarId ?? 'tran-binh-an'] ?? AVATARS[0]
+
   return (
-    <Modal
-      open={open}
-      title="Đạo Thân · Chỉ Số Nhân Vật"
-      onClose={onClose}
-      maxWidth="max-w-2xl"
-      footer={
-        <Button variant="primary" onClick={onClose} autoFocus>
-          Đóng
-        </Button>
-      }
-    >
-      {/* Căn cốt tổng quan */}
-      <div className="rounded-lg border border-gold-500/20 bg-ink-900/80 p-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3.5">
-            <img
-              src="assets/portraits/tran-binh-an.jpg"
-              alt="Trần Bình An"
-              className="h-16 w-16 shrink-0 rounded-full border-2 border-gold-500/50 object-cover shadow-ink"
-            />
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-han text-xl font-bold text-paper-100">{realm.name}</span>
-                {realm.stageLabel && (
-                  <span className="rounded bg-gold-500/10 px-2 py-0.5 text-xs text-gold-400 border border-gold-500/30">
-                    {realm.stageLabel}
-                  </span>
-                )}
-              </div>
+    <>
+      <Modal
+        open={open}
+        title="Đạo Thân · Chỉ Số Nhân Vật"
+        onClose={onClose}
+        maxWidth="max-w-2xl"
+        footer={
+          <Button variant="primary" onClick={onClose} autoFocus>
+            Đóng
+          </Button>
+        }
+      >
+        {/* Căn cốt tổng quan */}
+        <div className="rounded-lg border border-gold-500/20 bg-ink-900/80 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3.5">
+              <button
+                type="button"
+                onClick={() => setAvatarModalOpen(true)}
+                title="Bấm để đổi diện mạo"
+                className="group relative h-16 w-16 shrink-0 cursor-pointer overflow-hidden rounded-full border-2 border-gold-500/50 shadow-ink transition-transform hover:scale-105 hover:border-gold-400"
+              >
+                <img
+                  src={avatar.image}
+                  alt={avatar.name}
+                  className="h-full w-full object-cover object-top shadow-ink"
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+                  <span className="font-han text-[10px] text-gold-300">Đổi</span>
+                </div>
+              </button>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-han text-xl font-bold text-paper-100">{avatar.name}</span>
+                  <span className="font-han text-sm text-gold-400">({realm.name})</span>
+                  {realm.stageLabel && (
+                    <span className="rounded bg-gold-500/10 px-2 py-0.5 text-xs text-gold-400 border border-gold-500/30">
+                      {realm.stageLabel}
+                    </span>
+                  )}
+                </div>
               {realm.kiemLaiRealm && (
                 <p className="mt-1 text-xs text-gold-300 font-serif">
                   📜 Luyện Khí Sĩ: <span className="text-paper-100 font-medium">{realm.kiemLaiRealm}</span>
@@ -604,6 +623,14 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
           </div>
         </div>
       )}
-    </Modal>
+      </Modal>
+
+      <AvatarModal
+        open={avatarModalOpen}
+        onClose={() => setAvatarModalOpen(false)}
+        currentAvatarId={state.settings.avatarId ?? 'tran-binh-an'}
+        onSelectAvatar={setAvatar}
+      />
+    </>
   )
 }

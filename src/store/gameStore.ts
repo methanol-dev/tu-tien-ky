@@ -100,6 +100,7 @@ export interface GameStore {
   dismissEventResult: () => void
   resolveStoryScene: (sceneId: string, choiceId?: string) => void
   setPauseOnEvent: (value: boolean) => void
+  setAvatar: (avatarId: string) => void
   startRegion: (regionId: string, difficulty: Difficulty) => boolean
   setAutoAdvance: (value: boolean) => void
   openChests: (kind: ChestKind, count: number) => boolean
@@ -329,6 +330,11 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       buyLegacyUpgrade: (id) => apply(engineBuyLegacyUpgrade(get().state, id)),
       setPauseOnEvent: (value) =>
         set((s) => ({ state: { ...s.state, settings: { ...s.state.settings, pauseOnEvent: value } } })),
+
+      setAvatar: (avatarId) => {
+        set((s) => ({ state: { ...s.state, settings: { ...s.state.settings, avatarId } } }))
+        get().save()
+      },
 
       save: (now = Date.now()) => {
         const state = { ...get().state, lastSavedAt: now }
