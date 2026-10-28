@@ -79,7 +79,27 @@ export function JourneyStage({ state, compact = false }: Props) {
       <Layer d={MID} color={p.mid} duration={32} running={walking} opacity={0.95} />
       <Layer d={NEAR} color={p.near} duration={16} running={walking} opacity={1} />
       <div className="absolute inset-x-0 bottom-0 h-[12%]" style={{ background: p.ground }} aria-hidden />
+
+      {/* Lớp tranh nền thủy mặc phong cảnh vùng đất */}
+      {region.backdropUrl && (
+        <div
+          className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-25 mix-blend-luminosity transition-opacity duration-700"
+          style={{ backgroundImage: `url(${region.backdropUrl})` }}
+          aria-hidden
+        />
+      )}
+
       <div className="journey-mist pointer-events-none absolute inset-0" aria-hidden />
+
+      {/* Hiệu ứng kiếm ý / quyền phong khi nhân vật ra đòn */}
+      {lastPlayerHit && (
+        <div
+          key={`hit-fx-${lastPlayerHit.atMs}`}
+          className="pointer-events-none absolute bottom-[30%] left-[22%] h-1 w-[46%] rounded-full bg-gradient-to-r from-gold-400 via-paper-100 to-transparent opacity-90 shadow-[0_0_10px_#e0bf4a] animate-pulse"
+          style={{ transform: 'rotate(-6deg)' }}
+          aria-hidden
+        />
+      )}
 
       {/* Hero */}
       <div

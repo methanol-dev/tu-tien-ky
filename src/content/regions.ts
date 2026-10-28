@@ -57,6 +57,7 @@ export interface RegionDef {
   /** 1..6, drives gear tier together with difficulty. */
   tier: number
   palette: RegionPalette
+  backdropUrl?: string
   enemies: EnemyTemplate[]
   boss: EnemyTemplate
   loot: LootEntry[]
@@ -109,6 +110,7 @@ export const REGIONS: readonly RegionDef[] = [
     minRealmIndex: R['luyen-khi-1'],
     tier: 1,
     palette: { sky: '#121a16', far: '#1d2a23', mid: '#24362c', near: '#2d4536', ground: '#0d1411', accent: '#5aa391' },
+    backdropUrl: 'assets/regions/ly-chau-dong-thien.jpg',
     enemies: [mob('da-khuyen', 'Dã khuyển', 'wolf'), mob('bach-mang', 'Bạch mãng', 'snake', 0.3, 0.45, 0.2)],
     boss: boss('tran-long-mang', 'Trấn Long Mãng Xà', 'bear'),
     loot: [{ itemId: 'linh-thao', chance: 1, min: 2, max: 4 }, { itemId: 'huyet-tinh-chi', chance: 0.3, min: 1, max: 1 }],
@@ -121,6 +123,7 @@ export const REGIONS: readonly RegionDef[] = [
     minRealmIndex: R['luyen-khi-4'],
     tier: 2,
     palette: { sky: '#101014', far: '#1a1a22', mid: '#23232e', near: '#2c2c3a', ground: '#0a0a0e', accent: '#7f7fb3' },
+    backdropUrl: 'assets/regions/hoang-da-nam-ha.jpg',
     enemies: [mob('da-tu-cuop-bao', 'Dã tu cướp báu', 'cultist', 0.35, 0.5, 0.25), mob('hac-son-xa', 'Hắc sơn xà', 'snake', 0.4, 0.55, 0.3), mob('da-dieu-yeu', 'Dạ điểu yêu', 'bat', 0.3, 0.5, 0.2)],
     boss: boss('hac-son-lao-quai', 'Hắc Sơn Lão Quái', 'cultist', 1.05, 0.7, 0.5),
     loot: [{ itemId: 'huyet-tinh-chi', chance: 1, min: 1, max: 3 }, { itemId: 'tu-linh-chi', chance: 0.25, min: 1, max: 1 }, { itemId: 'tu-khi-dan', chance: 0.3, min: 1, max: 1 }],
@@ -133,6 +136,7 @@ export const REGIONS: readonly RegionDef[] = [
     minRealmIndex: R['luyen-khi-7'],
     tier: 3,
     palette: { sky: '#14121a', far: '#201c2b', mid: '#2a2538', near: '#352f46', ground: '#0d0b12', accent: '#bfae88' },
+    backdropUrl: 'assets/regions/thu-gian-ho.jpg',
     enemies: [mob('thuy-phi-ta-tu', 'Thủy phỉ tà tu', 'skeleton'), mob('thuy-quy-tuong', 'Thủy quỷ tướng', 'skeleton', 0.5, 0.5, 0.4)],
     boss: boss('luu-chi-mau', 'Lưu Chí Mậu', 'skeleton-lord', 1.1, 0.65, 0.55),
     loot: [{ itemId: 'tu-linh-chi', chance: 1, min: 1, max: 2 }, { itemId: 'pha-canh-dan', chance: 0.2, min: 1, max: 1 }],
@@ -145,6 +149,7 @@ export const REGIONS: readonly RegionDef[] = [
     minRealmIndex: R['truc-co-1'],
     tier: 4,
     palette: { sky: '#121a24', far: '#243447', mid: '#34495f', near: '#4a637c', ground: '#0e141c', accent: '#a9ccff' },
+    backdropUrl: 'assets/regions/lac-phach-son.svg',
     enemies: [mob('son-da-di-thu', 'Sơn dã dị thú', 'wolf'), mob('tuyet-yeu-ho-son', 'Tuyết yêu hộ sơn', 'yeti', 0.45, 0.5, 0.4)],
     boss: boss('bac-nhac-co-than', 'Bắc Nhạc Cổ Thần', 'serpent', 1.05, 0.65, 0.6),
     loot: [{ itemId: 'thien-tam-lien', chance: 0.8, min: 1, max: 2 }, { itemId: 'tu-linh-chi', chance: 1, min: 1, max: 2 }, { itemId: 'ngung-than-dan', chance: 0.3, min: 1, max: 1 }],
@@ -157,6 +162,7 @@ export const REGIONS: readonly RegionDef[] = [
     minRealmIndex: R['truc-co-3'],
     tier: 5,
     palette: { sky: '#1a0f0c', far: '#2e1712', mid: '#42201a', near: '#5a2b20', ground: '#120907', accent: '#d1443b' },
+    backdropUrl: 'assets/regions/kiem-khi-truong-thanh.svg',
     enemies: [mob('man-hoang-yeu-binh', 'Yêu binh tiền phong', 'lizard', 0.4, 0.55, 0.3), mob('tram-kiem-yeu-xa', 'Trảm kiếm yêu xà', 'snake', 0.35, 0.6, 0.25)],
     boss: boss('dai-yeu-man-hoang', 'Đại Yêu Man Hoang', 'dragonling', 1.1, 0.65, 0.55),
     loot: [{ itemId: 'thien-tam-lien', chance: 1, min: 1, max: 2 }, { itemId: 'tang-tho-dan', chance: 0.15, min: 1, max: 1 }],
@@ -169,6 +175,7 @@ export const REGIONS: readonly RegionDef[] = [
     minRealmIndex: R['kim-dan-1'],
     tier: 6,
     palette: { sky: '#160d14', far: '#261522', mid: '#361d30', near: '#48273f', ground: '#0e080d', accent: '#e0bf4a' },
+    backdropUrl: 'assets/regions/man-hoang-thien-ha.svg',
     enemies: [mob('yeu-toc-ho-phap', 'Yêu tộc hộ pháp', 'demon'), mob('chien-truong-ma-tuong', 'Chiến trường ma tướng', 'demon', 0.45, 0.5, 0.35)],
     boss: boss('yeu-hoang-than-thoai', 'Yêu Hoàng Thần Thoại', 'demon-general', 1.1, 0.65, 0.55),
     loot: [{ itemId: 'cuu-chuyen-can', chance: 0.6, min: 1, max: 1 }, { itemId: 'thien-tam-lien', chance: 1, min: 1, max: 3 }, { itemId: 'kim-nguyen-dan', chance: 0.15, min: 1, max: 1 }],

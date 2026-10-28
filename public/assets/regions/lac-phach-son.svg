@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid slice" width="100%" height="100%">
+  <defs>
+    <linearGradient id="sky-lac-phach" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#121a24"/>
+      <stop offset="60%" stop-color="#243447"/>
+      <stop offset="100%" stop-color="#0e141c"/>
+    </linearGradient>
+    <linearGradient id="bamboo-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3b5d4f" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#182921" stop-opacity="0.95"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="400" fill="url(#sky-lac-phach)"/>
+  
+  <!-- Núi mây xa mờ -->
+  <path d="M0 240 Q150 140 320 200 T650 170 T980 210 T1200 180 L1200 400 L0 400 Z" fill="#1b2a3a" opacity="0.6"/>
+  <path d="M0 270 Q200 180 440 240 T880 200 T1200 230 L1200 400 L0 400 Z" fill="#24374a" opacity="0.75"/>
+  
+  <!-- Dãy Lạc Phách Sơn & Rừng Trúc -->
+  <path d="M0 310 Q160 250 360 280 T750 240 T1100 290 T1200 280 L1200 400 L0 400 Z" fill="url(#bamboo-grad)"/>
+
+  <!-- Trúc Viện sườn núi (Mái đình ngói cổ) -->
+  <g transform="translate(620, 230)" opacity="0.85">
+    <path d="M20 30 L50 12 L80 30 L74 34 L50 22 L26 34 Z" fill="#bfae88"/>
+    <rect x="32" y="32" width="36" height="24" fill="#182921" stroke="#bfae88" stroke-width="1.5"/>
+    <path d="M46 32 V56" stroke="#bfae88" stroke-width="1.5"/>
+  </g>
+
+  <!-- Hạc trắng bay trên biển mây -->
+  <g transform="translate(420, 110)" opacity="0.7">
+    <path d="M0 10 Q12 0 24 10 Q12 6 0 10" fill="#f2ede4"/>
+  </g>
+  <g transform="translate(460, 90)" opacity="0.5">
+    <path d="M0 8 Q10 0 20 8 Q10 5 0 8" fill="#f2ede4"/>
+  </g>
+
+  <!-- Màn sương thủy mặc bảng lảng -->
+  <ellipse cx="600" cy="320" rx="550" ry="60" fill="#243447" opacity="0.35"/>
+</svg>

@@ -2,6 +2,7 @@ import { SLOT_NAME } from '@/content/gear'
 import { type GearInstance, gearScore, getGearDef, getGearName } from '@/engine'
 import { describeAffix, RARITY_BG, RARITY_CLASS, rarityLabel } from '@/lib/gearUi'
 import { Button } from '@/ui/atoms/Button'
+import { GearIcon } from '@/ui/atoms/GearIcon'
 
 interface Props {
   gear: GearInstance
@@ -19,9 +20,7 @@ export function GearCard({ gear, worn, equipped = false, onEquip, onUnequip, onS
   const better = !equipped && worn ? gearScore(gear) > gearScore(worn) : !equipped && !worn
   return (
     <li className={`flex gap-3 rounded-lg border p-3 ${RARITY_CLASS[gear.rarity]} ${RARITY_BG[gear.rarity]} ${equipped ? 'ring-1 ring-gold-500/40' : ''}`}>
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-current/30 bg-ink-950/60 font-han text-2xl" aria-hidden>
-        {def.glyph}
-      </div>
+      <GearIcon slot={def.slot} glyph={def.glyph} rarity={gear.rarity} gearId={gear.defId} />
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-baseline gap-x-2">
           <p className="font-han text-base">{getGearName(gear)}</p>

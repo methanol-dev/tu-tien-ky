@@ -78,31 +78,38 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
       {/* Căn cốt tổng quan */}
       <div className="rounded-lg border border-gold-500/20 bg-ink-900/80 p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-han text-xl font-bold text-paper-100">{realm.name}</span>
-              {realm.stageLabel && (
-                <span className="rounded bg-gold-500/10 px-2 py-0.5 text-xs text-gold-400 border border-gold-500/30">
-                  {realm.stageLabel}
-                </span>
+          <div className="flex items-center gap-3.5">
+            <img
+              src="assets/portraits/tran-binh-an.jpg"
+              alt="Trần Bình An"
+              className="h-16 w-16 shrink-0 rounded-full border-2 border-gold-500/50 object-cover shadow-ink"
+            />
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-han text-xl font-bold text-paper-100">{realm.name}</span>
+                {realm.stageLabel && (
+                  <span className="rounded bg-gold-500/10 px-2 py-0.5 text-xs text-gold-400 border border-gold-500/30">
+                    {realm.stageLabel}
+                  </span>
+                )}
+              </div>
+              {realm.kiemLaiRealm && (
+                <p className="mt-1 text-xs text-gold-300 font-serif">
+                  📜 Luyện Khí Sĩ: <span className="text-paper-100 font-medium">{realm.kiemLaiRealm}</span>
+                </p>
               )}
-            </div>
-            {realm.kiemLaiRealm && (
-              <p className="mt-1 text-xs text-gold-300 font-serif">
-                📜 Luyện Khí Sĩ: <span className="text-paper-100 font-medium">{realm.kiemLaiRealm}</span>
+              <p className="mt-0.5 text-xs text-vermilion-300 font-serif">
+                👊 Võ Đạo: <span className="text-paper-100 font-medium">{martial.name}</span> ({punches} quyền)
               </p>
-            )}
-            <p className="mt-0.5 text-xs text-vermilion-300 font-serif">
-              👊 Võ Đạo: <span className="text-paper-100 font-medium">{martial.name}</span> ({punches} quyền)
-            </p>
-            <p className="mt-1 text-xs text-paper-400">
-              Tuổi thọ:{' '}
-              <span className={`tabular-nums ${expired ? 'text-vermilion-400' : 'text-paper-200'}`}>
-                {formatAge(state.ageDays)}
-              </span>{' '}
-              / <span className="tabular-nums text-paper-300">{lifespanYears} năm</span>
-              {expired && <span className="ml-1 text-vermilion-400">(Đã tận)</span>}
-            </p>
+              <p className="mt-1 text-xs text-paper-400">
+                Tuổi thọ:{' '}
+                <span className={`tabular-nums ${expired ? 'text-vermilion-400' : 'text-paper-200'}`}>
+                  {formatAge(state.ageDays)}
+                </span>{' '}
+                / <span className="tabular-nums text-paper-300">{lifespanYears} năm</span>
+                {expired && <span className="ml-1 text-vermilion-400">(Đã tận)</span>}
+              </p>
+            </div>
           </div>
           <div className="text-right text-xs text-paper-400 space-y-0.5">
             <p>
