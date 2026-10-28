@@ -1,0 +1,79 @@
+{
+  "version": 5,
+  "createdAt": 1700000000000,
+  "lastSavedAt": 1700000000000,
+  "playedMs": 3690000,
+  "realmIndex": 11,
+  "qi": 132165.12,
+  "ageDays": 5850,
+  "lifespanBonusYears": 0,
+  "stones": 4601.8,
+  "techniques": {
+    "dan-khi-quyet": 4,
+    "tu-bao-quyet": 2
+  },
+  "inventory": {
+    "linh-thao": 12,
+    "tu-khi-dan": 2,
+    "thiet-kiem": 1,
+    "huyen-quy-giap": 1,
+    "ngung-than-phu": 2
+  },
+  "buffs": [],
+  "pendingBreakthroughBonus": 0,
+  "alchemy": null,
+  "expedition": {
+    "dungeonId": "tuyet-son-dinh",
+    "startedAtMs": 3600000,
+    "finishAtMs": 4200000
+  },
+  "tribulation": null,
+  "legacy": {
+    "daoVan": 5,
+    "lives": 2,
+    "upgrades": {
+      "tang-bao-cac": 1
+    },
+    "bestRealmIndex": 10
+  },
+  "pendingEvent": null,
+  "nextEventAtMs": 90000,
+  "eventCooldowns": {},
+  "flags": {
+    "thanh-van-de-tu": true,
+    "seen:tong-mon-chieu-mo": true
+  },
+  "gatherReadyAtMs": 0,
+  "nextLogId": 3,
+  "log": [
+    {
+      "id": 1,
+      "day": 5760,
+      "kind": "info",
+      "text": "Fixture v5"
+    },
+    {
+      "id": 2,
+      "day": 5760,
+      "kind": "info",
+      "text": "Lên đường tới Tuyết Sơn Đỉnh."
+    }
+  ],
+  "stats": {
+    "breakthroughs": 14,
+    "breakthroughFailures": 0,
+    "qiTotal": 8709.12,
+    "stonesTotal": 280.8,
+    "pillsUsed": 0,
+    "alchemyCrafted": 0,
+    "eventsResolved": 11,
+    "expeditions": 9,
+    "expeditionWins": 7,
+    "tribulationsPassed": 0,
+    "tribulationsFailed": 0
+  },
+  "settings": {
+    "timeScale": 1,
+    "pauseOnEvent": false
+  }
+}

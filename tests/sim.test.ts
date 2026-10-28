@@ -35,7 +35,7 @@ describe('balance simulation (24h active bot, seed 1)', () => {
   it('does not reach Hóa Thần in a day, and passes at least one tribulation', () => {
     expect(at('hoa-than-1')).toBeUndefined()
     expect(r.final.stats.tribulationsPassed).toBeGreaterThanOrEqual(1)
-    expect(r.final.stats.expeditionWins).toBeGreaterThan(0)
+    expect(r.final.stats.bossesSlain).toBeGreaterThan(0)
   })
 
   it('a passive player (no taps, no events) still reaches Trúc Cơ within 2 hours', () => {

@@ -1,11 +1,12 @@
-import { DUNGEONS } from '@/content/dungeons'
+import type { GearSlot } from '@/content/gear'
 import { RECIPES } from '@/content/recipes'
 import { REALMS } from '@/content/realms'
 import { TECHNIQUES } from '@/content/techniques'
 import { canStartAlchemy, collectAlchemy, isAlchemyReady, startAlchemy } from './alchemy'
 import { attemptBreakthrough, canBreakthrough, getBreakthroughChance, isLifespanExceeded, meditate } from './cultivation'
 import { getPendingEvent, isChoiceAvailable, resolveEvent, rollEvent, shouldRollEvent } from './events'
-import { canStartExpedition, completeExpedition, isExpeditionReady, startExpedition } from './expedition'
+import { equip, gearScore, getEquippedGear, getGearDef, openChests, salvage, salvageByRarity } from './gear'
+import { journeyTick } from './journey'
 import { canGather, gather } from './gather'
 import { getItemCount } from './inventory'
 import { usePill } from './pills'
@@ -48,7 +49,7 @@ export function simulate(opts: SimOptions): SimResult {
   let t = 0
 
   while (t < opts.seconds && !isLifespanExceeded(s)) {
-    s = tick(s, step * 1000)
+    s = journeyTick(tick(s, step * 1000), step * 1000, rng)
     t += step
 
     if (opts.events && shouldRollEvent(s)) s = rollEvent(s, rng)
@@ -121,16 +122,30 @@ export function simulate(opts: SimOptions): SimResult {
       if (r.ok) s = r.state
     }
 
-    if (isExpeditionReady(s)) {
-      const r = completeExpedition(s, rng)
-      if (r.ok) s = r.state.state
-    }
-    if (!s.expedition) {
-      for (const d of [...DUNGEONS].reverse()) {
-        if (canStartExpedition(s, d.id)) {
-          const r = startExpedition(s, d.id)
-          if (r.ok) s = r.state
-          break
+    // Journey: open every chest; when something new dropped, wear the best piece per slot and melt the junk.
+    if (s.journey.chests.red + s.journey.chests.normal > 0) {
+      if (s.journey.chests.red > 0) s = openChests(s, 'red', s.journey.chests.red, rng).state
+      if (s.journey.chests.normal > 0) s = openChests(s, 'normal', s.journey.chests.normal, rng).state
+      const bestScore: Partial<Record<GearSlot, number>> = {}
+      for (const e of getEquippedGear(s)) bestScore[getGearDef(e).slot] = gearScore(e)
+      for (const g of s.gear) {
+        const slot = getGearDef(g).slot
+        const score = gearScore(g)
+        if (score > (bestScore[slot] ?? -1)) {
+          const r = equip(s, g.uid)
+          if (r.ok) {
+            s = r.state
+            bestScore[slot] = score
+          }
+        }
+      }
+      if (s.gear.length > 40) {
+        const r = salvageByRarity(s, ['pham', 'linh', 'bao'])
+        if (r.ok) s = r.state.state
+        // Still crowded with Tiên/Thần: keep only what is worn.
+        if (s.gear.length > 40) {
+          const r2 = salvage(s, s.gear.map((g) => g.uid))
+          if (r2.ok) s = r2.state.state
         }
       }
     }

@@ -1,0 +1,220 @@
+import {
+  AFFIX_BY_KEY,
+  AFFIX_COUNT,
+  AFFIXES,
+  affixTierMult,
+  type AffixKey,
+  type ChestKind,
+  RARITIES,
+  RARITY_NAME,
+  RARITY_RANK,
+  RARITY_TABLE,
+  type Rarity,
+  SALVAGE_SECONDS,
+} from '@/content/affixes'
+import { GEAR_DEF_BY_ID, GEAR_DEFS, GEAR_SLOTS, type GearDef, type GearSlot, NAMED_GEAR, rollableGearFor } from '@/content/gear'
+import { type Difficulty, gearTier, REGION_BY_ID, REGIONS } from '@/content/regions'
+import { GEAR_CAP } from './constants'
+import { getStoneRate } from './economy'
+import { pushLog } from './log'
+import type { ActionResult, Affix, GameState, GearInstance, Rng } from './types'
+
+export type AffixTotals = Record<AffixKey, number>
+
+const ZERO_TOTALS: AffixTotals = { atk: 0, hp: 0, def: 0, crit: 0, critDmg: 0, atkSpeed: 0, lifesteal: 0, qiRate: 0, stoneRate: 0, lootChance: 0 }
+
+export function getGearByUid(state: GameState, uid: string): GearInstance | undefined {
+  return state.gear.find((g) => g.uid === uid)
+}
+
+export function getEquippedGear(state: GameState): GearInstance[] {
+  const out: GearInstance[] = []
+  for (const slot of GEAR_SLOTS) {
+    const uid = state.equipped[slot]
+    const g = uid ? getGearByUid(state, uid) : undefined
+    if (g) out.push(g)
+  }
+  return out
+}
+
+/** Sum of every affix across equipped gear. */
+export function getAffixTotals(state: GameState): AffixTotals {
+  const t: AffixTotals = { ...ZERO_TOTALS }
+  for (const g of getEquippedGear(state)) for (const a of g.affixes) t[a.key] += a.value
+  return t
+}
+
+export function isEquipped(state: GameState, uid: string): boolean {
+  return GEAR_SLOTS.some((s) => state.equipped[s] === uid)
+}
+
+export function getGearDef(g: GearInstance): GearDef {
+  return GEAR_DEF_BY_ID[g.defId]
+}
+
+export function getGearName(g: GearInstance): string {
+  return getGearDef(g)?.name ?? g.defId
+}
+
+/** Rough power number for sorting/compare; the bot and the UI "better than equipped" hint use it. */
+const SCORE_WEIGHT: AffixTotals = { atk: 1, hp: 0.6, def: 0.6, crit: 1.2, critDmg: 0.5, atkSpeed: 1, lifesteal: 1, qiRate: 2.5, stoneRate: 1, lootChance: 0.6 }
+export function gearScore(g: GearInstance): number {
+  return g.affixes.reduce((s, a) => s + a.value * SCORE_WEIGHT[a.key], 0)
+}
+
+export function pickWeightedIndex(weights: readonly number[], roll: number): number {
+  const total = weights.reduce((a, b) => a + b, 0)
+  let acc = 0
+  for (let i = 0; i < weights.length; i++) {
+    acc += weights[i]
+    if (roll * total < acc) return i
+  }
+  return weights.length - 1
+}
+
+export function rollRarity(kind: ChestKind, difficulty: Difficulty, rng: Rng): Rarity {
+  return RARITIES[pickWeightedIndex(RARITY_TABLE[kind][difficulty], rng())]
+}
+
+function round3(n: number): number {
+  return Math.round(n * 1000) / 1000
+}
+
+export function rollAffixes(slot: GearSlot, rarity: Rarity, tier: number, rng: Rng): Affix[] {
+  const pool = AFFIXES.filter((a) => a.slots.includes(slot))
+  const out: Affix[] = []
+  const mult = affixTierMult(tier)
+  const n = Math.min(AFFIX_COUNT[rarity], pool.length)
+  const remaining = [...pool]
+  for (let i = 0; i < n; i++) {
+    const idx = pickWeightedIndex(remaining.map((a) => a.weight), rng())
+    const def = remaining.splice(idx, 1)[0]
+    out.push({ key: def.key, value: round3((def.min + rng() * (def.max - def.min)) * mult) })
+  }
+  return out
+}
+
+export function rollGear(slot: GearSlot, rarity: Rarity, tier: number, uid: string, rng: Rng): GearInstance {
+  const bases = rollableGearFor(slot, tier)
+  const def = bases[Math.floor(rng() * bases.length)]
+  return { uid, defId: def.id, rarity, tier, affixes: rollAffixes(slot, rarity, tier, rng) }
+}
+
+export function createNamedGear(defId: string, uid: string, tier = 1): GearInstance {
+  const def = GEAR_DEF_BY_ID[defId]
+  if (!def?.named) throw new Error(`not named gear: ${defId}`)
+  return { uid, defId, rarity: def.named.rarity, tier, affixes: def.named.affixes.map((a) => ({ ...a })) }
+}
+
+export function isGearFull(state: GameState): boolean {
+  return state.gear.length >= GEAR_CAP
+}
+
+export interface ChestResult {
+  state: GameState
+  gear: GearInstance
+}
+
+/** Open one chest of `kind` from the current region. Red chests may hold the region's named gear. */
+export function openChest(state: GameState, kind: ChestKind, rng: Rng): ActionResult<ChestResult> {
+  if (state.journey.chests[kind] <= 0) return { ok: false, error: kind === 'red' ? 'Không có rương đỏ' : 'Không có rương' }
+  if (isGearFull(state)) return { ok: false, error: `Túi pháp bảo đã đầy (${GEAR_CAP}). Phân giải bớt đi.` }
+  const region = REGION_BY_ID[state.journey.regionId] ?? REGIONS[0]
+  const tier = gearTier(region, state.journey.difficulty)
+  const uid = `g${state.nextGearUid}`
+  let gear: GearInstance
+  if (kind === 'red' && region.namedGear && rng() < region.namedGear.chance) {
+    gear = createNamedGear(region.namedGear.gearId, uid, tier)
+  } else {
+    const slot = GEAR_SLOTS[Math.floor(rng() * GEAR_SLOTS.length)]
+    gear = rollGear(slot, rollRarity(kind, state.journey.difficulty, rng), tier, uid, rng)
+  }
+  let next: GameState = {
+    ...state,
+    gear: [...state.gear, gear],
+    nextGearUid: state.nextGearUid + 1,
+    journey: { ...state.journey, chests: { ...state.journey.chests, [kind]: state.journey.chests[kind] - 1 } },
+    stats: { ...state.stats, chestsOpened: state.stats.chestsOpened + 1, gearFound: state.stats.gearFound + 1 },
+  }
+  if (RARITY_RANK[gear.rarity] >= RARITY_RANK.tien || getGearDef(gear).named) {
+    next = pushLog(next, `Mở rương được ${getGearName(gear)} (${RARITY_NAME[gear.rarity]})!`, 'success')
+  }
+  return { ok: true, state: { state: next, gear } }
+}
+
+/** Open up to `max` chests of a kind (stops when empty or gear is full). */
+export function openChests(state: GameState, kind: ChestKind, max: number, rng: Rng): { state: GameState; opened: GearInstance[]; error?: string } {
+  let s = state
+  const opened: GearInstance[] = []
+  for (let i = 0; i < max; i++) {
+    const r = openChest(s, kind, rng)
+    if (!r.ok) return { state: s, opened, error: opened.length === 0 ? r.error : undefined }
+    s = r.state.state
+    opened.push(r.state.gear)
+  }
+  return { state: s, opened }
+}
+
+export function equip(state: GameState, uid: string): ActionResult {
+  const g = getGearByUid(state, uid)
+  if (!g) return { ok: false, error: 'Không tìm thấy pháp bảo' }
+  const slot = getGearDef(g).slot
+  if (state.equipped[slot] === uid) return { ok: false, error: 'Đang mặc rồi' }
+  return { ok: true, state: { ...state, equipped: { ...state.equipped, [slot]: uid } } }
+}
+
+export function unequip(state: GameState, slot: GearSlot): ActionResult {
+  if (!state.equipped[slot]) return { ok: false, error: 'Ô này đang trống' }
+  return { ok: true, state: { ...state, equipped: { ...state.equipped, [slot]: null } } }
+}
+
+export function getSalvageValue(state: GameState, items: GearInstance[]): number {
+  const rate = getStoneRate(state)
+  return Math.round(items.reduce((s, g) => s + SALVAGE_SECONDS[g.rarity] * rate, 0))
+}
+
+/** Break gear down into spirit stones. Equipped gear is skipped. */
+export function salvage(state: GameState, uids: string[]): ActionResult<{ state: GameState; stones: number; count: number }> {
+  const set = new Set(uids)
+  const victims = state.gear.filter((g) => set.has(g.uid) && !isEquipped(state, g.uid))
+  if (victims.length === 0) return { ok: false, error: 'Không có gì để phân giải (đồ đang mặc không phân giải được)' }
+  const stones = getSalvageValue(state, victims)
+  const gone = new Set(victims.map((g) => g.uid))
+  const next: GameState = {
+    ...state,
+    gear: state.gear.filter((g) => !gone.has(g.uid)),
+    stones: state.stones + stones,
+    stats: { ...state.stats, stonesTotal: state.stats.stonesTotal + stones },
+  }
+  return { ok: true, state: { state: next, stones, count: victims.length } }
+}
+
+export function salvageByRarity(state: GameState, rarities: Rarity[]): ActionResult<{ state: GameState; stones: number; count: number }> {
+  const uids = state.gear.filter((g) => rarities.includes(g.rarity) && !isEquipped(state, g.uid)).map((g) => g.uid)
+  return salvage(state, uids)
+}
+
+/** Content sanity check used by tests. Returns a list of problems (empty = ok). */
+export function validateGear(): string[] {
+  const errors: string[] = []
+  const ids = new Set<string>()
+  for (const g of GEAR_DEFS) {
+    if (ids.has(g.id)) errors.push(`duplicate gear id ${g.id}`)
+    ids.add(g.id)
+    if (!GEAR_SLOTS.includes(g.slot)) errors.push(`${g.id}: bad slot`)
+    if (g.named) {
+      if (g.named.affixes.length === 0) errors.push(`${g.id}: named gear without affixes`)
+      for (const a of g.named.affixes) if (!AFFIX_BY_KEY[a.key]) errors.push(`${g.id}: unknown affix ${a.key}`)
+    }
+  }
+  for (const slot of GEAR_SLOTS) {
+    for (let tier = 1; tier <= 9; tier++) {
+      if (rollableGearFor(slot, tier).length === 0) errors.push(`no rollable gear for ${slot} at tier ${tier}`)
+    }
+    if (AFFIXES.filter((a) => a.slots.includes(slot)).length < AFFIX_COUNT.than) errors.push(`${slot}: fewer affixes than a Thần item needs`)
+  }
+  for (const r of REGIONS) {
+    if (r.namedGear && !NAMED_GEAR.some((g) => g.id === r.namedGear!.gearId)) errors.push(`${r.id}: unknown named gear ${r.namedGear.gearId}`)
+  }
+  return errors
+}
