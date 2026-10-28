@@ -61,7 +61,7 @@ describe('App smoke', () => {
     await act(async () => {
       button('Luyện đan').click()
     })
-    expect(container.textContent).toContain('Đan lô')
+    expect(container.textContent).toContain('Đan Lô')
     await act(async () => {
       button('Túi đồ').click()
     })
