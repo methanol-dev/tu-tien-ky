@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { AFFIX_BY_KEY, AFFIX_COUNT, RARITIES, type Rarity } from '@/content/affixes'
-import { GEAR_DEF_BY_ID } from '@/content/gear'
+import { GEAR_DEF_BY_ID, getSlotsForType } from '@/content/gear'
 import {
   createInitialState,
   createSeededRng,
   equip,
+  type GameState,
   GEAR_CAP,
+  getActiveSetBonuses,
   getAffixTotals,
   getModifiers,
   getSalvageValue,
@@ -39,19 +41,19 @@ describe('gear rolling', () => {
   it('rolls the right number of distinct, slot-legal affixes scaled by tier', () => {
     const rng = createSeededRng(5)
     for (const rarity of RARITIES) {
-      const g = rollGear('kiem', rarity, 1, 'g1', rng)
+      const g = rollGear('vu-khi', rarity, 1, 'g1', rng)
       expect(g.affixes).toHaveLength(AFFIX_COUNT[rarity])
       expect(new Set(g.affixes.map((a) => a.key)).size).toBe(g.affixes.length)
       for (const a of g.affixes) {
         const def = AFFIX_BY_KEY[a.key]
-        expect(def.slots).toContain('kiem')
+        expect(def.slots).toContain('vu-khi')
         expect(a.value).toBeGreaterThanOrEqual(def.min - 1e-9)
         expect(a.value).toBeLessThanOrEqual(def.max + 1e-9)
       }
-      expect(GEAR_DEF_BY_ID[g.defId].slot).toBe('kiem')
+      expect(GEAR_DEF_BY_ID[g.defId].slot).toBe('vu-khi')
     }
-    const high = rollGear('giap', 'than', 9, 'g2', () => 0.999)
-    const low = rollGear('giap', 'than', 1, 'g3', () => 0.999)
+    const high = rollGear('ao', 'than', 9, 'g2', () => 0.999)
+    const low = rollGear('ao', 'than', 1, 'g3', () => 0.999)
     expect(high.affixes[0].value).toBeGreaterThan(low.affixes[0].value)
   })
 })
@@ -68,7 +70,16 @@ describe('chests', () => {
     expect(r.state.state.nextGearUid).toBe(2)
     expect(r.state.state.stats.chestsOpened).toBe(1)
     expect(openChest(s, 'red', createSeededRng(1)).ok).toBe(false)
-    const full = { ...s, gear: Array.from({ length: GEAR_CAP }, (_, i) => ({ uid: `x${i}`, defId: 'moc-phu', rarity: 'pham' as const, tier: 1, affixes: [] })) }
+    const full = {
+      ...s,
+      gear: Array.from({ length: GEAR_CAP }, (_, i) => ({
+        uid: `x${i}`,
+        defId: 'moc-phu',
+        rarity: 'pham' as const,
+        tier: 1,
+        affixes: [],
+      })),
+    }
     expect(openChest(full, 'normal', createSeededRng(1)).ok).toBe(false)
   })
 
@@ -93,28 +104,79 @@ describe('equip & salvage', () => {
   it('equips into the def slot, unequips, and totals only what is worn', () => {
     const s = geared()
     const g = s.gear[0]
-    const slot = GEAR_DEF_BY_ID[g.defId].slot
+    const def = GEAR_DEF_BY_ID[g.defId]
+    const validSlots = getSlotsForType(def.slot)
     const r = equip(s, g.uid)
     expect(r.ok).toBe(true)
     if (!r.ok) return
-    expect(r.state.equipped[slot]).toBe(g.uid)
+    const chosenSlot = validSlots.find((slot) => r.state.equipped[slot] === g.uid)
+    expect(chosenSlot).toBeDefined()
     expect(equip(r.state, g.uid).ok).toBe(false)
     const totals = getAffixTotals(r.state)
     for (const a of g.affixes) expect(totals[a.key]).toBeCloseTo(a.value)
-    const u = unequip(r.state, slot)
-    expect(u.ok).toBe(true)
-    if (u.ok) expect(getAffixTotals(u.state).atk).toBe(0)
-    expect(unequip(s, slot).ok).toBe(false)
+    if (chosenSlot) {
+      const u = unequip(r.state, chosenSlot)
+      expect(u.ok).toBe(true)
+      if (u.ok) expect(getAffixTotals(u.state).atk).toBe(0)
+      expect(unequip(s, chosenSlot).ok).toBe(false)
+    }
   })
 
   it('gear affixes feed modifiers: qiRate multiplies, stoneRate adds, lootChance multiplies', () => {
     const s = createInitialState(0)
-    const charm = { uid: 'c', defId: 'moc-phu', rarity: 'bao' as const, tier: 1, affixes: [{ key: 'qiRate' as const, value: 0.1 }, { key: 'stoneRate' as const, value: 0.2 }, { key: 'lootChance' as const, value: 0.5 }] }
-    const worn = { ...s, gear: [charm], equipped: { ...s.equipped, 'phap-khi': 'c' } }
+    const charm = {
+      uid: 'c',
+      defId: 'moc-phu',
+      rarity: 'bao' as const,
+      tier: 1,
+      affixes: [
+        { key: 'qiRate' as const, value: 0.1 },
+        { key: 'stoneRate' as const, value: 0.2 },
+        { key: 'lootChance' as const, value: 0.5 },
+      ],
+    }
+    const worn = { ...s, gear: [charm], equipped: { ...s.equipped, 'phu-luc': 'c' } }
     const m = getModifiers(worn)
     expect(m.qiRateMult).toBeCloseTo(1.1)
     expect(m.stoneRateMult).toBeCloseTo(1.2)
     expect(m.lootChanceMult).toBeCloseTo(1.5)
+  })
+
+  it('equips multi-slot items like rings into slot 1 then slot 2', () => {
+    const s = createInitialState(0)
+    const ring1 = { uid: 'r1', defId: 'dong-gioi', rarity: 'pham' as const, tier: 1, affixes: [] }
+    const ring2 = { uid: 'r2', defId: 'dong-gioi', rarity: 'pham' as const, tier: 1, affixes: [] }
+    let cur: GameState = { ...s, gear: [ring1, ring2] }
+    const res1 = equip(cur, 'r1')
+    expect(res1.ok).toBe(true)
+    if (res1.ok) cur = res1.state
+    expect(cur.equipped['nhan-1']).toBe('r1')
+    expect(cur.equipped['nhan-2']).toBeNull()
+
+    const res2 = equip(cur, 'r2')
+    expect(res2.ok).toBe(true)
+    if (res2.ok) cur = res2.state
+    expect(cur.equipped['nhan-1']).toBe('r1')
+    expect(cur.equipped['nhan-2']).toBe('r2')
+  })
+
+  it('activates set bonuses when wearing matching pieces', () => {
+    const s = createInitialState(0)
+    // 2 pieces of Nê Bình Khởi Thủy: Hòe Mộc Kiếm + Trúc Y Bình An
+    const sword = { uid: 's1', defId: 'thiet-kiem', rarity: 'linh' as const, tier: 1, affixes: [] }
+    const armor = { uid: 'a1', defId: 'huyen-quy-giap', rarity: 'bao' as const, tier: 1, affixes: [] }
+    const cur = {
+      ...s,
+      gear: [sword, armor],
+      equipped: { ...s.equipped, 'vu-khi': 's1', ao: 'a1' },
+    }
+    const sets = getActiveSetBonuses(cur)
+    expect(sets.length).toBe(1)
+    expect(sets[0].setId).toBe('ne-binh')
+    expect(sets[0].threshold).toBe(2)
+    // 2 món kích hoạt +15% qiRate
+    const totals = getAffixTotals(cur)
+    expect(totals.qiRate).toBeCloseTo(0.15)
   })
 
   it('salvage pays stones, skips equipped gear, and salvageByRarity filters', () => {

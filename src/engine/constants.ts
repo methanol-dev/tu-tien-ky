@@ -1,4 +1,4 @@
-export const SAVE_VERSION = 6
+export const SAVE_VERSION = 7
 export const LOG_LIMIT = 100
 export const DAYS_PER_YEAR = 360
 export const STARTING_AGE_YEARS = 16

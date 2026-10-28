@@ -1,8 +1,8 @@
-import type { GearSlot } from '@/content/gear'
+import type { GearType, GearSlot } from '@/content/gear'
 import type { Rarity } from '@/content/affixes'
 
 interface GearIconProps {
-  slot: GearSlot
+  slot: GearType | GearSlot
   glyph: string
   rarity: Rarity
   gearId?: string
@@ -11,10 +11,16 @@ interface GearIconProps {
 export function GearIcon({ slot, glyph, rarity, gearId }: GearIconProps) {
   const isFlyingSword = gearId === 'phi-kiem-tu-vi'
   const isBambooArmor = gearId === 'huyen-quy-giap'
-  const isBambooBasket = gearId === 'ngung-than-phu'
   const isHairpin = gearId === 'bang-tam-chau'
   const isYinGuanRobe = gearId === 'thien-ma-giap'
   const isWoodSword = gearId === 'thiet-kiem'
+
+  // Chuẩn hóa slot về GearType nếu là slot cụ thể như nhan-1, bong-tai-2
+  const normalizedSlot: string = slot.startsWith('nhan')
+    ? 'nhan'
+    : slot.startsWith('bong-tai')
+    ? 'bong-tai'
+    : slot
 
   return (
     <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-current/30 bg-ink-950/85 shadow-inner">
@@ -26,63 +32,95 @@ export function GearIcon({ slot, glyph, rarity, gearId }: GearIconProps) {
         fill="none"
         stroke="currentColor"
       >
-        {slot === 'kiem' && (
+        {normalizedSlot === 'vu-khi' && (
           <>
-            {/* Thân kiếm dài */}
             <path d="M10 38 L36 12 M34 10 L38 14 M36 12 L40 8 L38 6 L34 10 M8 40 L12 36" strokeWidth="2" strokeLinecap="round" />
             {isFlyingSword && (
-              /* Vòng lồng chim Lung Trung Tước bao bọc phi kiếm */
               <g stroke="#e0bf4a" strokeWidth="1.2" opacity="0.8">
                 <circle cx="24" cy="24" r="16" strokeDasharray="3 3" />
                 <path d="M16 12 Q24 6 32 12 M16 36 Q24 42 32 36" />
               </g>
             )}
             {isWoodSword && (
-              /* Vân gỗ Hòe Mộc Kiếm */
               <path d="M22 26 Q25 24 28 27" strokeWidth="1" strokeDasharray="2 1" opacity="0.6" />
             )}
           </>
         )}
 
-        {slot === 'giap' && (
+        {normalizedSlot === 'dau' && (
           <>
-            {/* Chiếc giáp bảo hộ hoặc chiến bào */}
+            {/* Đạo Quán / Trâm / Khôi */}
+            {isHairpin ? (
+              <g stroke="#5aa391" strokeWidth="1.8">
+                <path d="M10 38 L34 14" />
+                <circle cx="37" cy="11" r="4" fill="currentColor" opacity="0.5" />
+              </g>
+            ) : (
+              <>
+                <path d="M12 36 H36 L32 18 L24 10 L16 18 Z" strokeWidth="1.8" />
+                <circle cx="24" cy="12" r="2" fill="currentColor" />
+              </>
+            )}
+          </>
+        )}
+
+        {normalizedSlot === 'ao' && (
+          <>
             <path d="M16 10 L24 6 L32 10 L36 18 L32 40 L16 40 L12 18 Z" strokeWidth="1.8" />
             {isBambooArmor && (
-              /* Nan tre đan áo Trúc Y */
               <path d="M24 10 V38 M18 20 H30 M18 30 H30" strokeWidth="1" strokeDasharray="2 2" />
             )}
             {isYinGuanRobe && (
-              /* Vạt đại bào phơ phất */
               <path d="M12 28 Q8 38 14 42 M36 28 Q40 38 34 42" strokeWidth="1.5" />
             )}
           </>
         )}
 
-        {slot === 'phap-khi' && (
+        {normalizedSlot === 'quan' && (
           <>
-            {isHairpin ? (
-              /* Chiếc Trâm Bích Ngọc cài tóc thanh tú */
-              <g stroke="#5aa391" strokeWidth="1.8">
-                <path d="M10 38 L34 14" />
-                <circle cx="37" cy="11" r="4" fill="currentColor" opacity="0.5" />
-                <path d="M37 7 Q41 11 37 15" strokeWidth="1" />
-              </g>
-            ) : isBambooBasket ? (
-              /* Gùi Trúc & Giày Cỏ ngõ Nê Bình */
-              <g stroke="#bfae88" strokeWidth="1.5">
-                <rect x="14" y="14" width="20" height="22" rx="3" strokeDasharray="3 2" />
-                <path d="M20 14 V36 M28 14 V36" strokeWidth="1" />
-              </g>
-            ) : (
-              /* Thái cực đồ / Pháp bảo linh châu */
-              <>
-                <circle cx="24" cy="24" r="14" strokeWidth="1.8" />
-                <path d="M24 10 A7 7 0 0 1 24 24 A7 7 0 0 0 24 38" strokeWidth="1.5" />
-                <circle cx="24" cy="17" r="2" fill="currentColor" />
-                <circle cx="24" cy="31" r="2" fill="currentColor" />
-              </>
-            )}
+            <path d="M14 12 H34 L36 40 L26 40 L24 22 L22 40 L12 40 Z" strokeWidth="1.8" />
+          </>
+        )}
+
+        {normalizedSlot === 'giay' && (
+          <>
+            <path d="M12 16 L20 16 L22 30 L36 32 L36 38 L12 38 Z" strokeWidth="1.8" />
+          </>
+        )}
+
+        {normalizedSlot === 'dai-lung' && (
+          <>
+            <rect x="8" y="20" width="32" height="8" rx="2" strokeWidth="1.8" />
+            <circle cx="24" cy="24" r="3" fill="currentColor" />
+          </>
+        )}
+
+        {normalizedSlot === 'phu-luc' && (
+          <>
+            <rect x="14" y="10" width="20" height="28" rx="2" strokeWidth="1.8" />
+            <path d="M18 16 H30 M24 16 V32 M20 28 Q24 34 28 28" strokeWidth="1.2" />
+          </>
+        )}
+
+        {normalizedSlot === 'day-chuyen' && (
+          <>
+            <path d="M14 12 Q24 28 34 12" strokeWidth="1.8" />
+            <circle cx="24" cy="28" r="4" fill="currentColor" />
+          </>
+        )}
+
+        {normalizedSlot === 'nhan' && (
+          <>
+            <ellipse cx="24" cy="24" rx="14" ry="10" strokeWidth="2" />
+            <circle cx="24" cy="14" r="3" fill="currentColor" />
+          </>
+        )}
+
+        {normalizedSlot === 'bong-tai' && (
+          <>
+            <circle cx="24" cy="16" r="6" strokeWidth="1.8" />
+            <path d="M24 22 V34" strokeWidth="2" />
+            <circle cx="24" cy="34" r="3" fill="currentColor" />
           </>
         )}
       </svg>

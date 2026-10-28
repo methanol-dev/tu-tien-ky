@@ -15,8 +15,8 @@ export const MIGRATIONS: Record<number, Migration> = {
   5: (raw) => {
     const inventory = { ...((raw.inventory as Record<string, number> | undefined) ?? {}) }
     const gear: unknown[] = []
-    const equipped: Record<GearSlot, string | null> = { kiem: null, giap: null, 'phap-khi': null }
-    const bestRank: Partial<Record<GearSlot, number>> = {}
+    const equipped: Record<string, string | null> = { kiem: null, giap: null, 'phap-khi': null }
+    const bestRank: Partial<Record<string, number>> = {}
     let uid = 1
     for (const id of ['thiet-kiem', 'huyen-quy-giap', 'ngung-than-phu', 'bang-tam-chau', 'phi-kiem-tu-vi', 'thien-ma-giap']) {
       const owned = (inventory[id] ?? 0) > 0
@@ -46,6 +46,29 @@ export const MIGRATIONS: Record<number, Migration> = {
       nextGearUid: uid,
       journey: createInitialJourney(),
       stats: { enemiesSlain: 0, bossesSlain: 0, stagesCleared: 0, chestsOpened: 0, gearFound: 0, ...stats },
+    }
+  },
+  // 6 -> 7: Mở rộng 12 ô trang bị (đầu, áo, quần, giày, đai, vũ khí, phù, dây chuyền, 2 nhẫn, 2 bông tai) và hệ thống Set.
+  6: (raw) => {
+    const oldEquipped = (raw.equipped as Record<string, string | null> | undefined) ?? {}
+    const equipped: Record<GearSlot, string | null> = {
+      'vu-khi': oldEquipped['kiem'] ?? oldEquipped['vu-khi'] ?? null,
+      dau: oldEquipped['dau'] ?? null,
+      ao: oldEquipped['giap'] ?? oldEquipped['ao'] ?? null,
+      quan: oldEquipped['quan'] ?? null,
+      giay: oldEquipped['giay'] ?? null,
+      'dai-lung': oldEquipped['dai-lung'] ?? null,
+      'phu-luc': oldEquipped['phap-khi'] ?? oldEquipped['phu-luc'] ?? null,
+      'day-chuyen': oldEquipped['day-chuyen'] ?? null,
+      'nhan-1': oldEquipped['nhan-1'] ?? null,
+      'nhan-2': oldEquipped['nhan-2'] ?? null,
+      'bong-tai-1': oldEquipped['bong-tai-1'] ?? null,
+      'bong-tai-2': oldEquipped['bong-tai-2'] ?? null,
+    }
+    return {
+      ...raw,
+      version: 7,
+      equipped,
     }
   },
   // 0 -> 1: pre-release saves had no `stats.qiTotal`.

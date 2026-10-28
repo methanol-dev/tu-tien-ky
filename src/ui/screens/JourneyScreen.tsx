@@ -1,3 +1,4 @@
+import { getSlotsForType } from '@/content/gear'
 import { ITEM_BY_ID } from '@/content/items'
 import { REALMS } from '@/content/realms'
 import { type Difficulty, DIFFICULTY_NAMES, REGIONS } from '@/content/regions'
@@ -266,7 +267,8 @@ export function JourneyScreen() {
           <h3 className="font-han text-lg text-paper-100">Mới nhặt</h3>
           <ul className="grid gap-2 md:grid-cols-2">
             {recentGear.map((g) => {
-              const wornUid = state.equipped[getGearDef(g).slot]
+              const targetSlots = getSlotsForType(getGearDef(g).slot)
+              const wornUid = targetSlots.map((s) => state.equipped[s]).find(Boolean) ?? null
               const worn = wornUid ? state.gear.find((x) => x.uid === wornUid) ?? null : null
               return (
                 <GearCard

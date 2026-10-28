@@ -131,9 +131,9 @@ describe('App smoke', () => {
     await act(async () => {
       button('🛡️ Pháp Bảo').click()
     })
-    expect(container.textContent).toContain('Kiếm')
-    expect(container.textContent).toContain('Giáp')
-    expect(container.textContent).toContain('Pháp khí')
+    expect(container.textContent).toContain('Vũ khí')
+    expect(container.textContent).toContain('Áo')
+    expect(container.textContent).toContain('Phù lục')
 
     // Close modal
     await act(async () => {

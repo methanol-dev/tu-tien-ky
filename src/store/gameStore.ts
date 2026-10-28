@@ -105,7 +105,7 @@ export interface GameStore {
   setAutoAdvance: (value: boolean) => void
   openChests: (kind: ChestKind, count: number) => boolean
   dismissChestResult: () => void
-  equip: (uid: string) => boolean
+  equip: (uid: string, targetSlot?: GearSlot) => boolean
   unequip: (slot: GearSlot) => boolean
   salvage: (uids: string[]) => boolean
   salvageByRarity: (rarities: Rarity[]) => boolean
@@ -286,7 +286,7 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       },
       dismissChestResult: () => set({ chestResult: null }),
 
-      equip: (uid) => apply(engineEquip(get().state, uid)),
+      equip: (uid, targetSlot) => apply(engineEquip(get().state, uid, targetSlot)),
       unequip: (slot) => apply(engineUnequip(get().state, slot)),
       salvage: (uids) => {
         const r = engineSalvage(get().state, uids)

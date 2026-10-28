@@ -31,7 +31,7 @@ describe('combat stats', () => {
     const sword = { uid: 'g1', defId: 'thiet-kiem-tho', rarity: 'linh' as const, tier: 1, affixes: [{ key: 'atk' as const, value: 0.2 }, { key: 'atkSpeed' as const, value: 0.25 }] }
     const owned = { ...s, gear: [sword] }
     expect(getCombatStats(owned).atk).toBe(base.atk)
-    const armed = { ...owned, equipped: { ...owned.equipped, kiem: 'g1' } }
+    const armed = { ...owned, equipped: { ...owned.equipped, 'vu-khi': 'g1' } }
     expect(getCombatStats(armed).atk).toBe(Math.round(base.atk * 1.2))
     expect(getCombatStats(armed).attackMs).toBe(800)
   })

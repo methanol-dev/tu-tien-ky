@@ -17,7 +17,7 @@ describe('save / load', () => {
     s = pushLog(s, 'Khởi đầu con đường tu tiên', 'event')
     s = { ...s, qi: 42.5, realmIndex: 3 }
     const r = deserialize(serialize(s))
-    expect(r.ok).toBe(true)
+    expect(r.ok, !r.ok ? r.error : '').toBe(true)
     if (r.ok) expect(r.state).toEqual(s)
   })
 
@@ -25,7 +25,7 @@ describe('save / load', () => {
     let s = createInitialState(1)
     s = pushLog(s, 'Đột phá Trúc Cơ, thiên địa biến sắc', 'success')
     const r = importSave(exportSave(s))
-    expect(r.ok).toBe(true)
+    expect(r.ok, !r.ok ? r.error : '').toBe(true)
     if (r.ok) expect(r.state.log[0].text).toBe('Đột phá Trúc Cơ, thiên địa biến sắc')
   })
 
@@ -49,7 +49,7 @@ describe('save / load', () => {
     delete stats.qiTotal
     legacy.stats = stats
     const r = deserialize(JSON.stringify(legacy))
-    expect(r.ok).toBe(true)
+    expect(r.ok, !r.ok ? r.error : '').toBe(true)
     if (r.ok) {
       expect(r.state.version).toBe(SAVE_VERSION)
       expect(r.state.stats.qiTotal).toBe(0)

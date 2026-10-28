@@ -64,9 +64,9 @@ describe('v5 -> v6 (Phase 9: journey + gear)', () => {
     expect(s.legacy).toEqual(before.legacy)
     expect(s.inventory).toEqual({ 'linh-thao': 12, 'tu-khi-dan': 2 })
     expect(s.gear.map((g) => g.defId).sort()).toEqual(['huyen-quy-giap', 'ngung-than-phu', 'thiet-kiem'])
-    expect(s.equipped.kiem).toBe(s.gear.find((g) => g.defId === 'thiet-kiem')!.uid)
-    expect(s.equipped.giap).toBe(s.gear.find((g) => g.defId === 'huyen-quy-giap')!.uid)
-    expect(s.equipped['phap-khi']).toBe(s.gear.find((g) => g.defId === 'ngung-than-phu')!.uid)
+    expect(s.equipped['vu-khi']).toBe(s.gear.find((g) => g.defId === 'thiet-kiem')!.uid)
+    expect(s.equipped.ao).toBe(s.gear.find((g) => g.defId === 'huyen-quy-giap')!.uid)
+    expect(s.equipped.giay).toBe(s.gear.find((g) => g.defId === 'ngung-than-phu')!.uid)
     expect(s.nextGearUid).toBe(4)
     expect((s as unknown as Record<string, unknown>).expedition).toBeUndefined()
     expect((s.stats as unknown as Record<string, unknown>).expeditions).toBeUndefined()
@@ -74,5 +74,84 @@ describe('v5 -> v6 (Phase 9: journey + gear)', () => {
     expect(s.stats.enemiesSlain).toBe(0)
     expect(s.journey.phase).toBe('rest')
     expect(s.journey.regionId).toBe('hau-son-lam')
+  })
+
+  it('migrates v6 (3 slots) to v7 (12 slots)', () => {
+    const rawV6 = {
+      version: 6,
+      createdAt: 1000,
+      lastSavedAt: 2000,
+      playedMs: 500,
+      realmIndex: 1,
+      qi: 10,
+      ageDays: 5000,
+      lifespanBonusYears: 0,
+      stones: 50,
+      techniques: {},
+      inventory: {},
+      gear: [
+        { uid: 'g1', defId: 'thiet-kiem', rarity: 'linh', tier: 1, affixes: [] },
+        { uid: 'g2', defId: 'huyen-quy-giap', rarity: 'bao', tier: 1, affixes: [] },
+      ],
+      equipped: {
+        kiem: 'g1',
+        giap: 'g2',
+        'phap-khi': null,
+      },
+      nextGearUid: 3,
+      buffs: [],
+      pendingBreakthroughBonus: 0,
+      alchemy: null,
+      journey: {
+        regionId: 'hau-son-lam',
+        difficulty: 0,
+        stage: 1,
+        phase: 'rest',
+        phaseUntilMs: 1000,
+        party: [{ id: 'player', hp: 10, maxHp: 10, nextAttackAtMs: 0 }],
+        enemies: [],
+        chests: { normal: 0, red: 0 },
+        autoAdvance: true,
+        cleared: {},
+        deaths: 0,
+        runDeaths: 0,
+        accMs: 0,
+        events: [],
+      },
+      tribulation: null,
+      legacy: { daoVan: 0, lives: 1, upgrades: {}, bestRealmIndex: 0 },
+      pendingEvent: null,
+      nextEventAtMs: 1000,
+      eventCooldowns: {},
+      flags: {},
+      gatherReadyAtMs: 0,
+      nextLogId: 1,
+      log: [],
+      stats: {
+        breakthroughs: 0,
+        breakthroughFailures: 0,
+        qiTotal: 0,
+        stonesTotal: 0,
+        pillsUsed: 0,
+        alchemyCrafted: 0,
+        eventsResolved: 0,
+        tribulationsPassed: 0,
+        tribulationsFailed: 0,
+        enemiesSlain: 0,
+        bossesSlain: 0,
+        stagesCleared: 0,
+        chestsOpened: 0,
+        gearFound: 0,
+      },
+      settings: { timeScale: 1, pauseOnEvent: false },
+    }
+    const r = deserialize(JSON.stringify(rawV6))
+    expect(r.ok, r.ok ? '' : r.error).toBe(true)
+    if (!r.ok) return
+    expect(r.state.version).toBe(7)
+    expect(r.state.equipped['vu-khi']).toBe('g1')
+    expect(r.state.equipped.ao).toBe('g2')
+    expect(r.state.equipped['nhan-1']).toBeNull()
+    expect(r.state.equipped['bong-tai-1']).toBeNull()
   })
 })

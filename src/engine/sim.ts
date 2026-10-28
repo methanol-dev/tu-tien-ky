@@ -1,4 +1,4 @@
-import type { GearSlot } from '@/content/gear'
+import type { GearType } from '@/content/gear'
 import { RECIPES } from '@/content/recipes'
 import { REALMS } from '@/content/realms'
 import { TECHNIQUES } from '@/content/techniques'
@@ -126,16 +126,19 @@ export function simulate(opts: SimOptions): SimResult {
     if (s.journey.chests.red + s.journey.chests.normal > 0) {
       if (s.journey.chests.red > 0) s = openChests(s, 'red', s.journey.chests.red, rng).state
       if (s.journey.chests.normal > 0) s = openChests(s, 'normal', s.journey.chests.normal, rng).state
-      const bestScore: Partial<Record<GearSlot, number>> = {}
-      for (const e of getEquippedGear(s)) bestScore[getGearDef(e).slot] = gearScore(e)
+      const bestScore: Partial<Record<GearType, number>> = {}
+      for (const e of getEquippedGear(s)) {
+        const type = getGearDef(e).slot
+        bestScore[type] = Math.max(bestScore[type] ?? 0, gearScore(e))
+      }
       for (const g of s.gear) {
-        const slot = getGearDef(g).slot
+        const type = getGearDef(g).slot
         const score = gearScore(g)
-        if (score > (bestScore[slot] ?? -1)) {
+        if (score > (bestScore[type] ?? -1)) {
           const r = equip(s, g.uid)
           if (r.ok) {
             s = r.state
-            bestScore[slot] = score
+            bestScore[type] = score
           }
         }
       }
