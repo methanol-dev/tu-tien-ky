@@ -77,3 +77,4 @@ describe('indexedDb & hybrid storage', () => {
     expect(store.getState().notice?.text).toContain('Không tìm thấy bản lưu nào')
   })
 })
+
