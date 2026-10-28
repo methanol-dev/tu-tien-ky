@@ -90,3 +90,4 @@ export const WORLDS: readonly WorldDef[] = [
 export const WORLD_BY_ID: Readonly<Record<WorldId, WorldDef>> = Object.fromEntries(
   WORLDS.map((w) => [w.id, w])
 ) as Record<WorldId, WorldDef>
+

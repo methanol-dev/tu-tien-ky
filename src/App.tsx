@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CLASS_BY_ID } from '@/content/classes'
 import { getPendingEvent, getPendingStoryScene, isAlchemyReady, isReincarnationForced, requestPersistentStorage } from '@/engine'
 import { formatNumber } from '@/lib/format'
@@ -7,6 +7,7 @@ import { useGameStore } from '@/store/gameStore'
 import { InkSplash } from '@/ui/atoms/InkSplash'
 import { NavBar } from '@/ui/molecules/NavBar'
 import { Toast } from '@/ui/molecules/Toast'
+import { AdminModal } from '@/ui/organisms/AdminModal'
 import { CharacterModal } from '@/ui/organisms/CharacterModal'
 import { EventModal } from '@/ui/organisms/EventModal'
 import { StoryModal } from '@/ui/organisms/StoryModal'
@@ -62,6 +63,53 @@ export default function App() {
   const resolveEvent = useGameStore((s) => s.resolveEvent)
   const dismissEventResult = useGameStore((s) => s.dismissEventResult)
 
+  const [adminModalOpen, setAdminModalOpen] = useState(false)
+  const [secretClicks, setSecretClicks] = useState(0)
+  const lastClickTimeRef = useRef<number>(0)
+
+  const handleSecretLogoClick = () => {
+    const now = Date.now()
+    if (now - lastClickTimeRef.current > 2500) {
+      setSecretClicks(1)
+    } else {
+      const next = secretClicks + 1
+      if (next >= 5) {
+        setAdminModalOpen(true)
+        setSecretClicks(0)
+      } else {
+        setSecretClicks(next)
+      }
+    }
+    lastClickTimeRef.current = now
+  }
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'd') || e.key === 'F2') {
+        e.preventDefault()
+        setAdminModalOpen((prev) => !prev)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  useEffect(() => {
+    // Gắn DevTools API cho Console F12
+    ;(window as unknown as { admin: unknown }).admin = {
+      open: () => setAdminModalOpen(true),
+      close: () => setAdminModalOpen(false),
+      addStones: (n: number) => useGameStore.getState().adminAddStones(n),
+      addQi: (n: number) => useGameStore.getState().adminAddQi(n),
+      setRealm: (idx: number) => useGameStore.getState().adminSetRealm(idx),
+      addPunches: (n: number) => useGameStore.getState().adminAddPunches(n),
+      addChests: (normal: number, red: number) => useGameStore.getState().adminAddChests(normal, red),
+      unlockAllRegions: () => useGameStore.getState().adminUnlockAllRegions(),
+      fullGear: () => useGameStore.getState().adminGiveFullGear(),
+      setTimeScale: (scale: number) => useGameStore.getState().adminSetTimeScale(scale),
+    }
+  }, [])
+
   useEffect(() => {
     useGameStore.getState().hydrate()
     void requestPersistentStorage()
@@ -81,8 +129,16 @@ export default function App() {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col gap-6 px-4 pt-6 pb-24 md:pb-8">
       <header className="flex items-center justify-between gap-4">
-        <div className="flex items-baseline gap-3">
-          <h1 className="font-han text-3xl font-black tracking-widest text-paper-100">劍來</h1>
+        <div
+          className="flex items-baseline gap-3 cursor-pointer select-none group"
+          onClick={handleSecretLogoClick}
+          role="button"
+          tabIndex={0}
+          title="劍來 · Tu Tiên Ký"
+        >
+          <h1 className="font-han text-3xl font-black tracking-widest text-paper-100 transition-transform active:scale-95 group-hover:text-gold-300">
+            劍來
+          </h1>
           <span className="hidden font-han text-sm text-gold-400 sm:inline">Kiếm Lai · Tu Tiên Ký</span>
         </div>
         <div className="flex items-center gap-3">
@@ -137,6 +193,10 @@ export default function App() {
         open={characterModalOpen}
         onClose={() => setCharacterModalOpen(false)}
         state={state}
+      />
+      <AdminModal
+        open={adminModalOpen}
+        onClose={() => setAdminModalOpen(false)}
       />
       <ChestModal
         result={chestResult}

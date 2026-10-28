@@ -171,3 +171,4 @@ export const CLASSES: readonly ClassDef[] = [
 export const CLASS_BY_ID: Readonly<Record<ClassId, ClassDef>> = Object.fromEntries(
   CLASSES.map((c) => [c.id, c])
 ) as Record<ClassId, ClassDef>
+

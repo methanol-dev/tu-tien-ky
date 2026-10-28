@@ -5,6 +5,16 @@ import type { GearSlot } from '@/content/gear'
 import type { Difficulty } from '@/content/regions'
 import {
   type ActionResult,
+  adminAddChests,
+  adminAddHerbsAndPills,
+  adminAddPunches,
+  adminAddQi,
+  adminAddStones,
+  adminGiveFullGear,
+  adminInstantBreakthrough,
+  adminSetRealm,
+  adminSetTimeScale,
+  adminUnlockAllRegions,
   applyOfflineProgress,
   attemptBreakthrough,
   type BreakthroughResult,
@@ -125,6 +135,16 @@ export interface GameStore {
   importSave: (text: string) => { ok: true } | { ok: false; error: string }
   recoverFromIdb: (now?: number) => Promise<boolean>
   resetGame: (now?: number) => void
+  adminAddStones: (amount: number) => void
+  adminAddQi: (amount: number) => void
+  adminSetRealm: (realmIndex: number) => void
+  adminAddPunches: (punches: number) => void
+  adminAddChests: (normal: number, red: number) => void
+  adminUnlockAllRegions: () => void
+  adminGiveFullGear: () => void
+  adminAddHerbsAndPills: (count?: number) => void
+  adminInstantBreakthrough: () => void
+  adminSetTimeScale: (scale: number) => void
 }
 
 export interface GameStoreDeps {
@@ -399,6 +419,47 @@ export function createGameStore(deps: GameStoreDeps = {}) {
         storage.clear()
         set({ state: freshState(now), offlineReport: null, fx: null, chestResult: null, screen: 'cultivate' })
         get().save(now)
+      },
+
+      adminAddStones: (amount) => {
+        set({ state: adminAddStones(get().state, amount) })
+        get().save()
+      },
+      adminAddQi: (amount) => {
+        set({ state: adminAddQi(get().state, amount) })
+        get().save()
+      },
+      adminSetRealm: (realmIndex) => {
+        set({ state: adminSetRealm(get().state, realmIndex) })
+        get().save()
+      },
+      adminAddPunches: (punches) => {
+        set({ state: adminAddPunches(get().state, punches) })
+        get().save()
+      },
+      adminAddChests: (normal, red) => {
+        set({ state: adminAddChests(get().state, normal, red) })
+        get().save()
+      },
+      adminUnlockAllRegions: () => {
+        set({ state: adminUnlockAllRegions(get().state) })
+        get().save()
+      },
+      adminGiveFullGear: () => {
+        set({ state: adminGiveFullGear(get().state) })
+        get().save()
+      },
+      adminAddHerbsAndPills: (count) => {
+        set({ state: adminAddHerbsAndPills(get().state, count) })
+        get().save()
+      },
+      adminInstantBreakthrough: () => {
+        set({ state: adminInstantBreakthrough(get().state) })
+        get().save()
+      },
+      adminSetTimeScale: (scale) => {
+        set({ state: adminSetTimeScale(get().state, scale) })
+        get().save()
       },
     }
   })
