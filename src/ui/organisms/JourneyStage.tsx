@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import { useState, type CSSProperties } from 'react'
 import { AVATARS, AVATAR_BY_ID } from '@/content/avatars'
 import { REALMS } from '@/content/realms'
 import { DIFFICULTY_NAMES, STAGES_PER_REGION } from '@/content/regions'
@@ -44,6 +44,7 @@ export function JourneyStage({ state, compact = false }: Props) {
   const hpPct = player.maxHp > 0 ? Math.max(0, Math.min(100, (player.hp / player.maxHp) * 100)) : 0
   const walking = j.phase === 'walk'
   const avatar = AVATAR_BY_ID[state.settings.avatarId ?? 'tran-binh-an'] ?? AVATARS[0]
+  const [spriteError, setSpriteError] = useState(false)
 
   const recent = j.events.filter((e) => now - e.atMs < FLOAT_MS)
   const lastPlayerHit = j.events.filter((e) => (e.kind === 'hit' || e.kind === 'crit') && now - e.atMs < FLASH_MS).at(-1)
@@ -210,19 +211,33 @@ export function JourneyStage({ state, compact = false }: Props) {
       {/* ================= HERO (ĐẠO THÂN) ================= */}
       <div
         key={lastPlayerHit?.atMs ?? (lastHurt ? `h${lastHurt.atMs}` : 'idle')}
-        className={`absolute bottom-[12%] left-[12%] ${figure} aspect-square text-ink-950 ${heroAnim} ${
+        className={`absolute bottom-[11%] left-[10%] sm:left-[12%] ${
+          compact ? 'h-[82%]' : 'h-[58%] sm:h-[64%]'
+        } aspect-[677/1091] flex items-end justify-center select-none ${heroAnim} ${
           lastHurt ? 'journey-hurt' : ''
         }`}
-        style={{ filter: `drop-shadow(0 0 ${compact ? 2 : 8}px ${p.accent}88)` }}
+        style={{
+          filter: `drop-shadow(0 6px 14px rgba(0,0,0,0.65)) drop-shadow(0 0 ${compact ? 2 : 6}px ${p.accent}88)`,
+        }}
       >
-        <HeroSilhouette className="h-full w-full" />
-        {/* Vệt hào quang dưới chân người chơi */}
+        {!spriteError ? (
+          <img
+            src="/assets/characters/hero-sprite.png"
+            alt={avatar.name}
+            className="h-full w-auto max-w-none object-contain pointer-events-none drop-shadow-[0_0_8px_rgba(234,179,8,0.3)]"
+            onError={() => setSpriteError(true)}
+          />
+        ) : (
+          <HeroSilhouette className="h-full w-full aspect-square text-ink-950" />
+        )}
+        {/* Bóng đổ & vệt hào quang dưới chân người chơi */}
+        <div className="pointer-events-none absolute -bottom-1 left-1/2 h-2.5 w-4/5 -translate-x-1/2 rounded-full bg-ink-950/70 blur-[3px]" />
         <div
-          className="pointer-events-none absolute -bottom-1 left-1/2 h-2 w-3/4 -translate-x-1/2 rounded-full opacity-60 blur-[2px]"
+          className="pointer-events-none absolute -bottom-1 left-1/2 h-1.5 w-1/2 -translate-x-1/2 rounded-full opacity-60 blur-[2px]"
           style={{ backgroundColor: p.accent }}
         />
         {compact && (
-          <div className="absolute -top-2 left-1/2 h-1 w-[80%] -translate-x-1/2 overflow-hidden rounded-full bg-ink-950/60">
+          <div className="absolute -top-2 left-1/2 h-1 w-16 -translate-x-1/2 overflow-hidden rounded-full bg-ink-950/60">
             <div className={`h-full ${hpPct > 40 ? 'bg-jade-400' : 'bg-vermilion-400'}`} style={{ width: `${hpPct}%` }} />
           </div>
         )}
