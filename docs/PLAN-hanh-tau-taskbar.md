@@ -1,8 +1,8 @@
-# PLAN: Hành Tẩu — chế độ dải taskbar kiểu Task Bar Hero, phong cách tu tiên
+# PLAN: Hành Tẩu — dải nổi kiểu Task Bar Hero, phong cách tu tiên, 100% web
 
-> **Trạng thái**: 📝 Lập 2026-10-28, chờ chốt mục 9.
+> **Trạng thái**: 📝 Lập 2026-10-28, sửa cùng ngày: **bỏ Tauri, toàn bộ chạy trên web**. Chờ chốt mục 9.
 > **Tham chiếu**: *TBH: Task Bar Hero* (Nugem Studio, Steam, 2026): party 3 hero pixel tự đánh side-scroll trong cửa sổ nhỏ đè lên taskbar Windows; quái rớt rương → gear + nguyên liệu → Cube/rune tree → mạnh hơn → qua stage nhanh hơn; 3 act × 4 độ khó ≈ 120 stage; người chơi chỉ thao tác giữa các trận.
-> **Đã chốt với mày**: (1) **Hybrid**: giữ game idle hiện tại, thêm lớp auto-battle real-time; (2) **Tauri 2** desktop + web fallback; (3) hình ảnh **thủy mặc silhouette SVG/CSS**, không pixel art; (4) **gộp cốt truyện Kiếm Lai**: vùng = hồi, party = Trần Bình An + đồng hành. Plan [PLAN-cot-truyen-kiem-lai.md](PLAN-cot-truyen-kiem-lai.md) chuyển thành lớp nội dung làm ở P11.
+> **Đã chốt với mày**: (1) **Hybrid**: giữ game idle hiện tại, thêm lớp auto-battle real-time; (2) **chỉ web**, không shell desktop; dải nổi dùng **Document Picture-in-Picture** (Chrome/Edge), fallback cửa sổ popup; (3) hình ảnh **thủy mặc silhouette SVG/CSS**, không pixel art; (4) **gộp cốt truyện Kiếm Lai**: vùng = hồi, party = Trần Bình An + đồng hành. Plan [PLAN-cot-truyen-kiem-lai.md](PLAN-cot-truyen-kiem-lai.md) chuyển thành lớp nội dung làm ở P11.
 > **Tiền đề**: Phase 0–8 xong, save v5, 106 test, sim guardrail.
 
 ---
@@ -12,11 +12,11 @@
 Game hiện tại là thanh linh khí tăng dần, không có gì để **nhìn**. Mục tiêu:
 
 1. Thêm **Hành Tẩu**: tu sĩ (bóng mực) đi ngang qua sơn thủy, gặp yêu thú tự đánh, rớt rương, mở rương ra pháp bảo có độ hiếm. Chạy **liên tục, song song** với tích linh khí. Đây là cái "nhìn được" và là nguồn dopamine loot.
-2. Chế độ **dải taskbar**: cửa sổ Tauri không viền, always-on-top, rộng bằng màn hình, cao 48–64px, nằm đè lên taskbar Windows; nhân vật đánh nhau trong lúc mày làm việc. Bấm là mở rộng thành cửa sổ đầy đủ.
-3. Web vẫn chạy nguyên (tab "Hành tẩu" hiện cùng cảnh), PWA giữ. Desktop và web dùng chung 100% frontend.
+2. Chế độ **dải nổi**: một cửa sổ nhỏ **always-on-top** do trình duyệt cấp (Document Picture-in-Picture), mày kéo xuống sát taskbar, rộng tùy ý, cao 56–72px; nhân vật đánh nhau trong lúc mày làm việc ở app khác. Bấm là quay về tab đầy đủ.
+3. Không cài gì thêm: vẫn là PWA, GitHub Pages, một codebase. Trình duyệt không hỗ trợ PiP thì dùng popup thường hoặc chơi trong tab.
 4. Không phá save (migration v6), không phá đường cong cảnh giới (sim guardrail cũ giữ nguyên).
 
-Tiêu chí xong P9 (web): mở tab Hành tẩu thấy tu sĩ đi, đánh, chết thì lết về, qua stage, rớt rương, mở rương ra pháp bảo rarity, mặc vào mạnh lên rõ rệt, treo 1 giờ thấy tiến bộ. Tiêu chí xong P10: `pnpm tauri dev` ra dải trên taskbar, minimize vẫn đánh, bấm mở rộng/thu nhỏ được.
+Tiêu chí xong P9: mở tab Hành tẩu thấy tu sĩ đi, đánh, chết thì lết về, qua stage, rớt rương, mở rương ra pháp bảo rarity, mặc vào mạnh lên rõ rệt, treo 1 giờ thấy tiến bộ. Tiêu chí xong P10: bấm "Thả nổi" ra cửa sổ nhỏ luôn nổi trên các app khác trên Chrome/Edge, kéo xuống đáy màn hình, tab chính thu nhỏ mà cửa sổ vẫn đánh và vẫn lưu; đóng cửa sổ nổi thì về tab không mất tiến độ.
 
 ---
 
@@ -50,12 +50,18 @@ Pháp bảo hiện tại là "có/không có" (6 cái, passive cố định). V�
 
 Party 3 là linh hồn TBH và là chỗ gộp Kiếm Lai (Trần Bình An + Ninh Diêu + A Lương…). Nhưng party kéo theo vai trò, kỹ năng, AI chọn mục tiêu, UI 3 thanh HP. **P9 làm 1 hero**, nhưng `journey.party: Fighter[]` là mảng ngay từ đầu, combat loop duyệt mảng. P11 thêm đồng hành qua cốt truyện, không refactor.
 
-### 2.5 Tauri: một cửa sổ, hai hình dạng
+### 2.5 Dải nổi trên web: Document Picture-in-Picture
 
-Hai webview (dải + cửa sổ chính) là hai JS context, store không chia sẻ, phải sync qua IPC: phức tạp vô ích. **Một cửa sổ `main`**, toggle giữa hình dạng **strip** (x=0, y=màn hình trừ chiều cao dải, rộng = màn hình, cao 56px, không viền, always-on-top, trong suốt, skipTaskbar) và **full** (900×700 có viền, không always-on-top). Toggle gọi `getCurrentWindow().setSize/setPosition/setDecorations/setAlwaysOnTop`. Vị trí tính từ **kích thước monitor**, không phải work area, thì mới đè được lên taskbar (always-on-top của Windows nằm trên taskbar). Web không có Tauri → layout strip vẫn render được qua `?mode=strip` để dev và để ai muốn kéo tab thành cửa sổ nhỏ.
+Web **không** đè được lên taskbar và không có cửa sổ không viền. Cái gần nhất trình duyệt cho là **Document Picture-in-Picture API** (`documentPictureInPicture.requestWindow({ width, height })`, Chrome/Edge 116+): một cửa sổ nhỏ **luôn nổi trên mọi app**, mày kéo đặt đâu cũng được (sát taskbar là xong), có thể render DOM tùy ý chứ không chỉ video. Đây đúng là trải nghiệm "vừa làm việc vừa nhìn nhân vật đánh" của TBH, chỉ khác là có viền mỏng của trình duyệt và không full chiều rộng.
 
-> [!WARNING]
-> **Máy mày chưa có Rust.** `cargo`, `rustc`, `rustup` đều không có; không có Visual Studio Build Tools (chỉ có thư mục Shared). WebView2 155.x đã có. Trước P10 mày phải cài: **rustup** (rust-lang.org) + **Build Tools for Visual Studio 2022** với workload "Desktop development with C++" (~6–7GB, cần admin). Không có hai cái này thì `pnpm tauri dev` không chạy. Tao không tự cài được vì cần quyền admin và đổi hệ thống.
+Cách làm, giữ **một JS context, một store**:
+- Cửa sổ PiP là một `Window` con cùng origin; ta `createPortal` component `JourneyStage compact` vào `pipWindow.document.body`, copy stylesheet sang. Store Zustand vẫn ở tab chính, không sync gì cả.
+- Tab chính bị ẩn thì Chrome throttle rAF/timer, nhưng game đo bằng timestamp và có offline catch-up nên **không lệch**; cửa sổ PiP visible nên animation trong đó mượt. Để tick đều khi tab ẩn: `gameLoop` thêm fallback `setInterval` 1s (Chrome vẫn cho 1 lần/giây trong 5 phút đầu, sau đó 1 lần/phút → catch-up xử lý).
+- **Fallback** không có API: `window.open(url + '?mode=strip', 'tu-tien-strip', 'popup,width=720,height=72')` ra cửa sổ popup (không always-on-top, phải tự xếp cạnh). Firefox/Safari chỉ có fallback này. `?mode=strip` ở tab thường cũng render layout dải, dùng để dev và test.
+- Yêu cầu user gesture để mở PiP: nút **Thả nổi** trong tab Hành tẩu và trong header.
+
+> [!NOTE]
+> Giới hạn tao chưa chắc, kiểm chứng ở P10-01: kích thước tối đa cửa sổ PiP (Chrome clamp theo màn hình), có cho ẩn thanh tiêu đề không (Chrome có `disallowReturnToOpener`, và tùy phiên bản có `preferInitialWindowPlacement`), hành vi khi tab chính bị đóng (PiP đóng theo, save đã autosave 30s + `pagehide`).
 
 ### 2.6 Hình ảnh thủy mặc
 
@@ -146,20 +152,21 @@ src/content/
 - **Túi đồ** thêm mục **Pháp bảo**: 4 slot đang mặc + kho gear, so sánh stat khi hover/tap, bán hàng loạt theo rarity.
 - `ChestModal`: mở từng rương có animation mực loang theo màu rarity; "Mở tất cả" khi nhiều.
 - `JourneyStage` nhận prop `compact` để render layout dải 56px: parallax, silhouettes, HP mảnh, số dmg; góc phải: cảnh giới + % linh khí + stage + nút rương + nút mở rộng.
-- **Strip mode** (P10): `App` đọc `mode` từ store (`'full' | 'strip'`), strip chỉ render `JourneyStage compact` + 3 nút (rương / mở rộng / thoát). Kéo dải bằng `data-tauri-drag-region`.
+- **Strip layout** (P10): `App` đọc `mode` (`'full' | 'strip'`) từ URL `?mode=strip` hoặc từ việc đang render trong PiP; strip chỉ render `JourneyStage compact` + 3 nút (rương / về tab / đóng).
 
-### 4.5 Tauri (P10)
+### 4.5 Dải nổi web (P10)
 
 ```
-src-tauri/
-├── Cargo.toml, tauri.conf.json  (app.windows[0]: label main, decorations false, alwaysOnTop true, transparent true, skipTaskbar true, resizable false, visible false → hiện sau khi tính vị trí)
-├── capabilities/default.json     (window:allow-set-size/position/decorations/always-on-top, core:window)
-└── src/main.rs                   (mặc định; tray icon qua plugin tray nếu còn thời gian)
+src/platform/
+├── pip.ts            isPipSupported(), openStrip(), closeStrip(); copy <link>/<style> sang pipWindow.document; lắng nghe 'pagehide' của PiP
+└── StripPortal.tsx   createPortal(<StripLayout/>, pipWindow.document.body); giữ store của tab chính
 ```
-- `src/platform/window.ts`: `isTauri()`, `enterStrip()`, `enterFull()`, tính từ `currentMonitor()`; web thì no-op và dùng CSS.
-- Tick khi minimize: WebView2 có thể throttle rAF → `gameLoop` thêm fallback `setInterval` 1s khi `document.hidden`, vẫn đo bằng timestamp nên không lệch.
-- Build: `pnpm tauri build` ra `.msi`/`.exe` NSIS trong `src-tauri/target/release/bundle`. CI thêm job `windows-latest` build artifact, **không publish**, Pages giữ nguyên.
-- Vite: `base` khi Tauri phải là `'./'` (env `TAURI_ENV_PLATFORM`), PWA plugin tắt trong Tauri.
+- Nút **Thả nổi** → `openStrip()`: có API thì PiP `{ width: 720, height: 64 }`; không thì `window.open` popup `?mode=strip` (popup là context riêng → store riêng; để nó tự hydrate từ localStorage và **chỉ đọc**, tick bằng catch-up khi focus; ghi save vẫn là tab chính). Cách popup kém hơn hẳn, ghi rõ trong UI "Dùng Chrome/Edge để có cửa sổ luôn nổi".
+- Nhớ kích thước/vị trí lần trước qua `localStorage` (PiP chỉ cho set size; vị trí Chrome tự nhớ theo origin).
+- `gameLoop`: thêm `setInterval` 1s khi `document.hidden` để tick đều khi có PiP; vẫn đo bằng timestamp.
+- Khi PiP đóng (user bấm X hoặc tab đóng): gỡ portal, `save()`, về `mode = 'full'`.
+- Font CJK trong PiP: `document.fonts` của cửa sổ con tải lại từ cache → ok; kiểm tra FOUT.
+- Không có job CI mới, Pages y nguyên.
 
 ---
 
@@ -176,14 +183,14 @@ src-tauri/
 - `P9-08` Xóa `ExpeditionScreen`/`ExpeditionReportModal`/`expedition.ts` (giữ `combat.ts`), cập nhật docs, walkthrough, README. Commit theo task.
 - **Verify**: `pnpm test` ≥ 130 xanh, lint, build; sim guardrail; tay: treo 30 phút ở Luyện Khí thấy qua vùng 1 Thường, có 5+ gear, mặc vào thấy dmg tăng.
 
-### Phase 10 — Tauri shell + dải taskbar `[P10]`
-- `P10-00` **Mày cài** rustup + VS Build Tools C++ (mục 2.5). Tao kiểm tra `cargo --version` rồi mới bắt đầu.
-- `P10-01` `pnpm add -D @tauri-apps/cli`, `@tauri-apps/api`; `tauri init`; `tauri.conf.json`, capabilities, icon từ `scripts/gen-icons.ts`.
-- `P10-02` `src/platform/window.ts` + store `mode`; `enterStrip/enterFull`; strip layout trong `App`; drag region; nhớ mode lần trước.
-- `P10-03` Vite `base` theo Tauri, tắt PWA trong Tauri, kiểm tra localStorage/offline progress trong WebView2.
-- `P10-04` Tray icon (hiện/ẩn dải, thoát), tùy chọn khởi động cùng Windows (plugin autostart) **tắt mặc định**.
-- `P10-05` CI job build Windows artifact; `docs/DESKTOP.md` hướng dẫn cài toolchain và build.
-- **Verify**: `pnpm tauri dev` dải nằm đè taskbar, không che lúc chuyển full; minimize 10 phút quay lại thấy đúng tiến độ; `pnpm tauri build` ra installer chạy được trên máy mày.
+### Phase 10 — Dải nổi trên web `[P10]`
+- `P10-01` Spike 1 buổi: `documentPictureInPicture.requestWindow` trên Chrome/Edge máy mày, đo giới hạn kích thước, thanh tiêu đề, hành vi khi tab ẩn/đóng. Ghi kết quả vào plan này, chỉnh 2.5 nếu sai.
+- `P10-02` `StripLayout` (`JourneyStage compact` + 3 nút) render được qua `?mode=strip` trong tab thường; jsdom smoke.
+- `P10-03` `src/platform/pip.ts` + `StripPortal.tsx`: mở/đóng PiP, copy style, portal, cleanup, save khi đóng. Nút **Thả nổi** ở tab Hành tẩu và header. Nhớ kích thước.
+- `P10-04` Fallback popup `window.open` cho trình duyệt không có API, chế độ chỉ đọc; thông báo khuyên dùng Chrome/Edge.
+- `P10-05` `gameLoop` fallback `setInterval` khi `document.hidden`; test store: tab ẩn 10 phút rồi hiện lại không lệch tiến độ.
+- `P10-06` Cài đặt: chiều cao dải (56/64/72), hiện/ẩn số dmg, giảm hoạt ảnh (`prefers-reduced-motion`). Docs + walkthrough.
+- **Verify**: Chrome/Edge: Thả nổi → kéo xuống sát taskbar → Alt-Tab sang app khác vẫn thấy đánh; thu nhỏ tab chính 10 phút, tiến độ đúng; đóng PiP về tab không mất gì; Firefox ra popup, không crash.
 
 ### Phase 11 — Party, Luyện Khí Lô, cốt truyện Kiếm Lai `[P11]`
 - `P11-01` Đồng hành: `Fighter` thêm `role` (tiên phong / chủ công / hộ pháp) + 1 kỹ năng theo cooldown (đánh diện rộng / hồi máu / khiên). Slot party mở bằng cốt truyện. UI 3 silhouette.
@@ -194,7 +201,7 @@ src-tauri/
 
 ### Backlog (sau P11, nếu còn hứng)
 - Kinh mạch (rune tree) thay cho cây công pháp phẳng.
-- Document Picture-in-Picture cho web (cửa sổ nhỏ nổi trong Chrome).
+- Shell desktop (Tauri) để đè taskbar thật sự, nếu web PiP vẫn chưa đã. Đã bàn và gác lại 2026-10-28.
 - Âm thanh (vẫn chờ asset).
 
 ---
@@ -206,15 +213,15 @@ src-tauri/
 | Engine | `journeyTick` deterministic; bước 500ms không trôi khi dt lẻ; retreat/auto-advance; roll gear theo bảng; equip/salvage; migration v5→v6 fixture thật |
 | Content | validator vùng/gear/affix; mọi vùng có boss; không gear nào thiếu slot |
 | Sim | guardrail cảnh giới cũ **không đổi**; thêm mốc Hành tẩu; linh thạch không lạm phát quá ×1.5 |
-| UI smoke | tab Hành tẩu render stage; mở rương; equip; `compact` không vỡ ở 56px |
-| Desktop (tay) | dải đè taskbar trên 1 và 2 màn hình; DPI 125%/150%; minimize/restore; autosave khi đóng |
+| UI smoke | tab Hành tẩu render stage; mở rương; equip; `?mode=strip` không vỡ ở 56px |
+| Trình duyệt (tay) | PiP trên Chrome và Edge, DPI 125%/150%, 2 màn hình; tab ẩn 10 phút; đóng PiP; Firefox fallback popup |
 
 ---
 
 ## 7. Rủi ro
 
 > [!IMPORTANT]
-> **Toolchain Tauri là rủi ro lịch trình lớn nhất.** Cài VS Build Tools 6–7GB, lần đầu `cargo build` 5–10 phút. Nếu mày không cài được, P10 đứng; P9 vẫn chạy được trên web nên không mất gì.
+> **Dải nổi web không bằng TBH thật.** Không đè taskbar, có viền trình duyệt, chỉ Chrome/Edge có always-on-top, kích thước bị trình duyệt giới hạn. Đây là giới hạn nền tảng, không phải lỗi code. Nếu sau P10 mày thấy chưa đã thì mới quay lại Tauri (backlog), lúc đó toàn bộ P9–P10 vẫn dùng lại được.
 
 > [!WARNING]
 > **Loot lạm phát linh thạch.** Hành tẩu chạy liên tục, bán gear ra linh thạch → mua công pháp → nhanh hơn → vỡ guardrail. Mọi thưởng theo giây thu nhập, giá bán gear thấp, sim phải pass trước khi merge.
@@ -223,10 +230,7 @@ src-tauri/
 > **Dải 56px rất ít chỗ.** Phải chấp nhận dải chỉ "nhìn", mọi quyết định ở layout full. Nếu nhìn vẫn rối, tăng lên 72px hoặc chỉ hiện hero + 1 quái.
 
 > [!NOTE]
-> Always-on-top đè taskbar nghĩa là che nút Start/khay hệ thống phần dải chiếm. TBH cũng vậy. Cho chọn **neo trái/phải và chiều rộng** (50% / 100%) trong Cài đặt để chừa chỗ.
-
-> [!NOTE]
-> Tauri lưu localStorage riêng, save web và save desktop là hai save. Export/import đã có, đủ dùng; không làm cloud sync.
+> Chrome throttle tab ẩn: timer 1 lần/giây trong 5 phút đầu, sau đó 1 lần/phút. Engine đo bằng timestamp + catch-up nên tiến độ không lệch, nhưng **hoạt ảnh trong PiP chỉ mượt nếu rAF của tab chính còn chạy**; nếu không, dùng `pipWindow.requestAnimationFrame` cho animation và chỉ tick engine 1Hz. Kiểm chứng ở P10-01.
 
 ---
 
@@ -240,6 +244,5 @@ src-tauri/
 ## 9. Cần mày chốt trước khi code
 
 1. **Hành Tẩu thay thế hẳn Bí cảnh** (6 bí cảnh thành 6 vùng), không giữ song song. Tao đề xuất **thay**.
-2. **Dải cao 56px**, một cửa sổ toggle strip/full, neo đáy màn hình chính. Ok?
-3. **P9 trước (web, 1 hero), P10 Tauri, P11 party + truyện.** Hay mày muốn Tauri sớm hơn để nhìn dải thật trước khi làm sâu gameplay? (Nếu vậy: mày cài Rust ngay bây giờ, tao chèn P10-01..03 vào sau P9-04.)
-4. Mày tự cài **rustup + VS Build Tools C++** được chứ? Cần admin. Tao sẽ đưa lệnh kiểm tra sau khi cài.
+2. Dải nổi là **cửa sổ Picture-in-Picture của Chrome/Edge**, có viền mỏng, không đè taskbar, mày tự kéo xuống đáy. Chấp nhận giới hạn này chứ? (Không thì chỉ còn đường Tauri.)
+3. **P9 trước (1 hero), P10 dải nổi, P11 party + truyện.** Hay mày muốn tao làm spike PiP (P10-01) ngay đầu để chắc ăn nền tảng rồi mới cày P9? Tao đề xuất **spike trước**, mất một buổi, tránh làm xong P9 mới biết PiP không như mong.
