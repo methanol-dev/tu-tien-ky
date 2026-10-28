@@ -9,3 +9,4 @@ export function resolveAsset(path?: string): string {
   const normalizedBase = base.endsWith('/') ? base : `${base}/`
   return `${normalizedBase}${clean}`
 }
+

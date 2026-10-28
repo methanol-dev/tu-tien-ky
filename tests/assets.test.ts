@@ -21,3 +21,4 @@ describe('resolveAsset helper', () => {
     expect(res1).not.toContain('//assets')
   })
 })
+
