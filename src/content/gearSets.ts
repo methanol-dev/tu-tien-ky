@@ -113,3 +113,4 @@ export const GEAR_SETS: readonly GearSetDef[] = [
 export const GEAR_SET_BY_ID: Readonly<Record<string, GearSetDef>> = Object.fromEntries(
   GEAR_SETS.map((s) => [s.id, s])
 )
+
