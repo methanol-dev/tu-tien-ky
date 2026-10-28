@@ -1,6 +1,6 @@
 # PLAN: Cốt truyện Kiếm Lai — Phase 9 → 11
 
-> **Trạng thái**: 📝 Đang lập, chờ chốt mục 8.
+> **Trạng thái**: ⏸️ Gộp vào [PLAN-hanh-tau-taskbar.md](PLAN-hanh-tau-taskbar.md) (2026-10-28): làm ở P11-03 của plan đó, vùng Hành Tẩu = hồi, party = Trần Bình An + đồng hành. Mục 2/3/7 và 5 câu hỏi mục 8 vẫn còn hiệu lực.
 > **Ngày lập**: 2026-10-28
 > **Tiền đề**: Phase 0–8 xong (xem [PLAN-tu-tien-idle-rpg.md](PLAN-tu-tien-idle-rpg.md), [walkthrough.md](walkthrough.md)). Engine 106 test, save v5, sim guardrail khóa đường cong.
 > **Scope**: Thêm **lớp cốt truyện tuyến tính theo hồi** lấy khung từ tiểu thuyết *Kiếm Lai* (剑来, Phong Hỏa Hí Chư Hầu) bọc lên vòng lặp idle hiện có. Tình tiết chi tiết mày viết sau; plan này xây **bộ máy kể chuyện + khung sườn hồi + quy trình mày đổ nội dung vào**.
