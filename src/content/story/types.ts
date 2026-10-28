@@ -37,3 +37,4 @@ export interface StoryChapter {
   summary: string
   scenes: StoryScene[]
 }
+

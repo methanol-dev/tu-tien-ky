@@ -1,4 +1,5 @@
 import { baselineStats } from '@/content/regions'
+import { getMartialPunches, getMartialRealm } from '@/content/martialRealms'
 import {
   BASE_CRIT_CHANCE,
   BASE_CRIT_MULT,
@@ -23,14 +24,18 @@ export interface CombatStats {
   lifesteal: number
 }
 
-/** Baseline combat stats grow with realm; equipped gear affixes multiply them. */
+/** Baseline combat stats grow with realm; equipped gear affixes and martial realm multiply them. */
 export function getCombatStats(state: GameState): CombatStats {
   const b = baselineStats(state.realmIndex)
   const t = getAffixTotals(state)
+  const punches = getMartialPunches(state.stats)
+  const martial = getMartialRealm(punches)
+  const mb = martial.bonus
+
   return {
-    hp: Math.round(b.hp * (1 + t.hp)),
-    atk: Math.round(b.atk * (1 + t.atk)),
-    def: Math.round(b.def * (1 + t.def)),
+    hp: Math.round(b.hp * (1 + t.hp + mb.hpPercent)),
+    atk: Math.round(b.atk * (1 + t.atk + mb.atkPercent)),
+    def: Math.round(b.def * (1 + t.def + mb.defPercent)),
     crit: Math.min(MAX_CRIT_CHANCE, BASE_CRIT_CHANCE + t.crit),
     critMult: BASE_CRIT_MULT + t.critDmg,
     attackMs: Math.round(PLAYER_ATTACK_MS / Math.min(MAX_ATTACK_SPEED_MULT, 1 + t.atkSpeed)),

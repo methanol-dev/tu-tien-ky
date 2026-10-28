@@ -108,16 +108,24 @@ describe('App smoke', () => {
       button('Chỉ số').click()
     })
     expect(container.textContent).toContain('Đạo Thân · Chỉ Số Nhân Vật')
-    expect(container.textContent).toContain('⚔️ Chiến Lực (Hành Tẩu)')
+    expect(container.textContent).toContain('⚔️ Chiến Lực')
     expect(container.textContent).toContain('Tỉ lệ bạo kích')
     expect(container.textContent).toContain('Sát thương bạo')
 
-    // Switch to cultivation tab
+    // Switch to cultivation tab (Luyện Khí Sĩ 15 Cảnh)
     await act(async () => {
-      button('🧘 Tu Vi & Căn Cơ').click()
+      button('🧘 Luyện Khí Sĩ').click()
     })
     expect(container.textContent).toContain('Tốc độ tụ khí')
-    expect(container.textContent).toContain('Bế quan tối đa')
+    expect(container.textContent).toContain('15 Cảnh Giới Luyện Khí Sĩ')
+    expect(container.textContent).toContain('Hạ Ngũ Cảnh')
+
+    // Switch to martial tab (Võ Đạo 11 Cảnh)
+    await act(async () => {
+      button('👊 Võ Đạo').click()
+    })
+    expect(container.textContent).toContain('11 Cảnh Giới Võ Đạo Kiếm Lai')
+    expect(container.textContent).toContain('Nê Phôi Cảnh')
 
     // Switch to gear tab
     await act(async () => {

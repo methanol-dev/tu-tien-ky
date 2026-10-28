@@ -1,6 +1,12 @@
 import { useState } from 'react'
 import { RARITY_NAME } from '@/content/affixes'
 import { GEAR_SLOTS, SLOT_NAME } from '@/content/gear'
+import {
+  MARTIAL_STAGES,
+  getMartialPunches,
+  getMartialRealm,
+  getNextMartialRealm,
+} from '@/content/martialRealms'
 import { baselineStats } from '@/content/regions'
 import { TECHNIQUE_BY_ID } from '@/content/techniques'
 import {
@@ -30,7 +36,7 @@ interface CharacterModalProps {
   state: GameState
 }
 
-type Tab = 'combat' | 'cultivation' | 'gear'
+type Tab = 'combat' | 'cultivation' | 'martial' | 'gear'
 
 export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
   const [tab, setTab] = useState<Tab>('combat')
@@ -46,6 +52,10 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
   const buffs = getActiveBuffs(state)
   const expired = isLifespanExceeded(state)
   const lifespanYears = Math.floor(getLifespanDays(state) / 360)
+
+  const punches = getMartialPunches(state.stats)
+  const martial = getMartialRealm(punches)
+  const nextMartial = getNextMartialRealm(punches)
 
   const byUid = new Map(state.gear.map((g) => [g.uid, g]))
   const learnedTechniques = Object.entries(state.techniques)
@@ -77,6 +87,14 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
                 </span>
               )}
             </div>
+            {realm.kiemLaiRealm && (
+              <p className="mt-1 text-xs text-gold-300 font-serif">
+                📜 Luyện Khí Sĩ: <span className="text-paper-100 font-medium">{realm.kiemLaiRealm}</span>
+              </p>
+            )}
+            <p className="mt-0.5 text-xs text-vermilion-300 font-serif">
+              👊 Võ Đạo: <span className="text-paper-100 font-medium">{martial.name}</span> ({punches} quyền)
+            </p>
             <p className="mt-1 text-xs text-paper-400">
               Tuổi thọ:{' '}
               <span className={`tabular-nums ${expired ? 'text-vermilion-400' : 'text-paper-200'}`}>
@@ -104,33 +122,44 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-paper-400/15">
+      <div className="flex border-b border-paper-400/15 text-xs sm:text-sm">
         <button
           type="button"
           onClick={() => setTab('combat')}
-          className={`flex-1 border-b-2 py-2 text-center text-sm font-medium transition-colors ${
+          className={`flex-1 border-b-2 py-2 text-center font-medium transition-colors ${
             tab === 'combat'
               ? 'border-gold-400 text-gold-400'
               : 'border-transparent text-paper-400 hover:text-paper-200'
           }`}
         >
-          ⚔️ Chiến Lực (Hành Tẩu)
+          ⚔️ Chiến Lực
         </button>
         <button
           type="button"
           onClick={() => setTab('cultivation')}
-          className={`flex-1 border-b-2 py-2 text-center text-sm font-medium transition-colors ${
+          className={`flex-1 border-b-2 py-2 text-center font-medium transition-colors ${
             tab === 'cultivation'
               ? 'border-gold-400 text-gold-400'
               : 'border-transparent text-paper-400 hover:text-paper-200'
           }`}
         >
-          🧘 Tu Vi & Căn Cơ
+          🧘 Luyện Khí Sĩ (15 Cảnh)
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab('martial')}
+          className={`flex-1 border-b-2 py-2 text-center font-medium transition-colors ${
+            tab === 'martial'
+              ? 'border-gold-400 text-gold-400'
+              : 'border-transparent text-paper-400 hover:text-paper-200'
+          }`}
+        >
+          👊 Võ Đạo (11 Cảnh)
         </button>
         <button
           type="button"
           onClick={() => setTab('gear')}
-          className={`flex-1 border-b-2 py-2 text-center text-sm font-medium transition-colors ${
+          className={`flex-1 border-b-2 py-2 text-center font-medium transition-colors ${
             tab === 'gear'
               ? 'border-gold-400 text-gold-400'
               : 'border-transparent text-paper-400 hover:text-paper-200'
@@ -302,6 +331,41 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
             </div>
           </div>
 
+          {/* 15 Cảnh Giới Luyện Khí Sĩ Kiếm Lai */}
+          <div className="space-y-2 rounded-lg border border-gold-500/20 bg-ink-900/60 p-3.5">
+            <div className="flex items-center justify-between">
+              <h4 className="font-han text-sm font-semibold text-gold-400">
+                📜 15 Cảnh Giới Luyện Khí Sĩ (Kiếm Lai)
+              </h4>
+              <span className="text-xs text-paper-300">
+                Hiện tại: <strong className="text-paper-100">{realm.kiemLaiRealm ?? realm.name}</strong>
+              </span>
+            </div>
+            <div className="grid gap-2 text-xs sm:grid-cols-3">
+              <div className="rounded border border-paper-400/10 bg-ink-950/50 p-2 space-y-1">
+                <span className="font-han text-gold-300 block font-medium">Hạ Ngũ Cảnh (Nhập Đạo)</span>
+                <p className="text-[11px] text-paper-400">
+                  1. Đồng Bì · 2. Thảo Căn · 3. Liễu Cốt · 4. Khí Phủ · 5. Dưỡng Khí
+                </p>
+                <p className="text-[10px] text-paper-400 italic">Rèn giũa thân xác phàm nhân, câu thông linh khí trời đất.</p>
+              </div>
+              <div className="rounded border border-paper-400/10 bg-ink-950/50 p-2 space-y-1">
+                <span className="font-han text-gold-300 block font-medium">Trung Ngũ Cảnh (Đăng Đường)</span>
+                <p className="text-[11px] text-paper-400">
+                  6. Động Phủ · 7. Quan Hải · 8. Long Môn · 9. Kim Đan · 10. Nguyên Anh
+                </p>
+                <p className="text-[10px] text-paper-400 italic">Mở phủ ngắm biển, vượt long môn kết đan anh biến hóa.</p>
+              </div>
+              <div className="rounded border border-paper-400/10 bg-ink-950/50 p-2 space-y-1">
+                <span className="font-han text-gold-300 block font-medium">Thượng Ngũ Cảnh (Đại La)</span>
+                <p className="text-[11px] text-paper-400">
+                  11. Ngọc Phác · 12. Tiên Nhân · 13. Phi Thăng · 14. Hợp Đạo · 15. Bản Nguyên
+                </p>
+                <p className="text-[10px] text-paper-400 italic">Phi thăng tuyệt đỉnh, chưởng khống quy tắc trời đất vạn cổ.</p>
+              </div>
+            </div>
+          </div>
+
           {/* Dược lực đang phát huy */}
           {buffs.length > 0 && (
             <div className="space-y-1.5">
@@ -346,7 +410,127 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
         </div>
       )}
 
-      {/* Tab 3: Pháp bảo */}
+      {/* Tab 3: Võ Đạo Kiếm Lai */}
+      {tab === 'martial' && (
+        <div className="space-y-4 pt-1">
+          {/* Cảnh giới võ đạo hiện tại */}
+          <div className="rounded-lg border border-vermilion-500/30 bg-ink-900/70 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <span className="text-xs tracking-wider text-vermilion-400 font-semibold uppercase">
+                  {martial.group}
+                </span>
+                <h3 className="font-han text-2xl font-bold text-paper-100 mt-0.5">
+                  {martial.name}
+                </h3>
+              </div>
+              <div className="text-right">
+                <span className="text-xs text-paper-400">Quyền ý tích lũy</span>
+                <p className="font-han text-xl font-bold text-gold-400 tabular-nums">
+                  {formatNumber(punches)} <span className="text-xs font-normal text-paper-300">quyền</span>
+                </p>
+              </div>
+            </div>
+
+            <p className="mt-2 text-xs text-paper-300 italic border-l-2 border-vermilion-500/50 pl-3 py-0.5">
+              "{martial.description}"
+            </p>
+
+            {/* Gia trì chiến lực */}
+            <div className="mt-3 grid grid-cols-3 gap-2 rounded bg-ink-950/60 p-2 text-center text-xs">
+              <div>
+                <span className="text-paper-400 text-[11px] block">Khí huyết</span>
+                <span className="font-han font-bold text-jade-400">
+                  +{formatPercent(martial.bonus.hpPercent)}
+                </span>
+              </div>
+              <div>
+                <span className="text-paper-400 text-[11px] block">Công kích</span>
+                <span className="font-han font-bold text-vermilion-400">
+                  +{formatPercent(martial.bonus.atkPercent)}
+                </span>
+              </div>
+              <div>
+                <span className="text-paper-400 text-[11px] block">Phòng ngự</span>
+                <span className="font-han font-bold text-qi-400">
+                  +{formatPercent(martial.bonus.defPercent)}
+                </span>
+              </div>
+            </div>
+
+            {/* Tiến độ tới cảnh giới kế tiếp */}
+            {nextMartial ? (
+              <div className="mt-3 space-y-1">
+                <div className="flex justify-between text-xs text-paper-300">
+                  <span>Cảnh giới kế: <strong className="text-paper-100">{nextMartial.name}</strong></span>
+                  <span className="text-gold-400 tabular-nums">
+                    {formatNumber(punches)} / {formatNumber(nextMartial.minPunches)} quyền
+                  </span>
+                </div>
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-ink-950">
+                  <div
+                    className="h-full bg-gradient-to-r from-vermilion-500 to-gold-400 transition-all duration-300"
+                    style={{
+                      width: `${Math.min(100, (punches / nextMartial.minPunches) * 100)}%`,
+                    }}
+                  />
+                </div>
+              </div>
+            ) : (
+              <p className="mt-3 text-center text-xs text-gold-400 font-han">
+                Đã đạt tới đỉnh phong Võ Thần Cảnh! Một quyền toái toái chư thiên vạn giới.
+              </p>
+            )}
+          </div>
+
+          {/* Danh sách 11 Cảnh Giới Võ Phu */}
+          <div className="space-y-2">
+            <h4 className="font-han text-sm font-semibold text-paper-200">
+              👊 11 Cảnh Giới Võ Đạo Kiếm Lai
+            </h4>
+            <div className="grid gap-2 sm:grid-cols-2 text-xs max-h-60 overflow-y-auto pr-1">
+              {MARTIAL_STAGES.map((s) => {
+                const reached = punches >= s.minPunches
+                const isCurrent = martial.id === s.id
+                return (
+                  <div
+                    key={s.id}
+                    className={`rounded-md border p-2.5 transition-colors ${
+                      isCurrent
+                        ? 'border-vermilion-500/80 bg-vermilion-500/10'
+                        : reached
+                        ? 'border-paper-400/20 bg-ink-900/40 text-paper-300'
+                        : 'border-paper-400/10 bg-ink-950/30 text-paper-400 opacity-60'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className={`font-han font-semibold ${isCurrent ? 'text-vermilion-400' : reached ? 'text-paper-100' : 'text-paper-400'}`}>
+                        {s.name}
+                      </span>
+                      <span className="text-[10px] tabular-nums font-mono">
+                        {s.minPunches === 0 ? 'Khởi đầu' : `${formatNumber(s.minPunches)} quyền`}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-[11px] text-paper-400 line-clamp-2">
+                      {s.description}
+                    </p>
+                    <div className="mt-1.5 flex gap-2 text-[10px]">
+                      <span className="text-vermilion-300">Công +{formatPercent(s.bonus.atkPercent)}</span>
+                      <span className="text-qi-300">Thủ +{formatPercent(s.bonus.defPercent)}</span>
+                      <span className="text-jade-300">HP +{formatPercent(s.bonus.hpPercent)}</span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            <p className="text-[11px] text-paper-400 italic">
+              💡 Võ phu xuất quyền trong từng trận chiến hành tẩu: diệt quái (+1 quyền), hạ boss (+10 quyền), vượt ải (+5 quyền), phá cảnh (+50 quyền).
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 4: Pháp bảo */}
       {tab === 'gear' && (
         <div className="space-y-4 pt-1">
           <ul className="grid gap-3 sm:grid-cols-3">

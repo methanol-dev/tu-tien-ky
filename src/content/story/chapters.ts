@@ -321,3 +321,4 @@ export const CHAPTERS: readonly StoryChapter[] = [
 export const CHAPTER_BY_ID: Readonly<Record<string, StoryChapter>> = Object.fromEntries(
   CHAPTERS.map((c) => [c.id, c]),
 )
+

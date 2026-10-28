@@ -118,3 +118,4 @@ export function StoryModal({ scene, onResolve }: StoryModalProps) {
     </Modal>
   )
 }
+

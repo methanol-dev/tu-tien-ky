@@ -62,3 +62,4 @@ export const NPCS: readonly NpcDef[] = [
 export const NPC_BY_ID: Readonly<Record<string, NpcDef>> = Object.fromEntries(
   NPCS.map((n) => [n.id, n]),
 )
+

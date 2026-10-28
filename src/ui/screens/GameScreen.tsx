@@ -1,3 +1,4 @@
+import { getMartialPunches, getMartialRealm } from '@/content/martialRealms'
 import {
   canBreakthrough,
   canGather,
@@ -36,6 +37,8 @@ export function GameScreen() {
   const gatherCd = getGatherCooldownMs(state)
   const buffs = getActiveBuffs(state)
   const combat = getCombatStats(state)
+  const punches = getMartialPunches(state.stats)
+  const martial = getMartialRealm(punches)
 
   return (
     <div className="grid gap-6 md:grid-cols-[1.25fr_1fr]">
@@ -93,6 +96,34 @@ export function GameScreen() {
             Thọ nguyên đã cạn. Linh khí không còn tụ lại được nữa. Qua tab Luân hồi để chuyển thế.
           </p>
         )}
+
+        {/* Con đường Tu Luyện Kiếm Lai */}
+        <div className="rounded-lg border border-gold-500/20 bg-ink-900/60 p-3">
+          <div className="flex items-center justify-between text-xs text-paper-300 mb-2">
+            <span className="font-han text-gold-400 font-bold">☯️ Song Tu Kiếm Lai</span>
+            <button
+              type="button"
+              onClick={() => setCharacterModalOpen(true)}
+              className="text-[11px] text-gold-400 hover:text-gold-300 hover:underline"
+            >
+              Xem chi tiết ›
+            </button>
+          </div>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="rounded border border-paper-400/15 bg-ink-950/60 p-2">
+              <span className="text-[10px] text-paper-400 block">Luyện Khí Sĩ (15 Cảnh)</span>
+              <span className="font-han font-medium text-paper-100 truncate block mt-0.5" title={realm.kiemLaiRealm}>
+                {realm.kiemLaiRealm ?? realm.name}
+              </span>
+            </div>
+            <div className="rounded border border-paper-400/15 bg-ink-950/60 p-2">
+              <span className="text-[10px] text-paper-400 block">Võ Phu (11 Cảnh)</span>
+              <span className="font-han font-medium text-vermilion-400 truncate block mt-0.5">
+                {martial.name} ({punches} quyền)
+              </span>
+            </div>
+          </div>
+        </div>
 
         <div className="space-y-3">
           <div className="flex items-center justify-between">
