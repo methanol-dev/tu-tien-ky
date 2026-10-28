@@ -76,7 +76,7 @@ export function JourneyStage({ state, compact = false }: Props) {
     <div
       className={`relative ${h} w-full overflow-hidden ${
         compact ? '' : 'rounded-lg border border-gold-500/20 shadow-ink'
-      } ${lastHurt && !compact ? 'animate-shake' : ''}`}
+      }`}
       style={{ background: `linear-gradient(to bottom, ${p.sky} 0%, ${p.far} 70%, ${p.ground} 100%)` }}
       role="img"
       aria-label={`${region.name}, ${phaseText}`}
