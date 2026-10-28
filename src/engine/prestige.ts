@@ -1,4 +1,3 @@
-import { TREASURES } from '@/content/items'
 import { LEGACY_BY_ID, type LegacyUpgradeDef } from '@/content/legacy'
 import { REALM_INDEX_BY_ID, REALMS } from '@/content/realms'
 import { isLifespanExceeded } from './cultivation'
@@ -43,9 +42,9 @@ export function reincarnate(state: GameState, now: number): ActionResult {
   }
   let next = applyLegacyStart({ ...createInitialState(now), legacy })
   if (getLegacyLevel(state, 'tang-bao-cac') > 0) {
-    const kept: Record<string, number> = {}
-    for (const t of TREASURES) if ((state.inventory[t.id] ?? 0) > 0) kept[t.id] = 1
-    next = { ...next, inventory: { ...next.inventory, ...kept } }
+    // Only what the soul "wears" crosses over: the equipped pieces, same uids.
+    const kept = state.gear.filter((g) => Object.values(state.equipped).includes(g.uid))
+    next = { ...next, gear: kept, equipped: { ...state.equipped }, nextGearUid: state.nextGearUid }
   }
   next = pushLog(next, `Kiếp thứ ${legacy.lives}. Nguyên thần mang theo ${gained} Đạo Vận từ kiếp trước.`, 'event')
   return { ok: true, state: next }

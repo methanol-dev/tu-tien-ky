@@ -1,7 +1,7 @@
-import { TREASURES } from '@/content/items'
 import { LEGACY_BY_ID } from '@/content/legacy'
 import { TECHNIQUE_BY_ID } from '@/content/techniques'
 import { DEFAULT_OFFLINE_CAP_MS, MEDITATE_BONUS_SECONDS } from './constants'
+import { getAffixTotals } from './gear'
 import type { GameState } from './types'
 
 export interface Modifiers {
@@ -12,11 +12,13 @@ export interface Modifiers {
   meditateSeconds: number
   offlineCapMs: number
   lifespanBonusYears: number
+  /** Multiplies chest drop chance in the journey. */
+  lootChanceMult: number
 }
 
 const HOUR = 3_600_000
 
-/** Aggregates every passive bonus (techniques + active buffs) into one object. */
+/** Aggregates every passive bonus (legacy + techniques + gear + active buffs) into one object. */
 export function getModifiers(state: GameState): Modifiers {
   let qiAdd = 0
   let stoneAdd = 0
@@ -28,6 +30,7 @@ export function getModifiers(state: GameState): Modifiers {
     meditateSeconds: MEDITATE_BONUS_SECONDS,
     offlineCapMs: DEFAULT_OFFLINE_CAP_MS,
     lifespanBonusYears: 0,
+    lootChanceMult: 1,
   }
 
   for (const [id, level] of Object.entries(state.legacy.upgrades)) {
@@ -64,12 +67,12 @@ export function getModifiers(state: GameState): Modifiers {
         break
     }
   }
-  mods.qiRateMult = 1 + qiAdd
-  mods.stoneRateMult = 1 + stoneAdd
 
-  for (const t of TREASURES) {
-    if ((state.inventory[t.id] ?? 0) > 0 && t.passive?.qiRate) mods.qiRateMult *= 1 + t.passive.qiRate
-  }
+  const gear = getAffixTotals(state)
+  stoneAdd += gear.stoneRate
+  mods.qiRateMult = (1 + qiAdd) * (1 + gear.qiRate)
+  mods.stoneRateMult = 1 + stoneAdd
+  mods.lootChanceMult = 1 + gear.lootChance
 
   for (const buff of state.buffs) {
     if (buff.expiresAtMs > state.playedMs) mods.qiRateMult *= buff.qiRateMult

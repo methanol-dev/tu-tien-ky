@@ -57,7 +57,7 @@ describe('App smoke', () => {
     await act(async () => {
       button('Công pháp').click()
     })
-    expect(container.textContent).toContain('Dẫn Khí Quyết')
+    expect(container.textContent).toContain('Khí Thao Long Diêu')
     await act(async () => {
       button('Luyện đan').click()
     })
@@ -66,6 +66,13 @@ describe('App smoke', () => {
       button('Túi đồ').click()
     })
     expect(container.textContent).toContain('Phường thị')
+    expect(container.textContent).toContain('Pháp bảo')
+    await act(async () => {
+      button('Hành tẩu').click()
+    })
+    expect(container.textContent).toContain('Ly Châu Động Thiên')
+    expect(container.textContent).toContain('Tĩnh tọa')
+    expect(container.querySelector('[role="img"]')).not.toBeNull()
     await act(async () => {
       button('Cài đặt').click()
     })
@@ -84,5 +91,54 @@ describe('App smoke', () => {
     const saved = Object.keys(localStorage).find((k) => k.startsWith('tu-tien-ky:save'))
     expect(saved).toBeDefined()
     expect(JSON.parse(localStorage.getItem(saved!)!).qi).toBeGreaterThan(0)
+  })
+
+  it('displays character stats and opens character modal', async () => {
+    await act(async () => {
+      root.render(<App />)
+    })
+    expect(container.textContent).toContain('Căn cơ tu vi')
+    expect(container.textContent).toContain('Chiến lực hành tẩu')
+    expect(container.textContent).toContain('Khí huyết')
+    expect(container.textContent).toContain('Công')
+    expect(container.textContent).toContain('Thủ')
+
+    // Open CharacterModal from header
+    await act(async () => {
+      button('Chỉ số').click()
+    })
+    expect(container.textContent).toContain('Đạo Thân · Chỉ Số Nhân Vật')
+    expect(container.textContent).toContain('⚔️ Chiến Lực')
+    expect(container.textContent).toContain('Tỉ lệ bạo kích')
+    expect(container.textContent).toContain('Sát thương bạo')
+
+    // Switch to cultivation tab (Luyện Khí Sĩ 15 Cảnh)
+    await act(async () => {
+      button('🧘 Luyện Khí Sĩ').click()
+    })
+    expect(container.textContent).toContain('Tốc độ tụ khí')
+    expect(container.textContent).toContain('15 Cảnh Giới Luyện Khí Sĩ')
+    expect(container.textContent).toContain('Hạ Ngũ Cảnh')
+
+    // Switch to martial tab (Võ Đạo 11 Cảnh)
+    await act(async () => {
+      button('👊 Võ Đạo').click()
+    })
+    expect(container.textContent).toContain('11 Cảnh Giới Võ Đạo Kiếm Lai')
+    expect(container.textContent).toContain('Nê Phôi Cảnh')
+
+    // Switch to gear tab
+    await act(async () => {
+      button('🛡️ Pháp Bảo').click()
+    })
+    expect(container.textContent).toContain('Kiếm')
+    expect(container.textContent).toContain('Giáp')
+    expect(container.textContent).toContain('Pháp khí')
+
+    // Close modal
+    await act(async () => {
+      button('Đóng').click()
+    })
+    expect(container.textContent).not.toContain('Đạo Thân · Chỉ Số Nhân Vật')
   })
 })

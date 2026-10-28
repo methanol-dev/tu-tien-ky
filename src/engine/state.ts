@@ -1,5 +1,25 @@
-import { DAYS_PER_YEAR, FIRST_EVENT_AT_MS, SAVE_VERSION, STARTING_AGE_YEARS } from './constants'
-import type { GameState } from './types'
+import { REGIONS } from '@/content/regions'
+import { DAYS_PER_YEAR, FIRST_EVENT_AT_MS, JOURNEY_WALK_MS, SAVE_VERSION, STARTING_AGE_YEARS } from './constants'
+import type { GameState, JourneyState } from './types'
+
+export function createInitialJourney(regionId: string = REGIONS[0].id): JourneyState {
+  return {
+    regionId,
+    difficulty: 0,
+    stage: 1,
+    phase: 'rest',
+    phaseUntilMs: JOURNEY_WALK_MS,
+    party: [{ id: 'player', hp: 1, maxHp: 1, nextAttackAtMs: 0 }],
+    enemies: [],
+    chests: { normal: 0, red: 0 },
+    autoAdvance: true,
+    cleared: {},
+    deaths: 0,
+    runDeaths: 0,
+    accMs: 0,
+    events: [],
+  }
+}
 
 export function createInitialState(now: number = Date.now()): GameState {
   return {
@@ -14,10 +34,13 @@ export function createInitialState(now: number = Date.now()): GameState {
     stones: 0,
     techniques: {},
     inventory: {},
+    gear: [],
+    equipped: { kiem: null, giap: null, 'phap-khi': null },
+    nextGearUid: 1,
     buffs: [],
     pendingBreakthroughBonus: 0,
     alchemy: null,
-    expedition: null,
+    journey: createInitialJourney(),
     tribulation: null,
     legacy: { daoVan: 0, lives: 1, upgrades: {}, bestRealmIndex: 0 },
     pendingEvent: null,
@@ -35,10 +58,13 @@ export function createInitialState(now: number = Date.now()): GameState {
       pillsUsed: 0,
       alchemyCrafted: 0,
       eventsResolved: 0,
-      expeditions: 0,
-      expeditionWins: 0,
       tribulationsPassed: 0,
       tribulationsFailed: 0,
+      enemiesSlain: 0,
+      bossesSlain: 0,
+      stagesCleared: 0,
+      chestsOpened: 0,
+      gearFound: 0,
     },
     settings: { timeScale: 1, pauseOnEvent: false },
   }

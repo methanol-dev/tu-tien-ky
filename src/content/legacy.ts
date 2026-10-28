@@ -24,7 +24,7 @@ export const LEGACY_UPGRADES: readonly LegacyUpgradeDef[] = [
   { id: 'truong-sinh-the', name: 'Trường Sinh Chi Thể', description: 'Thọ nguyên mỗi kiếp dài hơn.', effect: 'lifespanYears', perLevel: 20, maxLevel: 10, baseCost: 2, costGrowth: 1.5 },
   { id: 'dao-tam-kien-co', name: 'Đạo Tâm Kiên Cố', description: 'Đột phá dễ hơn, thiên kiếp bớt đau.', effect: 'breakthroughBonus', perLevel: 0.01, maxLevel: 10, baseCost: 3, costGrowth: 1.5 },
   { id: 'tien-the-di-san', name: 'Tiền Thế Di Sản', description: 'Chôn linh thạch kiếp trước, kiếp sau đào lên.', effect: 'startStones', perLevel: 300, maxLevel: 10, baseCost: 2, costGrowth: 1.6 },
-  { id: 'tang-bao-cac', name: 'Tàng Bảo Các', description: 'Pháp bảo theo nguyên thần sang kiếp sau.', effect: 'keepTreasures', perLevel: 1, maxLevel: 1, baseCost: 8, costGrowth: 1 },
+  { id: 'tang-bao-cac', name: 'Tàng Bảo Các', description: 'Pháp bảo đang mặc theo nguyên thần sang kiếp sau.', effect: 'keepTreasures', perLevel: 1, maxLevel: 1, baseCost: 8, costGrowth: 1 },
 ]
 
 export const LEGACY_BY_ID: Readonly<Record<string, LegacyUpgradeDef>> = Object.fromEntries(

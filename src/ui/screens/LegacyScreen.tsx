@@ -27,7 +27,7 @@ function describe(effect: string, perLevel: number, level: number): string {
     case 'startStones':
       return `Khởi đầu với ${cur} linh thạch (+${perLevel}/tầng)`
     case 'keepTreasures':
-      return level > 0 ? 'Pháp bảo được giữ qua các kiếp' : 'Giữ lại toàn bộ pháp bảo khi chuyển thế'
+      return level > 0 ? 'Pháp bảo đang mặc được giữ qua các kiếp' : 'Giữ lại pháp bảo đang mặc khi chuyển thế'
     default:
       return ''
   }

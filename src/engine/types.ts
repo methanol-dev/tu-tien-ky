@@ -1,3 +1,7 @@
+import type { AffixKey, Rarity } from '@/content/affixes'
+import type { GearSlot } from '@/content/gear'
+import type { Difficulty, SilhouetteId } from '@/content/regions'
+
 export type LogKind = 'info' | 'success' | 'danger' | 'event'
 
 export interface LogEntry {
@@ -25,10 +29,13 @@ export interface GameStats {
   pillsUsed: number
   alchemyCrafted: number
   eventsResolved: number
-  expeditions: number
-  expeditionWins: number
   tribulationsPassed: number
   tribulationsFailed: number
+  enemiesSlain: number
+  bossesSlain: number
+  stagesCleared: number
+  chestsOpened: number
+  gearFound: number
 }
 
 /** Temporary multiplier. Timed against `playedMs` so it also runs down during offline progress. */
@@ -42,12 +49,6 @@ export interface Buff {
 export interface PendingEvent {
   eventId: string
   triggeredAtMs: number
-}
-
-export interface ExpeditionJob {
-  dungeonId: string
-  startedAtMs: number
-  finishAtMs: number
 }
 
 export interface TribulationState {
@@ -76,6 +77,79 @@ export interface AlchemyJob {
   finishAtMs: number
 }
 
+// ---- Gear & journey (Phase 9) ----
+
+export interface Affix {
+  key: AffixKey
+  value: number
+}
+
+export interface GearInstance {
+  uid: string
+  defId: string
+  rarity: Rarity
+  tier: number
+  affixes: Affix[]
+}
+
+/** A party member in the journey. P9: only the player; companions come with the story. */
+export interface Fighter {
+  id: string
+  hp: number
+  maxHp: number
+  nextAttackAtMs: number
+}
+
+export interface JourneyEnemy {
+  id: string
+  name: string
+  silhouette: SilhouetteId
+  hp: number
+  maxHp: number
+  atk: number
+  def: number
+  boss: boolean
+  nextAttackAtMs: number
+}
+
+/** `rest`: region locked by realm, hero meditates. `retreat`: fled after dying, healing up. */
+export type JourneyPhase = 'rest' | 'walk' | 'fight' | 'retreat'
+
+export type JourneyEventKind = 'hit' | 'crit' | 'hurt' | 'kill' | 'boss-kill' | 'death' | 'stage' | 'chest' | 'region'
+
+/** Short-lived facts for the UI (damage numbers, flashes). Ring buffer, see JOURNEY_EVENT_LIMIT. */
+export interface JourneyEvent {
+  atMs: number
+  kind: JourneyEventKind
+  amount?: number
+  /** 'player' or index into `enemies`. */
+  target?: 'player' | number
+}
+
+export interface JourneyState {
+  regionId: string
+  difficulty: Difficulty
+  /** 1..STAGES_PER_REGION. */
+  stage: number
+  phase: JourneyPhase
+  /** playedMs at which the current walk/retreat ends. */
+  phaseUntilMs: number
+  party: Fighter[]
+  enemies: JourneyEnemy[]
+  chests: { normal: number; red: number }
+  /** Move up a difficulty / region after a clean clear; step down after repeated deaths. */
+  autoAdvance: boolean
+  /** regionId -> highest difficulty cleared (0..3). Absent = never cleared. */
+  cleared: Record<string, number>
+  /** Consecutive deaths in the current region/difficulty. */
+  deaths: number
+  /** Deaths accumulated while clearing the current run; 0 at region clear = clean. */
+  runDeaths: number
+  /** Leftover ms not yet simulated (fixed-step accumulator). */
+  accMs: number
+  events: JourneyEvent[]
+}
+
 export interface GameState {
   version: number
   /** Epoch ms when this save was created. */
@@ -95,13 +169,17 @@ export interface GameState {
   stones: number
   /** Technique id -> level. Absent = level 0. */
   techniques: Record<string, number>
-  /** Item id -> count. */
+  /** Item id -> count (herbs, pills). */
   inventory: Record<string, number>
+  /** Gear instances owned (equipped ones included). */
+  gear: GearInstance[]
+  equipped: Record<GearSlot, string | null>
+  nextGearUid: number
   buffs: Buff[]
   /** One-shot bonus consumed by the next breakthrough attempt. */
   pendingBreakthroughBonus: number
   alchemy: AlchemyJob | null
-  expedition: ExpeditionJob | null
+  journey: JourneyState
   tribulation: TribulationState | null
   legacy: Legacy
   /** Random event awaiting a choice, if any. */

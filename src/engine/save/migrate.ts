@@ -1,4 +1,7 @@
+import { RARITY_RANK } from '@/content/affixes'
+import { GEAR_DEF_BY_ID, type GearSlot } from '@/content/gear'
 import { SAVE_VERSION } from '../constants'
+import { createInitialJourney } from '../state'
 
 type RawSave = Record<string, unknown>
 type Migration = (raw: RawSave) => RawSave
@@ -8,6 +11,43 @@ type Migration = (raw: RawSave) => RawSave
  * Bump SAVE_VERSION, add `MIGRATIONS[old] = ...`, update schema.ts. No exceptions.
  */
 export const MIGRATIONS: Record<number, Migration> = {
+  // 5 -> 6: journey replaces expeditions; treasures become named gear instances (Phase 9).
+  5: (raw) => {
+    const inventory = { ...((raw.inventory as Record<string, number> | undefined) ?? {}) }
+    const gear: unknown[] = []
+    const equipped: Record<GearSlot, string | null> = { kiem: null, giap: null, 'phap-khi': null }
+    const bestRank: Partial<Record<GearSlot, number>> = {}
+    let uid = 1
+    for (const id of ['thiet-kiem', 'huyen-quy-giap', 'ngung-than-phu', 'bang-tam-chau', 'phi-kiem-tu-vi', 'thien-ma-giap']) {
+      const owned = (inventory[id] ?? 0) > 0
+      delete inventory[id]
+      const def = GEAR_DEF_BY_ID[id]
+      if (!owned || !def?.named) continue
+      const instance = { uid: `g${uid}`, defId: id, rarity: def.named.rarity, tier: 1, affixes: def.named.affixes.map((a) => ({ ...a })) }
+      uid += 1
+      gear.push(instance)
+      const rank = RARITY_RANK[def.named.rarity]
+      if ((bestRank[def.slot] ?? -1) < rank) {
+        bestRank[def.slot] = rank
+        equipped[def.slot] = instance.uid
+      }
+    }
+    const { expeditions: _e, expeditionWins: _w, ...stats } = ((raw.stats as RawSave | undefined) ?? {}) as RawSave
+    void _e
+    void _w
+    const { expedition: _x, ...rest } = raw
+    void _x
+    return {
+      ...rest,
+      version: 6,
+      inventory,
+      gear,
+      equipped,
+      nextGearUid: uid,
+      journey: createInitialJourney(),
+      stats: { enemiesSlain: 0, bossesSlain: 0, stagesCleared: 0, chestsOpened: 0, gearFound: 0, ...stats },
+    }
+  },
   // 0 -> 1: pre-release saves had no `stats.qiTotal`.
   0: (raw) => {
     const stats = (raw.stats as RawSave | undefined) ?? {}

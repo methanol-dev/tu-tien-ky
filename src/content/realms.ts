@@ -40,6 +40,8 @@ export interface RealmStage {
   terminal: boolean
   /** True if this is the first stage of its major realm. */
   firstOfMajor: boolean
+  /** Phân loại cảnh giới chuẩn theo tác phẩm Kiếm Lai. */
+  kiemLaiRealm: string
 }
 
 interface MajorRealmDef {
@@ -78,6 +80,45 @@ function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t
 }
 
+const KIEM_LAI_HA_NGU_CANH = [
+  'Hạ Ngũ Cảnh · Luyện Bì (Đồng Bì)',
+  'Hạ Ngũ Cảnh · Luyện Nhục (Thảo Căn)',
+  'Hạ Ngũ Cảnh · Luyện Cân',
+  'Hạ Ngũ Cảnh · Luyện Cốt',
+  'Hạ Ngũ Cảnh · Luyện Thể',
+  'Hạ Ngũ Cảnh · Khai Huyệt (365 Huyệt)',
+  'Hạ Ngũ Cảnh · Thông Kinh Mạch',
+  'Hạ Ngũ Cảnh · Dẫn Khí Nhập Thể',
+  'Hạ Ngũ Cảnh · Viên Mãn Đỉnh Phong',
+]
+
+function getKiemLaiRealmLabel(id: MajorRealmId, stageIdx: number): string {
+  switch (id) {
+    case 'pham-nhan':
+      return 'Phàm Tục (Ngõ Nê Bình)'
+    case 'luyen-khi':
+      return KIEM_LAI_HA_NGU_CANH[stageIdx] ?? 'Hạ Ngũ Cảnh'
+    case 'truc-co':
+      return 'Trung Ngũ Cảnh · Động Phủ & Quan Hải'
+    case 'kim-dan':
+      return 'Trung Ngũ Cảnh · Long Môn & Kim Đan'
+    case 'nguyen-anh':
+      return 'Trung Ngũ Cảnh · Nguyên Anh Cảnh'
+    case 'hoa-than':
+      return 'Thượng Ngũ Cảnh · Ngọc Phác Cảnh'
+    case 'luyen-hu':
+      return 'Thượng Ngũ Cảnh · Tiên Nhân Cảnh'
+    case 'hop-the':
+      return 'Thượng Ngũ Cảnh · Phi Thăng Cảnh'
+    case 'dai-thua':
+      return 'Thập Tứ Cảnh (Hợp Đạo Thiên Địa)'
+    case 'do-kiep':
+      return 'Chuẩn Thập Ngũ Cảnh (Thiên Kiếp)'
+    case 'phi-thang':
+      return 'Thập Ngũ Cảnh (Bản Nguyên Chí Cao)'
+  }
+}
+
 function buildRealms(defs: readonly MajorRealmDef[]): RealmStage[] {
   const out: RealmStage[] = []
   defs.forEach((def, majorIdx) => {
@@ -99,6 +140,7 @@ function buildRealms(defs: readonly MajorRealmDef[]): RealmStage[] {
         tribulation: isLast && !def.terminal && Boolean(next?.tribulationOnEnter),
         terminal: Boolean(def.terminal),
         firstOfMajor: k === 0,
+        kiemLaiRealm: getKiemLaiRealmLabel(def.id, k),
       })
     })
   })

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { EVENTS } from '@/content/events'
 import { REALMS } from '@/content/realms'
-import { createMemoryStorage, createSeededRng, serialize, createInitialState } from '@/engine'
+import { createMemoryStorage, createSeededRng, serialize, createInitialState, } from '@/engine'
+import { REALM_INDEX_BY_ID } from '@/content/realms'
 import { createGameStore } from '@/store/gameStore'
 
 const HOUR = 3_600_000
@@ -92,3 +93,34 @@ describe('game store events', () => {
     expect(store.getState().eventResult).toBeNull()
   })
 })
+
+describe('game store journey', () => {
+  it('ticks the journey alongside cultivation, opens chests into chestResult, equips and salvages', () => {
+    const store = createGameStore({ storage: createMemoryStorage(), rng: createSeededRng(3) })
+    store.getState().hydrate(0)
+    useRealm(store, 'luyen-khi-4')
+    for (let i = 0; i < 600; i++) store.getState().tick(1000)
+    const s = store.getState().state
+    expect(s.stats.enemiesSlain).toBeGreaterThan(0)
+    expect(s.journey.chests.normal + s.journey.chests.red).toBeGreaterThan(0)
+    expect(store.getState().openChests('normal', 0)).toBe(true)
+    const kind = s.journey.chests.red > 0 ? 'red' : 'normal'
+    expect(store.getState().openChests(kind, 1)).toBe(true)
+    const opened = store.getState().chestResult
+    expect(opened).not.toBeNull()
+    expect(opened!.length).toBe(1)
+    const uid = opened![0].uid
+    expect(store.getState().equip(uid)).toBe(true)
+    expect(store.getState().salvage([uid])).toBe(false) // equipped: refused with an error notice
+    expect(store.getState().notice?.kind).toBe('error')
+    store.getState().dismissChestResult()
+    expect(store.getState().chestResult).toBeNull()
+    expect(store.getState().startRegion('tuyet-son-dinh', 0)).toBe(false)
+    store.getState().setAutoAdvance(false)
+    expect(store.getState().state.journey.autoAdvance).toBe(false)
+  })
+})
+
+function useRealm(store: ReturnType<typeof createGameStore>, id: string) {
+  store.setState((st) => ({ state: { ...st.state, realmIndex: REALM_INDEX_BY_ID[id] } }))
+}

@@ -37,6 +37,14 @@ export function RealmPanel({ realm, nextRealm, chance, pendingBonus, progress, f
       {realm.stageLabel && (
         <p className="relative mt-1 font-han text-xl text-gold-400">{realm.stageLabel}</p>
       )}
+      {realm.kiemLaiRealm && (
+        <div className="relative mt-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/30 bg-gold-500/10 px-3 py-1 text-xs text-gold-300">
+            <span className="text-gold-400">📜</span>
+            <span>{realm.kiemLaiRealm}</span>
+          </span>
+        </div>
+      )}
       <p className="relative mt-4 text-sm text-paper-300">
         {nextRealm ? (
           <>

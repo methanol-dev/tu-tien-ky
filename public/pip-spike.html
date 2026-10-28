@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spike: Document Picture-in-Picture</title>
+    <style>
+      body { font-family: Georgia, serif; background: #0f1115; color: #e8dcc2; margin: 0; padding: 24px; line-height: 1.5; }
+      h1 { font-size: 20px; color: #e0bf4a; }
+      button { font: inherit; padding: 8px 14px; margin: 4px 6px 4px 0; background: #272b35; color: #f3ead7; border: 1px solid #bfae8833; border-radius: 6px; cursor: pointer; }
+      button:disabled { opacity: 0.4; cursor: not-allowed; }
+      pre { background: #0a0b0e; border: 1px solid #bfae8822; padding: 12px; border-radius: 6px; max-height: 50vh; overflow: auto; font-size: 12px; }
+      .ok { color: #5aa391; } .bad { color: #d1443b; } .warn { color: #e0bf4a; }
+      label { margin-right: 12px; }
+      input { width: 70px; font: inherit; background: #1a1d24; color: #f3ead7; border: 1px solid #bfae8833; border-radius: 4px; padding: 4px; }
+    </style>
+  </head>
+  <body>
+    <h1>Spike P10-01 · Document Picture-in-Picture</h1>
+    <p>
+      Trang này không dính gì tới game, chỉ đo xem trình duyệt của mày cho cửa sổ nổi tới đâu. Mở bằng Chrome hoặc Edge, bấm lần lượt, rồi gửi lại nội dung khung log.
+    </p>
+    <p>
+      <label>Rộng <input id="w" type="number" value="720" /></label>
+      <label>Cao <input id="h" type="number" value="64" /></label>
+      <button id="open">1. Mở cửa sổ nổi</button>
+      <button id="resize" disabled>2. Thử đổi kích thước (1200×56)</button>
+      <button id="hide">3. Che tab này (chuyển tab khác 15s rồi quay lại)</button>
+      <button id="close" disabled>4. Đóng cửa sổ nổi</button>
+      <button id="popup">Fallback: window.open popup</button>
+    </p>
+    <pre id="log"></pre>
+
+    <script>
+      const logEl = document.getElementById('log')
+      const log = (msg, cls) => {
+        const t = new Date().toLocaleTimeString('vi-VN')
+        const line = document.createElement('div')
+        if (cls) line.className = cls
+        line.textContent = `[${t}] ${msg}`
+        logEl.appendChild(line)
+        logEl.scrollTop = logEl.scrollHeight
+      }
+
+      const supported = 'documentPictureInPicture' in window
+      log(`navigator.userAgent: ${navigator.userAgent}`)
+      log(`documentPictureInPicture: ${supported ? 'CÓ' : 'KHÔNG (Firefox/Safari chỉ còn fallback popup)'}`, supported ? 'ok' : 'bad')
+      log(`Màn hình: ${screen.width}×${screen.height}, availHeight ${screen.availHeight} (taskbar ≈ ${screen.height - screen.availHeight}px), DPR ${devicePixelRatio}`)
+
+      let pip = null
+      let pipTimer = null
+      let mainTimer = null
+      let lastMain = performance.now()
+
+      // Timer throttling probe: how often does a 1s interval actually fire in each window?
+      mainTimer = setInterval(() => {
+        const now = performance.now()
+        const gap = Math.round(now - lastMain)
+        lastMain = now
+        if (gap > 1500) log(`Tab chính: interval 1s bị giãn thành ${gap}ms (hidden=${document.hidden})`, 'warn')
+      }, 1000)
+      document.addEventListener('visibilitychange', () => log(`Tab chính visibilitychange → hidden=${document.hidden}`))
+
+      document.getElementById('open').onclick = async () => {
+        const width = Number(document.getElementById('w').value)
+        const height = Number(document.getElementById('h').value)
+        if (!supported) return log('Không có API, dùng nút fallback.', 'bad')
+        try {
+          pip = await documentPictureInPicture.requestWindow({ width, height })
+          log(`requestWindow({${width}×${height}}) → nhận được ${pip.innerWidth}×${pip.innerHeight} (outer ${pip.outerWidth}×${pip.outerHeight})`, 'ok')
+          pip.document.body.style.cssText = 'margin:0;background:#0f1115;color:#f3ead7;font:12px Georgia;display:flex;align-items:center;justify-content:space-between;padding:0 10px;height:100vh;box-sizing:border-box;'
+          pip.document.body.innerHTML = '<span>修 Tu Tiên Ký · dải nổi thử</span><span id="t">0</span>'
+          let n = 0
+          let last = performance.now()
+          pipTimer = pip.setInterval(() => {
+            n++
+            const now = performance.now()
+            const gap = Math.round(now - last)
+            last = now
+            pip.document.getElementById('t').textContent = `${n}s · gap ${gap}ms`
+            if (gap > 1500) log(`PiP: interval 1s bị giãn thành ${gap}ms`, 'warn')
+          }, 1000)
+          pip.addEventListener('resize', () => log(`PiP resize → ${pip.innerWidth}×${pip.innerHeight}`))
+          pip.addEventListener('pagehide', () => {
+            log('PiP pagehide (đóng bằng X hoặc tab chính đóng)')
+            pip = null
+            document.getElementById('resize').disabled = true
+            document.getElementById('close').disabled = true
+          })
+          document.getElementById('resize').disabled = false
+          document.getElementById('close').disabled = false
+        } catch (e) {
+          log(`requestWindow lỗi: ${e.name}: ${e.message}`, 'bad')
+        }
+      }
+
+      document.getElementById('resize').onclick = () => {
+        if (!pip) return
+        try {
+          pip.resizeTo(1200, 56)
+          log(`resizeTo(1200,56) → ${pip.innerWidth}×${pip.innerHeight}`, pip.innerWidth === 1200 ? 'ok' : 'warn')
+        } catch (e) {
+          log(`resizeTo lỗi: ${e.name}: ${e.message} (PiP thường không cho script đổi size, user kéo tay thì được)`, 'warn')
+        }
+      }
+
+      document.getElementById('hide').onclick = () => {
+        log('Giờ chuyển sang app khác 15 giây. Quay lại xem có dòng "bị giãn" không: nếu tab chính giãn mà PiP không giãn → animation phải chạy bằng rAF của PiP.', 'warn')
+      }
+
+      document.getElementById('close').onclick = () => {
+        if (pip) pip.close()
+      }
+
+      document.getElementById('popup').onclick = () => {
+        const w = window.open('about:blank', 'tu-tien-strip', 'popup,width=720,height=72')
+        if (!w) return log('window.open bị chặn (popup blocker).', 'bad')
+        w.document.body.style.cssText = 'margin:0;background:#0f1115;color:#f3ead7;font:12px Georgia;padding:8px;'
+        w.document.body.textContent = 'Popup fallback: không always-on-top, trình duyệt tự xếp cạnh.'
+        log(`window.open popup → ${w.innerWidth}×${w.innerHeight}. Nó KHÔNG nổi trên app khác.`, 'warn')
+      }
+
+      window.addEventListener('pagehide', () => clearInterval(mainTimer))
+    </script>
+  </body>
+</html>

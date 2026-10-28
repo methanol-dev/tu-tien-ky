@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createInitialState, deserialize, SAVE_VERSION } from '@/engine'
+import raw from './fixtures/save-v5.json?raw'
 
 describe('save migration chain', () => {
   it('upgrades a v1 save (pre-economy) to the current version with sane defaults', () => {
@@ -43,5 +44,35 @@ describe('save migration chain', () => {
     expect(
       deserialize(JSON.stringify({ ...s, buffs: [{ id: 'a', name: 'b', qiRateMult: -1, expiresAtMs: 0 }] })).ok,
     ).toBe(false)
+  })
+})
+
+describe('v5 -> v6 (Phase 9: journey + gear)', () => {
+  it('converts treasures into equipped named gear and drops expeditions, keeping everything else', () => {
+    const before = JSON.parse(raw)
+    expect(before.version).toBe(5)
+    const r = deserialize(raw)
+    expect(r.ok, r.ok ? '' : r.error).toBe(true)
+    if (!r.ok) return
+    const s = r.state
+    expect(s.version).toBe(SAVE_VERSION)
+    expect(s.realmIndex).toBe(before.realmIndex)
+    expect(s.qi).toBe(before.qi)
+    expect(s.stones).toBe(before.stones)
+    expect(s.flags).toEqual(before.flags)
+    expect(s.techniques).toEqual(before.techniques)
+    expect(s.legacy).toEqual(before.legacy)
+    expect(s.inventory).toEqual({ 'linh-thao': 12, 'tu-khi-dan': 2 })
+    expect(s.gear.map((g) => g.defId).sort()).toEqual(['huyen-quy-giap', 'ngung-than-phu', 'thiet-kiem'])
+    expect(s.equipped.kiem).toBe(s.gear.find((g) => g.defId === 'thiet-kiem')!.uid)
+    expect(s.equipped.giap).toBe(s.gear.find((g) => g.defId === 'huyen-quy-giap')!.uid)
+    expect(s.equipped['phap-khi']).toBe(s.gear.find((g) => g.defId === 'ngung-than-phu')!.uid)
+    expect(s.nextGearUid).toBe(4)
+    expect((s as unknown as Record<string, unknown>).expedition).toBeUndefined()
+    expect((s.stats as unknown as Record<string, unknown>).expeditions).toBeUndefined()
+    expect(s.stats.breakthroughs).toBe(14)
+    expect(s.stats.enemiesSlain).toBe(0)
+    expect(s.journey.phase).toBe('rest')
+    expect(s.journey.regionId).toBe('hau-son-lam')
   })
 })
