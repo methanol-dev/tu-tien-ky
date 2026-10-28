@@ -23,8 +23,8 @@ export interface TechniqueDef {
 export const TECHNIQUES: readonly TechniqueDef[] = [
   {
     id: 'dan-khi-quyet',
-    name: 'Dẫn Khí Quyết',
-    description: 'Công pháp nhập môn, dẫn linh khí trời đất vào kinh mạch.',
+    name: 'Khí Thao Long Diêu',
+    description: 'Thao luyện thổ nạp khi gánh nước nung gốm ở lò rồng ngõ Nê Bình, dẫn linh khí nhập kinh mạch.',
     effect: 'qiRateMult',
     perLevel: 0.1,
     maxLevel: 10,
@@ -34,8 +34,8 @@ export const TECHNIQUES: readonly TechniqueDef[] = [
   },
   {
     id: 'ngu-khi-thuat',
-    name: 'Ngự Khí Thuật',
-    description: 'Mỗi lần vận công chủ động hấp thu được nhiều linh khí hơn.',
+    name: 'Hám Sơn Quyền Phổ',
+    description: 'Quyền pháp võ đạo nhập môn do tiền bối truyền thụ, mỗi quyền đánh ra chấn động khí huyết và linh khí.',
     effect: 'meditateSeconds',
     perLevel: 0.25,
     maxLevel: 10,
@@ -45,8 +45,8 @@ export const TECHNIQUES: readonly TechniqueDef[] = [
   },
   {
     id: 'tu-linh-tran',
-    name: 'Tụ Linh Trận',
-    description: 'Bày trận trong động phủ, bế quan lâu hơn vẫn tụ được linh khí.',
+    name: 'Tụ Khí Lạc Phách',
+    description: 'Phương pháp tích khí bế quan trên đỉnh Lạc Phách Sơn, giúp kéo dài thời gian tu luyện khi rời mạng.',
     effect: 'offlineCapHours',
     perLevel: 1,
     maxLevel: 8,
@@ -56,8 +56,8 @@ export const TECHNIQUES: readonly TechniqueDef[] = [
   },
   {
     id: 'thanh-tam-chu',
-    name: 'Thanh Tâm Chú',
-    description: 'Giữ đạo tâm vững vàng, tăng tỉ lệ đột phá thành công.',
+    name: 'Văn Đảm Thuần Lương',
+    description: 'Đạo tâm vững như bàn thạch, tri hành hợp nhất, giúp tăng xác suất đột phá cảnh giới kế tiếp.',
     effect: 'breakthroughBonus',
     perLevel: 0.02,
     maxLevel: 10,
@@ -67,8 +67,8 @@ export const TECHNIQUES: readonly TechniqueDef[] = [
   },
   {
     id: 'tu-bao-quyet',
-    name: 'Tụ Bảo Quyết',
-    description: 'Cảm ứng linh thạch trong đất đá, thu được nhiều linh thạch hơn.',
+    name: 'Tàng Bảo Kiếm Các',
+    description: 'Bí quyết quản lý ngân quỹ tông môn của Lạc Phách Sơn, tăng thu hoạch linh thạch và tự mở rương.',
     effect: 'stoneRateMult',
     perLevel: 0.15,
     maxLevel: 10,
@@ -78,8 +78,8 @@ export const TECHNIQUES: readonly TechniqueDef[] = [
   },
   {
     id: 'kim-cuong-bat-hoai',
-    name: 'Kim Cương Bất Hoại Thể',
-    description: 'Thân thể cứng như kim cương, đột phá thất bại tổn hao ít linh khí hơn.',
+    name: 'Thập Thất Bách Quyền',
+    description: 'Võ phu rèn giũa nhục thân qua hàng ngàn quyền, giảm thiểu hao tổn khi nghịch thiên đột phá thất bại.',
     effect: 'failPenaltyMult',
     perLevel: 0.05,
     maxLevel: 10,
@@ -89,8 +89,8 @@ export const TECHNIQUES: readonly TechniqueDef[] = [
   },
   {
     id: 'thai-thuong-vong-tinh-luc',
-    name: 'Thái Thượng Vong Tình Lục',
-    description: 'Thượng cổ công pháp, quên tình tuyệt dục, tốc độ tu luyện tăng vọt.',
+    name: 'Kiếm Ý Trường Thành',
+    description: 'Kiếm ý vắt ngang trời đất đúc từ ngàn năm chiến hỏa Kiếm Khí Trường Thành, tốc độ tu vi tăng vọt.',
     effect: 'qiRateMult',
     perLevel: 0.25,
     maxLevel: 10,

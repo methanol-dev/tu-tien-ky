@@ -24,27 +24,27 @@ export function NavBar({ current, onChange, alchemyReady, journeyAlert, legacyAl
       aria-label="Điều hướng"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-paper-400/10 bg-ink-900/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:static md:border-0 md:bg-transparent md:pb-0 md:backdrop-blur-none"
     >
-      <ul className="mx-auto flex max-w-5xl justify-around md:justify-end md:gap-1">
+      <ul className="mx-auto flex w-full max-w-5xl items-center justify-between md:justify-end md:gap-1">
         {TABS.map((t) => {
           const active = t.id === current
           return (
-            <li key={t.id} className="relative">
+            <li key={t.id} className="relative flex-1 md:flex-initial">
               <button
                 type="button"
                 onClick={() => onChange(t.id)}
                 aria-current={active ? 'page' : undefined}
-                className={`flex min-h-14 min-w-11 flex-col items-center justify-center gap-0.5 px-2 transition-colors md:min-h-11 md:flex-row md:gap-2 md:rounded-md md:px-3 ${
+                className={`flex w-full min-h-13 flex-col items-center justify-center gap-0.5 px-0.5 transition-colors md:min-h-11 md:w-auto md:flex-row md:gap-2 md:rounded-md md:px-3 ${
                   active ? 'text-gold-400 md:bg-ink-700' : 'text-paper-400 hover:text-paper-100'
                 }`}
               >
-                <span aria-hidden className="font-han text-xl leading-none md:text-base">
+                <span aria-hidden className="font-han text-lg leading-none md:text-base">
                   {t.glyph}
                 </span>
-                <span className="text-[10px] md:text-sm">{t.label}</span>
+                <span className="text-[10px] leading-tight md:text-sm">{t.label}</span>
                 {((t.id === 'alchemy' && alchemyReady) || (t.id === 'journey' && journeyAlert) || (t.id === 'legacy' && legacyAlert)) && (
                   <span
                     aria-label="Sẵn sàng"
-                    className="absolute top-2 right-3 h-2 w-2 animate-pulse rounded-full bg-gold-400 md:top-1 md:right-1"
+                    className="absolute top-1.5 right-2 h-1.5 w-1.5 animate-pulse rounded-full bg-gold-400 md:top-1 md:right-1"
                   />
                 )}
               </button>

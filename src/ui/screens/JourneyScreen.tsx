@@ -18,6 +18,7 @@ export function JourneyScreen() {
   const openChests = useGameStore((s) => s.openChests)
   const equip = useGameStore((s) => s.equip)
   const salvage = useGameStore((s) => s.salvage)
+  const setCharacterModalOpen = useGameStore((s) => s.setCharacterModalOpen)
 
   const j = state.journey
   const stats = getCombatStats(state)
@@ -27,7 +28,16 @@ export function JourneyScreen() {
   return (
     <div className="space-y-6">
       <header className="space-y-3">
-        <h2 className="font-han text-2xl text-gold-400">Hành tẩu</h2>
+        <div className="flex items-baseline justify-between">
+          <h2 className="font-han text-2xl text-gold-400">Hành tẩu</h2>
+          <button
+            type="button"
+            onClick={() => setCharacterModalOpen(true)}
+            className="text-xs text-gold-400 hover:text-gold-300 hover:underline"
+          >
+            Chi tiết chỉ số ›
+          </button>
+        </div>
         <JourneyStage state={state} />
         <StatRow
           stats={[

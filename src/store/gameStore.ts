@@ -31,6 +31,7 @@ import {
   type OfflineReport,
   openChests as engineOpenChests,
   resolveEvent as engineResolveEvent,
+  resolveStoryScene as engineResolveStoryScene,
   rollEvent,
   salvage as engineSalvage,
   salvageByRarity as engineSalvageByRarity,
@@ -81,6 +82,9 @@ export interface GameStore {
   chestResult: GearInstance[] | null
   /** Last bolt outcome, for the tribulation dialog's final screen. */
   tribulationResult: BoltResult | null
+  /** Whether the full character stats sheet dialog is open. */
+  characterModalOpen: boolean
+  setCharacterModalOpen: (open: boolean) => void
   hydrate: (now?: number) => void
   tick: (dtMs: number) => void
   resume: (now?: number) => void
@@ -94,6 +98,7 @@ export interface GameStore {
   collectAlchemy: () => boolean
   resolveEvent: (choiceId: string) => boolean
   dismissEventResult: () => void
+  resolveStoryScene: (sceneId: string, choiceId?: string) => void
   setPauseOnEvent: (value: boolean) => void
   startRegion: (regionId: string, difficulty: Difficulty) => boolean
   setAutoAdvance: (value: boolean) => void
@@ -157,6 +162,8 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       eventResult: null,
       chestResult: null,
       tribulationResult: null,
+      characterModalOpen: false,
+      setCharacterModalOpen: (open) => set({ characterModalOpen: open }),
 
       hydrate: (now = Date.now()) => {
         const raw = storage.load()
@@ -239,6 +246,11 @@ export function createGameStore(deps: GameStoreDeps = {}) {
         return true
       },
       dismissEventResult: () => set({ eventResult: null }),
+      resolveStoryScene: (sceneId, choiceId) => {
+        const { state } = engineResolveStoryScene(get().state, sceneId, choiceId)
+        set({ state })
+        get().save()
+      },
 
       startRegion: (regionId, difficulty) => apply(engineStartRegion(get().state, regionId, difficulty)),
       setAutoAdvance: (value) => set((s) => ({ state: engineSetAutoAdvance(s.state, value) })),

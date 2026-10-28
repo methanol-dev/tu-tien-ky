@@ -1,8 +1,10 @@
 import { RARITY_RANK } from '@/content/affixes'
 import { GEAR_SLOTS, SLOT_NAME } from '@/content/gear'
-import { type GameState, GEAR_CAP, gearScore, getGearDef, isEquipped } from '@/engine'
+import { type GameState, GEAR_CAP, gearScore, getCombatStats, getGearDef, isEquipped } from '@/engine'
+import { formatNumber, formatPercent } from '@/lib/format'
 import { useGameStore } from '@/store/gameStore'
 import { Button } from '@/ui/atoms/Button'
+import { StatRow } from '@/ui/molecules/StatRow'
 import { GearCard } from '@/ui/organisms/GearCard'
 
 export function GearPanel({ state }: { state: GameState }) {
@@ -10,7 +12,9 @@ export function GearPanel({ state }: { state: GameState }) {
   const unequip = useGameStore((s) => s.unequip)
   const salvage = useGameStore((s) => s.salvage)
   const salvageByRarity = useGameStore((s) => s.salvageByRarity)
+  const setCharacterModalOpen = useGameStore((s) => s.setCharacterModalOpen)
 
+  const combat = getCombatStats(state)
   const byUid = new Map(state.gear.map((g) => [g.uid, g]))
   const bag = state.gear
     .filter((g) => !isEquipped(state, g.uid))
@@ -21,6 +25,31 @@ export function GearPanel({ state }: { state: GameState }) {
       <div className="flex items-baseline justify-between">
         <h3 className="font-han text-lg text-paper-100">Pháp bảo</h3>
         <span className="text-xs text-paper-400 tabular-nums">{state.gear.length} / {GEAR_CAP}</span>
+      </div>
+
+      <div className="rounded-lg border border-paper-400/10 bg-ink-900/60 p-3">
+        <div className="mb-2 flex items-center justify-between">
+          <span className="font-han text-xs text-paper-300">Thuộc tính chiến đấu hiện tại</span>
+          <button
+            type="button"
+            onClick={() => setCharacterModalOpen(true)}
+            className="text-xs text-gold-400 hover:text-gold-300 hover:underline"
+          >
+            Chi tiết đạo thân ›
+          </button>
+        </div>
+        <StatRow
+          stats={[
+            { label: 'Khí huyết', value: formatNumber(combat.hp) },
+            {
+              label: 'Công',
+              value: formatNumber(combat.atk),
+              hint: `Bạo kích ${formatPercent(combat.crit)}`,
+            },
+            { label: 'Thủ', value: formatNumber(combat.def) },
+            { label: 'Tốc đánh', value: `${(1000 / combat.attackMs).toFixed(2)}/s` },
+          ]}
+        />
       </div>
 
       <ul className="grid gap-2 sm:grid-cols-3">

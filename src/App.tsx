@@ -1,12 +1,14 @@
 import { useEffect } from 'react'
-import { getPendingEvent, isAlchemyReady, isReincarnationForced } from '@/engine'
+import { getPendingEvent, getPendingStoryScene, isAlchemyReady, isReincarnationForced } from '@/engine'
 import { formatNumber } from '@/lib/format'
 import { startGameLoop } from '@/store/gameLoop'
 import { useGameStore } from '@/store/gameStore'
 import { InkSplash } from '@/ui/atoms/InkSplash'
 import { NavBar } from '@/ui/molecules/NavBar'
 import { Toast } from '@/ui/molecules/Toast'
+import { CharacterModal } from '@/ui/organisms/CharacterModal'
 import { EventModal } from '@/ui/organisms/EventModal'
+import { StoryModal } from '@/ui/organisms/StoryModal'
 import { ChestModal } from '@/ui/organisms/ChestModal'
 import { TribulationModal } from '@/ui/organisms/TribulationModal'
 import { OfflineModal } from '@/ui/organisms/OfflineModal'
@@ -50,7 +52,11 @@ export default function App() {
   const fx = useGameStore((s) => s.fx)
   const dismissNotice = useGameStore((s) => s.dismissNotice)
   const state = useGameStore((s) => s.state)
+  const characterModalOpen = useGameStore((s) => s.characterModalOpen)
+  const setCharacterModalOpen = useGameStore((s) => s.setCharacterModalOpen)
   const pendingEvent = useGameStore((s) => getPendingEvent(s.state))
+  const pendingStory = getPendingStoryScene(state)
+  const resolveStoryScene = useGameStore((s) => s.resolveStoryScene)
   const eventResult = useGameStore((s) => s.eventResult)
   const resolveEvent = useGameStore((s) => s.resolveEvent)
   const dismissEventResult = useGameStore((s) => s.dismissEventResult)
@@ -74,10 +80,19 @@ export default function App() {
     <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col gap-6 px-4 pt-6 pb-24 md:pb-8">
       <header className="flex items-center justify-between gap-4">
         <div className="flex items-baseline gap-3">
-          <h1 className="font-han text-3xl font-black tracking-widest text-paper-100">修仙記</h1>
-          <span className="hidden font-han text-sm text-gold-400 sm:inline">Tu Tiên Ký</span>
+          <h1 className="font-han text-3xl font-black tracking-widest text-paper-100">劍來</h1>
+          <span className="hidden font-han text-sm text-gold-400 sm:inline">Kiếm Lai · Tu Tiên Ký</span>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setCharacterModalOpen(true)}
+            className="flex min-h-8 items-center gap-1.5 rounded-md border border-gold-500/30 bg-ink-800/80 px-2.5 py-1 text-xs text-paper-200 transition-colors hover:border-gold-500 hover:text-gold-400"
+            title="Xem chỉ số nhân vật (Đạo thân)"
+          >
+            <span aria-hidden className="font-han text-sm text-gold-400">身</span>
+            <span>Chỉ số</span>
+          </button>
           <p className="font-han text-sm text-paper-300 tabular-nums" title="Linh thạch">
             <span aria-hidden className="mr-1 text-gold-400">◆</span>
             {formatNumber(stones)}
@@ -97,6 +112,11 @@ export default function App() {
       </div>
 
       <OfflineModal report={offlineReport} onClose={dismissOffline} />
+      <CharacterModal
+        open={characterModalOpen}
+        onClose={() => setCharacterModalOpen(false)}
+        state={state}
+      />
       <ChestModal
         result={chestResult}
         state={state}
@@ -116,6 +136,14 @@ export default function App() {
           state={state}
           onChoose={resolveEvent}
           onDismissResult={dismissEventResult}
+        />
+      )}
+      {!offlineReport && !chestResult && !pendingEvent && (
+        <StoryModal
+          scene={pendingStory}
+          onResolve={(choiceId) => {
+            if (pendingStory) resolveStoryScene(pendingStory.id, choiceId)
+          }}
         />
       )}
       <Toast notice={notice} onDismiss={dismissNotice} />
