@@ -44,3 +44,4 @@ describe('martialRealms content', () => {
     expect(getNextMartialRealm(200_000)).toBeNull()
   })
 })
+

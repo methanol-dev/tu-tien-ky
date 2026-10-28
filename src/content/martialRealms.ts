@@ -148,3 +148,4 @@ export function getNextMartialRealm(punches: number): MartialStage | null {
   }
   return null
 }
+
