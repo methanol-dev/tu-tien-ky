@@ -205,3 +205,4 @@ export function AdminModal({ open, onClose }: AdminModalProps) {
     </Modal>
   )
 }
+

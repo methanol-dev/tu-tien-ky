@@ -1,7 +1,7 @@
 import { useState, type CSSProperties } from 'react'
 import { AVATARS, AVATAR_BY_ID } from '@/content/avatars'
 import { REALMS } from '@/content/realms'
-import { DIFFICULTY_NAMES, STAGES_PER_REGION } from '@/content/regions'
+import { DIFFICULTY_NAMES, STAGES_PER_REGION, type SilhouetteId } from '@/content/regions'
 import { type GameState, getPhaseProgress, getRegion, isRegionUnlocked } from '@/engine'
 import { formatDurationMs, formatNumber } from '@/lib/format'
 import { EnemySilhouette, HeroSilhouette } from '@/ui/silhouettes'
@@ -32,6 +32,30 @@ function Layer({ d, color, duration, running, opacity }: { d: string; color: str
       ))}
     </div>
   )
+}
+
+function EnemyFigure({
+  enemy,
+  silhouette,
+}: {
+  enemy: { id: string; name: string; imageUrl?: string }
+  silhouette: SilhouetteId
+}) {
+  const [imgError, setImgError] = useState(false)
+  const candidateUrl = enemy.imageUrl ?? `/assets/monsters/${enemy.id}.png`
+
+  if (!imgError) {
+    return (
+      <img
+        src={candidateUrl}
+        alt={enemy.name}
+        className="h-full w-auto max-w-none object-contain pointer-events-none -scale-x-100 transition-transform duration-200 drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]"
+        onError={() => setImgError(true)}
+      />
+    )
+  }
+
+  return <EnemySilhouette id={silhouette} className="h-full w-full -scale-x-100" />
 }
 
 export function JourneyStage({ state, compact = false }: Props) {
@@ -164,8 +188,22 @@ export function JourneyStage({ state, compact = false }: Props) {
                   />
                 </div>
               </div>
-              <div className="flex h-9 w-9 items-center justify-center rounded-full border border-vermilion-500/50 bg-ink-900 text-sm">
-                {mainEnemy.boss ? '👑' : '⚔️'}
+              <div className="flex h-9 w-9 items-center justify-center rounded-full border border-vermilion-500/50 bg-ink-900 text-sm overflow-hidden">
+                {(() => {
+                  const tmpl = region.boss.id === mainEnemy.id ? region.boss : region.enemies.find((e) => e.id === mainEnemy.id)
+                  const img = tmpl?.imageUrl ?? `/assets/monsters/${mainEnemy.id}.png`
+                  return (
+                    <img
+                      src={img}
+                      alt={mainEnemy.name}
+                      className="h-full w-full object-cover object-top"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLElement).style.display = 'none'
+                      }}
+                    />
+                  )
+                })()}
+                <span className="hidden last:inline">{mainEnemy.boss ? '👑' : '⚔️'}</span>
               </div>
             </div>
           ) : (
@@ -261,7 +299,7 @@ export function JourneyStage({ state, compact = false }: Props) {
                 : `drop-shadow(0 0 ${compact ? 2 : 6}px ${p.accent}66)`,
             }}
           >
-            <EnemySilhouette id={e.silhouette} className="h-full w-full -scale-x-100" />
+            <EnemyFigure enemy={e} silhouette={e.silhouette} />
 
             {/* Vòng hào quang hắc ám dưới chân Boss */}
             {e.boss && !dead && (
