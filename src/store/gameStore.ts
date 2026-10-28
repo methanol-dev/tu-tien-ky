@@ -14,8 +14,8 @@ import {
   resolveBolt as engineResolveBolt,
   type TribulationAction,
   collectAlchemy as engineCollectAlchemy,
+  createHybridStorage,
   createInitialState,
-  createLocalStorage,
   defaultRng,
   deserialize,
   equip as engineEquip,
@@ -119,6 +119,7 @@ export interface GameStore {
   setScreen: (screen: Screen) => void
   exportSave: () => string
   importSave: (text: string) => { ok: true } | { ok: false; error: string }
+  recoverFromIdb: (now?: number) => Promise<boolean>
   resetGame: (now?: number) => void
 }
 
@@ -135,7 +136,7 @@ function freshState(now: number): GameState {
 }
 
 export function createGameStore(deps: GameStoreDeps = {}) {
-  const storage = deps.storage ?? createLocalStorage()
+  const storage = deps.storage ?? createHybridStorage()
   const rng = deps.rng ?? defaultRng
   let fxCounter = 0
   let noticeCounter = 0
@@ -168,6 +169,23 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       hydrate: (now = Date.now()) => {
         const raw = storage.load()
         if (!raw) {
+          // If synchronous localStorage is empty, try async IndexedDB healing
+          if (storage.loadAsync) {
+            void storage.loadAsync().then((idbRaw) => {
+              if (idbRaw) {
+                const parsed = deserialize(idbRaw)
+                if (parsed.ok) {
+                  const { state, report } = applyOfflineProgress(parsed.state, now, undefined, rng)
+                  set({
+                    state,
+                    hydrated: true,
+                    offlineReport: report.appliedMs >= MIN_OFFLINE_REPORT_MS ? report : null,
+                  })
+                  get().notify('Đã khôi phục đạo hạnh từ kho lưu trữ IndexedDB!', 'success')
+                }
+              }
+            })
+          }
           set({ state: freshState(now), hydrated: true, offlineReport: null })
           return
         }
@@ -341,6 +359,29 @@ export function createGameStore(deps: GameStoreDeps = {}) {
         })
         get().save()
         return { ok: true }
+      },
+
+      recoverFromIdb: async (now = Date.now()) => {
+        if (!storage.loadAsync) return false
+        const idbRaw = await storage.loadAsync()
+        if (!idbRaw) {
+          get().notify('Không tìm thấy bản lưu nào trong IndexedDB.', 'error')
+          return false
+        }
+        const parsed = deserialize(idbRaw)
+        if (!parsed.ok) {
+          get().notify(`Bản lưu trong IndexedDB bị lỗi: ${parsed.error}`, 'error')
+          return false
+        }
+        const { state, report } = applyOfflineProgress(parsed.state, now, undefined, rng)
+        set({
+          state,
+          hydrated: true,
+          offlineReport: report.appliedMs >= MIN_OFFLINE_REPORT_MS ? report : null,
+        })
+        get().save()
+        get().notify('Đã khôi phục đạo hạnh thành công từ IndexedDB!', 'success')
+        return true
       },
 
       resetGame: (now = Date.now()) => {

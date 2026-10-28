@@ -6,6 +6,7 @@ import { gameStateSchema } from './schema'
 export * from './migrate'
 export * from './schema'
 export * from './storage'
+export * from './indexedDb'
 
 export type DeserializeResult = { ok: true; state: GameState } | { ok: false; error: string }
 

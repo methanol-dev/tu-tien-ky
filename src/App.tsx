@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { getPendingEvent, getPendingStoryScene, isAlchemyReady, isReincarnationForced } from '@/engine'
+import { getPendingEvent, getPendingStoryScene, isAlchemyReady, isReincarnationForced, requestPersistentStorage } from '@/engine'
 import { formatNumber } from '@/lib/format'
 import { startGameLoop } from '@/store/gameLoop'
 import { useGameStore } from '@/store/gameStore'
@@ -63,6 +63,7 @@ export default function App() {
 
   useEffect(() => {
     useGameStore.getState().hydrate()
+    void requestPersistentStorage()
     return startGameLoop(useGameStore)
   }, [])
 

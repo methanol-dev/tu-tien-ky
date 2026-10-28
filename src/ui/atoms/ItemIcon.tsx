@@ -154,3 +154,4 @@ export function ItemIcon({ id, kind, tier, size = 'md' }: ItemIconProps) {
     </div>
   )
 }
+
