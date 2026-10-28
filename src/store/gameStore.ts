@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { ChestKind, Rarity } from '@/content/affixes'
+import type { ClassId } from '@/content/classes'
 import type { GearSlot } from '@/content/gear'
 import type { Difficulty } from '@/content/regions'
 import {
@@ -9,6 +10,7 @@ import {
   type BreakthroughResult,
   buyItem as engineBuyItem,
   buyLegacyUpgrade as engineBuyLegacyUpgrade,
+  changeClass as engineChangeClass,
   type BoltResult,
   reincarnate as engineReincarnate,
   resolveBolt as engineResolveBolt,
@@ -109,6 +111,7 @@ export interface GameStore {
   unequip: (slot: GearSlot) => boolean
   salvage: (uids: string[]) => boolean
   salvageByRarity: (rarities: Rarity[]) => boolean
+  changeClass: (classId: ClassId) => boolean
   resolveBolt: (action: TribulationAction) => boolean
   dismissTribulationResult: () => void
   reincarnate: () => boolean
@@ -302,6 +305,8 @@ export function createGameStore(deps: GameStoreDeps = {}) {
         get().notify(`Phân giải ${r.state.count} món, thu ${Math.round(r.state.stones)} linh thạch.`, 'success')
         return true
       },
+
+      changeClass: (classId) => apply(engineChangeClass(get().state, classId)),
 
       resolveBolt: (action) => {
         const r = engineResolveBolt(get().state, action, rng)

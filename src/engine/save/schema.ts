@@ -83,10 +83,22 @@ const journeySchema = z.object({
 
 /** Schema for the CURRENT save version. Older versions go through migrations first. */
 export const gameStateSchema = z.object({
-  version: z.literal(7),
+  version: z.literal(8),
   createdAt: z.number().int().nonnegative(),
   lastSavedAt: z.number().int().nonnegative(),
   playedMs: z.number().nonnegative(),
+  classId: z.enum([
+    'kiem-tu',
+    'vo-phu',
+    'nho-gia',
+    'dao-gia',
+    'phat-gia',
+    'binh-gia',
+    'duoc-gia',
+    'thuong-gia',
+    'mac-gia',
+    'am-duong-gia',
+  ]),
   realmIndex: z.number().int().nonnegative(),
   qi: z.number().nonnegative().finite(),
   ageDays: z.number().nonnegative().finite(),

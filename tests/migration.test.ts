@@ -148,7 +148,8 @@ describe('v5 -> v6 (Phase 9: journey + gear)', () => {
     const r = deserialize(JSON.stringify(rawV6))
     expect(r.ok, r.ok ? '' : r.error).toBe(true)
     if (!r.ok) return
-    expect(r.state.version).toBe(7)
+    expect(r.state.version).toBe(8)
+    expect(r.state.classId).toBe('kiem-tu')
     expect(r.state.equipped['vu-khi']).toBe('g1')
     expect(r.state.equipped.ao).toBe('g2')
     expect(r.state.equipped['nhan-1']).toBeNull()

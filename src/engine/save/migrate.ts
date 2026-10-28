@@ -11,6 +11,14 @@ type Migration = (raw: RawSave) => RawSave
  * Bump SAVE_VERSION, add `MIGRATIONS[old] = ...`, update schema.ts. No exceptions.
  */
 export const MIGRATIONS: Record<number, Migration> = {
+  // 7 -> 8: Hỗ trợ 10 Class Archetypes Tu Đạo & 5 Tòa Thiên Hạ.
+  7: (raw) => {
+    return {
+      ...raw,
+      version: 8,
+      classId: raw.classId ?? 'kiem-tu',
+    }
+  },
   // 5 -> 6: journey replaces expeditions; treasures become named gear instances (Phase 9).
   5: (raw) => {
     const inventory = { ...((raw.inventory as Record<string, number> | undefined) ?? {}) }

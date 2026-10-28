@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { RARITY_NAME } from '@/content/affixes'
 import { AVATARS, AVATAR_BY_ID } from '@/content/avatars'
+import { CLASSES, CLASS_BY_ID } from '@/content/classes'
 import { GEAR_SLOTS, SLOT_NAME } from '@/content/gear'
 import {
   MARTIAL_STAGES,
@@ -40,12 +41,13 @@ interface CharacterModalProps {
   state: GameState
 }
 
-type Tab = 'combat' | 'cultivation' | 'martial' | 'gear'
+type Tab = 'combat' | 'cultivation' | 'martial' | 'gear' | 'class'
 
 export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
   const [tab, setTab] = useState<Tab>('combat')
   const [avatarModalOpen, setAvatarModalOpen] = useState(false)
   const setAvatar = useGameStore((s) => s.setAvatar)
+  const changeClass = useGameStore((s) => s.changeClass)
 
   if (!open) return null
 
@@ -122,6 +124,14 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
               <p className="mt-0.5 text-xs text-vermilion-300 font-serif">
                 👊 Võ Đạo: <span className="text-paper-100 font-medium">{martial.name}</span> ({punches} quyền)
               </p>
+              {(() => {
+                const currentClass = CLASS_BY_ID[state.classId] ?? CLASS_BY_ID['kiem-tu']
+                return (
+                  <p className="mt-0.5 text-xs font-serif" style={{ color: currentClass.accentColor }}>
+                    🏮 Đạo Thống: <span className="text-paper-100 font-medium">{currentClass.name} · {currentClass.title}</span>
+                  </p>
+                )
+              })()}
               <p className="mt-1 text-xs text-paper-400">
                 Tuổi thọ:{' '}
                 <span className={`tabular-nums ${expired ? 'text-vermilion-400' : 'text-paper-200'}`}>
@@ -193,7 +203,18 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
               : 'border-transparent text-paper-400 hover:text-paper-200'
           }`}
         >
-          🛡️ Pháp Bảo ({Object.values(state.equipped).filter(Boolean).length}/3)
+          🛡️ Pháp Bảo ({Object.values(state.equipped).filter(Boolean).length}/12)
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab('class')}
+          className={`flex-1 border-b-2 py-2 text-center font-medium transition-colors ${
+            tab === 'class'
+              ? 'border-gold-400 text-gold-400'
+              : 'border-transparent text-paper-400 hover:text-paper-200'
+          }`}
+        >
+          🏮 Đạo Thống (10 Phái)
         </button>
       </div>
 
@@ -643,6 +664,104 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Tab 5: Đạo Thống (10 Phái & Chư Tử Bách Gia) */}
+      {tab === 'class' && (
+        <div className="space-y-4 pt-1">
+          <div className="rounded-lg border border-gold-500/20 bg-ink-900/60 p-3">
+            <h4 className="font-han text-sm text-gold-300">Chư Tử Bách Gia & Đạo Thống Kiếm Lai</h4>
+            <p className="mt-1 text-xs text-paper-300">
+              Trời đất bao la, đạo hữu có thể quy y Phật môn, nhập thế Nho gia, thuận theo Đạo pháp tự nhiên, hoặc đúc rèn ngạo cốt Kiếm Tu / Võ Phu thuần túy. Mỗi phái mang theo thiên phú chân truyền và kỹ năng trấn phái độc nhất vô nhị.
+            </p>
+          </div>
+
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {CLASSES.map((c) => {
+              const active = state.classId === c.id
+              return (
+                <li
+                  key={c.id}
+                  className={`relative flex flex-col justify-between rounded-xl border p-4 transition-all ${
+                    active
+                      ? 'border-gold-400 bg-ink-900/95 ring-2 ring-gold-500/30 shadow-lg'
+                      : 'border-paper-400/20 bg-ink-950/70 hover:border-gold-500/40'
+                  }`}
+                  style={
+                    active
+                      ? {
+                          borderColor: c.accentColor,
+                          boxShadow: `0 0 16px ${c.accentColor}33`,
+                        }
+                      : undefined
+                  }
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2.5">
+                        <span
+                          className="flex h-9 w-9 items-center justify-center rounded-lg font-han font-bold text-lg border"
+                          style={{
+                            borderColor: c.accentColor + '88',
+                            color: c.accentColor,
+                            backgroundColor: c.accentColor + '22',
+                          }}
+                        >
+                          {c.glyph}
+                        </span>
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <h5 className="font-han text-base font-bold text-paper-100">{c.name}</h5>
+                            <span className="text-[11px] text-paper-400">({c.faction})</span>
+                          </div>
+                          <p className="text-xs font-serif" style={{ color: c.accentColor }}>
+                            {c.title}
+                          </p>
+                        </div>
+                      </div>
+
+                      {active && (
+                        <span className="shrink-0 rounded-full bg-gold-500/20 px-2 py-0.5 text-[10px] font-bold text-gold-400 border border-gold-500/40">
+                          Chính Thống
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-xs text-paper-300 leading-relaxed">{c.description}</p>
+
+                    <div className="space-y-1 rounded-md border border-paper-400/10 bg-ink-950/80 p-2.5 text-xs">
+                      <div className="text-paper-200">
+                        <span className="text-paper-400">Trấn phái: </span>
+                        <strong className="text-gold-300 font-medium">{c.signatureSkill}</strong>
+                      </div>
+                      <div className="text-paper-200">
+                        <span className="text-paper-400">Chân truyền: </span>
+                        <strong className="text-jade-400 font-medium">{c.passiveName}</strong>
+                      </div>
+                      <p className="text-[11px] text-paper-300/90 font-serif pt-0.5">{c.passiveDesc}</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 pt-2.5 border-t border-paper-400/10 flex justify-end">
+                    {active ? (
+                      <span className="text-xs font-han text-gold-400 flex items-center gap-1">
+                        <span>✓</span> Đang theo đuổi
+                      </span>
+                    ) : (
+                      <Button
+                        variant="secondary"
+                        className="px-2.5 py-1 text-xs"
+                        onClick={() => changeClass(c.id)}
+                      >
+                        Gia Nhập Đạo Thống
+                      </Button>
+                    )}
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
         </div>
       )}
       </Modal>

@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { getSlotsForType } from '@/content/gear'
 import { ITEM_BY_ID } from '@/content/items'
 import { REALMS } from '@/content/realms'
 import { type Difficulty, DIFFICULTY_NAMES, REGIONS } from '@/content/regions'
+import { WORLDS, WORLD_BY_ID, type WorldId } from '@/content/worlds'
 import { getCombatStats, getGearDef, isDifficultyAvailable, isRegionUnlocked } from '@/engine'
 import { formatNumber, formatPercent } from '@/lib/format'
 import { useGameStore } from '@/store/gameStore'
@@ -27,6 +29,10 @@ export function JourneyScreen() {
   const stats = getCombatStats(state)
   const chests = j.chests.normal + j.chests.red
   const recentGear = state.gear.slice(-4).reverse()
+  const [selectedWorld, setSelectedWorld] = useState<WorldId | 'all'>('all')
+
+  const displayedRegions =
+    selectedWorld === 'all' ? REGIONS : REGIONS.filter((r) => r.worldId === selectedWorld)
 
   return (
     <div className="space-y-6">
@@ -120,15 +126,113 @@ export function JourneyScreen() {
         />
       </label>
 
-      {/* ================= BẢN ĐỒ VÙNG ĐẤT PHONG CẢNH KIẾM LAI ================= */}
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="font-han text-xl text-paper-100">Bản Đồ Vùng Đất</h3>
+      {/* ================= BẢN ĐỒ 5 TÒA THIÊN HẠ KIẾM LAI ================= */}
+      <section className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 className="font-han text-xl text-paper-100 flex items-center gap-2">
+              <span>Bản Đồ Thiên Hạ</span>
+              <span className="text-xs text-gold-400 font-serif">· 5 Tòa Thiên Hạ & Biên Ải</span>
+            </h3>
+            <p className="text-xs text-paper-400">Khám phá các cõi giới, đối đầu đại yêu và các thế lực chư tử bách gia</p>
+          </div>
           <span className="text-xs text-paper-400">Chọn vùng & độ khó để bắt đầu hành tẩu</span>
         </div>
 
+        {/* Thanh chuyển đổi Thiên Hạ */}
+        <div className="flex flex-wrap items-center gap-1.5 border-b border-paper-400/15 pb-2">
+          <button
+            type="button"
+            onClick={() => setSelectedWorld('all')}
+            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
+              selectedWorld === 'all'
+                ? 'bg-gold-500/20 text-gold-300 border border-gold-500/50 shadow-sm'
+                : 'bg-ink-900/60 text-paper-400 hover:text-paper-200 border border-paper-400/10'
+            }`}
+          >
+            Tất cả vùng ({REGIONS.length})
+          </button>
+          {WORLDS.map((w) => {
+            const active = selectedWorld === w.id
+            const count = REGIONS.filter((r) => r.worldId === w.id).length
+            return (
+              <button
+                key={w.id}
+                type="button"
+                onClick={() => setSelectedWorld(w.id)}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
+                  active
+                    ? 'border shadow-md'
+                    : 'bg-ink-900/60 text-paper-400 hover:text-paper-200 border border-paper-400/10'
+                }`}
+                style={
+                  active
+                    ? {
+                        backgroundColor: w.accentColor + '22',
+                        borderColor: w.accentColor,
+                        color: w.accentColor,
+                      }
+                    : undefined
+                }
+              >
+                <span className="font-han font-bold">{w.glyph}</span>
+                <span>{w.name}</span>
+                <span className="text-[10px] opacity-70">({count})</span>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Banner giới thiệu Thiên Hạ khi chọn cụ thể */}
+        {selectedWorld !== 'all' && (
+          <div
+            className="relative overflow-hidden rounded-xl border p-4 shadow-ink"
+            style={{
+              borderColor: WORLD_BY_ID[selectedWorld].accentColor + '44',
+              background: `linear-gradient(135deg, ${WORLD_BY_ID[selectedWorld].accentColor}15 0%, rgba(10,10,14,0.95) 100%)`,
+            }}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span
+                    className="flex h-7 w-7 items-center justify-center rounded-lg font-han font-bold text-sm border"
+                    style={{
+                      borderColor: WORLD_BY_ID[selectedWorld].accentColor,
+                      color: WORLD_BY_ID[selectedWorld].accentColor,
+                      backgroundColor: WORLD_BY_ID[selectedWorld].accentColor + '22',
+                    }}
+                  >
+                    {WORLD_BY_ID[selectedWorld].glyph}
+                  </span>
+                  <h4 className="font-han text-lg font-bold text-paper-100">
+                    {WORLD_BY_ID[selectedWorld].name}
+                  </h4>
+                  <span className="text-xs text-paper-300 font-serif">
+                    · {WORLD_BY_ID[selectedWorld].title}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs text-paper-300 max-w-2xl leading-relaxed">
+                  {WORLD_BY_ID[selectedWorld].description}
+                </p>
+                <div className="mt-2.5 flex flex-wrap items-center gap-3 text-[11px] text-paper-400">
+                  <span>
+                    Chúa tể cai quản:{' '}
+                    <strong className="text-paper-200 font-medium">{WORLD_BY_ID[selectedWorld].ruler}</strong>
+                  </span>
+                  <span>•</span>
+                  <span>
+                    Thế lực chủ đạo:{' '}
+                    <strong className="text-paper-200 font-medium">{WORLD_BY_ID[selectedWorld].dominantFaction}</strong>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <ul className="grid gap-4 md:grid-cols-2">
-          {REGIONS.map((r) => {
+          {displayedRegions.map((r) => {
             const unlocked = isRegionUnlocked(state, r)
             const cleared = j.cleared[r.id]
             const current = j.regionId === r.id

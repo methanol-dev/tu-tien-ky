@@ -27,6 +27,7 @@ export function createInitialState(now: number = Date.now()): GameState {
     createdAt: now,
     lastSavedAt: now,
     playedMs: 0,
+    classId: 'kiem-tu',
     realmIndex: 0,
     qi: 0,
     ageDays: STARTING_AGE_YEARS * DAYS_PER_YEAR,

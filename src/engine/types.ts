@@ -1,4 +1,5 @@
 import type { AffixKey, Rarity } from '@/content/affixes'
+import type { ClassId } from '@/content/classes'
 import type { GearSlot } from '@/content/gear'
 import type { Difficulty, SilhouetteId } from '@/content/regions'
 
@@ -160,6 +161,8 @@ export interface GameState {
   lastSavedAt: number
   /** Total real time the simulation has advanced, in ms. Game-time clock for cooldowns. */
   playedMs: number
+  /** Origin tu đạo / class archetype. Defaults to 'kiem-tu'. */
+  classId: ClassId
   /** Index into REALMS. */
   realmIndex: number
   qi: number

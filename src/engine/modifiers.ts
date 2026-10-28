@@ -1,3 +1,4 @@
+import { CLASS_BY_ID } from '@/content/classes'
 import { LEGACY_BY_ID } from '@/content/legacy'
 import { TECHNIQUE_BY_ID } from '@/content/techniques'
 import { DEFAULT_OFFLINE_CAP_MS, MEDITATE_BONUS_SECONDS } from './constants'
@@ -69,10 +70,13 @@ export function getModifiers(state: GameState): Modifiers {
   }
 
   const gear = getAffixTotals(state)
+  const classDef = CLASS_BY_ID[state.classId] ?? CLASS_BY_ID['kiem-tu']
+  const cm = classDef.multipliers
+
   stoneAdd += gear.stoneRate
-  mods.qiRateMult = (1 + qiAdd) * (1 + gear.qiRate)
-  mods.stoneRateMult = 1 + stoneAdd
-  mods.lootChanceMult = 1 + gear.lootChance
+  mods.qiRateMult = (1 + qiAdd) * (1 + gear.qiRate) * (cm.qiRate ?? 1)
+  mods.stoneRateMult = (1 + stoneAdd) * (cm.stoneRate ?? 1)
+  mods.lootChanceMult = (1 + gear.lootChance) * (cm.lootChance ?? 1)
 
   for (const buff of state.buffs) {
     if (buff.expiresAtMs > state.playedMs) mods.qiRateMult *= buff.qiRateMult

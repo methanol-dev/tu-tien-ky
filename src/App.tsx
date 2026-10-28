@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { CLASS_BY_ID } from '@/content/classes'
 import { getPendingEvent, getPendingStoryScene, isAlchemyReady, isReincarnationForced, requestPersistentStorage } from '@/engine'
 import { formatNumber } from '@/lib/format'
 import { startGameLoop } from '@/store/gameLoop'
@@ -85,6 +86,25 @@ export default function App() {
           <span className="hidden font-han text-sm text-gold-400 sm:inline">Kiếm Lai · Tu Tiên Ký</span>
         </div>
         <div className="flex items-center gap-3">
+          {(() => {
+            const curClass = CLASS_BY_ID[state.classId] ?? CLASS_BY_ID['kiem-tu']
+            return (
+              <button
+                type="button"
+                onClick={() => setCharacterModalOpen(true)}
+                className="hidden sm:flex min-h-8 items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs transition-colors hover:opacity-90"
+                style={{
+                  borderColor: curClass.accentColor + '66',
+                  backgroundColor: curClass.accentColor + '18',
+                  color: curClass.accentColor,
+                }}
+                title={`Đạo Thống: ${curClass.name} (${curClass.faction}) - Bấm để xem và chuyển đổi`}
+              >
+                <span className="font-han font-bold">{curClass.glyph}</span>
+                <span>{curClass.name}</span>
+              </button>
+            )
+          })()}
           <button
             type="button"
             onClick={() => setCharacterModalOpen(true)}

@@ -4,6 +4,7 @@
  * region's minimum realm, scaled by stage and difficulty.
  */
 import { REALM_INDEX_BY_ID as R, REALMS } from './realms'
+import type { WorldId } from './worlds'
 
 export type SilhouetteId =
   | 'wolf'
@@ -53,8 +54,9 @@ export interface RegionDef {
   id: string
   name: string
   description: string
+  worldId: WorldId
   minRealmIndex: number
-  /** 1..6, drives gear tier together with difficulty. */
+  /** 1..9, drives gear tier together with difficulty. */
   tier: number
   palette: RegionPalette
   backdropUrl?: string
@@ -107,6 +109,7 @@ export const REGIONS: readonly RegionDef[] = [
     id: 'hau-son-lam',
     name: 'Ly Châu Động Thiên',
     description: 'Trấn nhỏ ngõ Nê Bình thuộc Ly Châu Động Thiên. Quanh lò gốm Long Diêu yêu khí chực chờ, ngoại nhân dòm ngó cơ duyên.',
+    worldId: 'hao-nhien',
     minRealmIndex: R['luyen-khi-1'],
     tier: 1,
     palette: { sky: '#121a16', far: '#1d2a23', mid: '#24362c', near: '#2d4536', ground: '#0d1411', accent: '#5aa391' },
@@ -120,6 +123,7 @@ export const REGIONS: readonly RegionDef[] = [
     id: 'hac-phong-dong',
     name: 'Hoang Dã Nam Hạ',
     description: 'Đường thiên lý tống thư đưa nhóm trẻ Lý Bảo Bình nam hạ đến Sơn Nhai Thư Viện. Dã tu giang hồ rình rập ven đường.',
+    worldId: 'hao-nhien',
     minRealmIndex: R['luyen-khi-4'],
     tier: 2,
     palette: { sky: '#101014', far: '#1a1a22', mid: '#23232e', near: '#2c2c3a', ground: '#0a0a0e', accent: '#7f7fb3' },
@@ -133,6 +137,7 @@ export const REGIONS: readonly RegionDef[] = [
     id: 'van-cot-quat',
     name: 'Thư Giản Hồ',
     description: 'Chốn bùn lầy dã tu cá lớn nuốt cá bé. Nơi Trần Bình An nghiền nát văn đảm, dùng quy củ và nắm đấm định lại nhân tâm.',
+    worldId: 'hao-nhien',
     minRealmIndex: R['luyen-khi-7'],
     tier: 3,
     palette: { sky: '#14121a', far: '#201c2b', mid: '#2a2538', near: '#352f46', ground: '#0d0b12', accent: '#bfae88' },
@@ -146,6 +151,7 @@ export const REGIONS: readonly RegionDef[] = [
     id: 'tuyet-son-dinh',
     name: 'Lạc Phách Sơn',
     description: 'Ngọn núi tổ đình cơ nghiệp tại Bảo Bình Châu, quy tụ bằng hữu và đệ tử chân truyền dưới sự phù trợ của Ngụy Bách.',
+    worldId: 'hao-nhien',
     minRealmIndex: R['truc-co-1'],
     tier: 4,
     palette: { sky: '#121a24', far: '#243447', mid: '#34495f', near: '#4a637c', ground: '#0e141c', accent: '#a9ccff' },
@@ -159,6 +165,7 @@ export const REGIONS: readonly RegionDef[] = [
     id: 'hoa-diem-coc',
     name: 'Kiếm Khí Trường Thành',
     description: 'Tường thành vạn trượng ngăn Man Hoang Yêu Tộc. Nơi kiếm tu ngàn năm đổ máu và danh xưng Ẩn Quan ra đời.',
+    worldId: 'kiem-khi',
     minRealmIndex: R['truc-co-3'],
     tier: 5,
     palette: { sky: '#1a0f0c', far: '#2e1712', mid: '#42201a', near: '#5a2b20', ground: '#120907', accent: '#d1443b' },
@@ -172,6 +179,7 @@ export const REGIONS: readonly RegionDef[] = [
     id: 'thien-ma-chien-truong',
     name: 'Man Hoang Thiên Hạ',
     description: 'Chiến trường sào huyệt Yêu tộc, nơi Trần Bình An cùng Ninh Diêu vấn kiếm thiên hạ, hoàn thành ước hẹn mười năm.',
+    worldId: 'man-hoang',
     minRealmIndex: R['kim-dan-1'],
     tier: 6,
     palette: { sky: '#160d14', far: '#261522', mid: '#361d30', near: '#48273f', ground: '#0e080d', accent: '#e0bf4a' },
@@ -180,6 +188,46 @@ export const REGIONS: readonly RegionDef[] = [
     boss: boss('yeu-hoang-than-thoai', 'Yêu Hoàng Thần Thoại', 'demon-general', 1.1, 0.65, 0.55),
     loot: [{ itemId: 'cuu-chuyen-can', chance: 0.6, min: 1, max: 1 }, { itemId: 'thien-tam-lien', chance: 1, min: 1, max: 3 }, { itemId: 'kim-nguyen-dan', chance: 0.15, min: 1, max: 1 }],
     namedGear: { gearId: 'thien-ma-giap', chance: 0.12 },
+  },
+  {
+    id: 'phi-thang-thanh',
+    name: 'Phi Thăng Thành',
+    description: 'Tân Thiên Hạ do Kiếm Khí Trường Thành thăng hoa. Nơi Kiếm Tu trẻ tuổi mài giũa kiếm phong dưới sự chỉ điểm của Đệ Nhất Nhân Ninh Diệu.',
+    worldId: 'ngu-thai',
+    minRealmIndex: R['kim-dan-3'],
+    tier: 7,
+    palette: { sky: '#170f24', far: '#281a3e', mid: '#3a2559', near: '#4f3279', ground: '#0f0a17', accent: '#a855f7' },
+    backdropUrl: 'assets/regions/lac-phach-son.svg',
+    enemies: [mob('ngu-thai-kiem-linh', 'Ngũ Thải Kiếm Linh', 'dragonling', 0.45, 0.6, 0.35), mob('tinh-hoa-kiem-tu', 'Tinh hoa Kiếm Tu', 'cultist', 0.5, 0.65, 0.4)],
+    boss: boss('ninh-dieu-kiem-y', 'Ninh Diệu Kiếm Ý Huyễn Thân', 'demon-general', 1.15, 0.7, 0.6),
+    loot: [{ itemId: 'cuu-chuyen-can', chance: 0.8, min: 1, max: 2 }, { itemId: 'kim-nguyen-dan', chance: 0.25, min: 1, max: 1 }],
+    namedGear: { gearId: 'phi-kiem-tu-vi', chance: 0.2 },
+  },
+  {
+    id: 'bach-ngoc-kinh',
+    name: 'Bạch Ngọc Kinh',
+    description: 'Thanh Minh Thiên Hạ đạo môn tổ đình. Mười hai lầu năm thành cao vút cửu tiêu, Đạo Tổ và Tam Đại Chưởng Giáo trấn giữ đạo mạch.',
+    worldId: 'thanh-minh',
+    minRealmIndex: R['nguyen-anh-1'],
+    tier: 8,
+    palette: { sky: '#0c1a24', far: '#152d3e', mid: '#1f435c', near: '#2c5c7d', ground: '#08121a', accent: '#38bdf8' },
+    backdropUrl: 'assets/regions/thu-gian-ho.jpg',
+    enemies: [mob('dao-mon-chan-nhan', 'Đạo Môn Đạo Đồng', 'cultist', 0.5, 0.65, 0.4), mob('thanh-hu-kiem-khi', 'Thanh Hư Kiếm Khí', 'serpent', 0.55, 0.7, 0.45)],
+    boss: boss('luc-tram-phan-than', 'Lục Trầm Hóa Thân', 'demon-general', 1.2, 0.75, 0.65),
+    loot: [{ itemId: 'cuu-chuyen-can', chance: 1, min: 2, max: 3 }],
+  },
+  {
+    id: 'tu-di-son',
+    name: 'Tu Di Sơn',
+    description: 'Liên Hoa Thiên Hạ Phật Môn cực lạc tịnh độ. Vạn trượng kim thân phổ độ chúng sinh, hóa giải vạn trượng sát nghiệp cửu châu.',
+    worldId: 'lien-hoa',
+    minRealmIndex: R['hoa-than-1'],
+    tier: 9,
+    palette: { sky: '#241a0c', far: '#3e2d15', mid: '#5c431f', near: '#7d5c2c', ground: '#1a1208', accent: '#fbbf24' },
+    backdropUrl: 'assets/regions/ly-chau-dong-thien.jpg',
+    enemies: [mob('kim-cuong-la-han', 'Kim Cương La Hán', 'yeti', 0.6, 0.65, 0.55), mob('bo-de-ho-phap', 'Bồ Đề Hộ Pháp', 'demon', 0.65, 0.7, 0.5)],
+    boss: boss('phat-da-phap-tuong', 'Phật Đà Kim Thân Pháp Tượng', 'demon-general', 1.25, 0.8, 0.7),
+    loot: [{ itemId: 'cuu-chuyen-can', chance: 1, min: 2, max: 4 }],
   },
 ]
 
