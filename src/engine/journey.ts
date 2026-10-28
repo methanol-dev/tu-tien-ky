@@ -190,7 +190,7 @@ function fightStep(state: GameState, now: number, ctx: StepContext, rng: Rng): G
   const region = getRegion(state)
   let j = state.journey
   let s = state
-  let player = { ...j.party[0] }
+  const player = { ...j.party[0] }
   const enemies = j.enemies.map((e) => ({ ...e }))
 
   // Player strikes the first living enemy.

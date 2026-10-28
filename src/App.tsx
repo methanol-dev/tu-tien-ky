@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { getPendingEvent, isAlchemyReady, isExpeditionReady, isReincarnationForced } from '@/engine'
+import { getPendingEvent, isAlchemyReady, isReincarnationForced } from '@/engine'
 import { formatNumber } from '@/lib/format'
 import { startGameLoop } from '@/store/gameLoop'
 import { useGameStore } from '@/store/gameStore'
@@ -7,13 +7,13 @@ import { InkSplash } from '@/ui/atoms/InkSplash'
 import { NavBar } from '@/ui/molecules/NavBar'
 import { Toast } from '@/ui/molecules/Toast'
 import { EventModal } from '@/ui/organisms/EventModal'
-import { ExpeditionReportModal } from '@/ui/organisms/ExpeditionReportModal'
+import { ChestModal } from '@/ui/organisms/ChestModal'
 import { TribulationModal } from '@/ui/organisms/TribulationModal'
 import { OfflineModal } from '@/ui/organisms/OfflineModal'
 import { AlchemyScreen } from '@/ui/screens/AlchemyScreen'
-import { ExpeditionScreen } from '@/ui/screens/ExpeditionScreen'
 import { GameScreen } from '@/ui/screens/GameScreen'
 import { InventoryScreen } from '@/ui/screens/InventoryScreen'
+import { JourneyScreen } from '@/ui/screens/JourneyScreen'
 import { LegacyScreen } from '@/ui/screens/LegacyScreen'
 import { SettingsScreen } from '@/ui/screens/SettingsScreen'
 import { TechniquesScreen } from '@/ui/screens/TechniquesScreen'
@@ -23,7 +23,7 @@ const SCREENS = {
   techniques: TechniquesScreen,
   inventory: InventoryScreen,
   alchemy: AlchemyScreen,
-  expedition: ExpeditionScreen,
+  journey: JourneyScreen,
   legacy: LegacyScreen,
   settings: SettingsScreen,
 } as const
@@ -34,13 +34,16 @@ export default function App() {
   const setScreen = useGameStore((s) => s.setScreen)
   const stones = useGameStore((s) => s.state.stones)
   const alchemyReady = useGameStore((s) => isAlchemyReady(s.state))
-  const expeditionReady = useGameStore((s) => isExpeditionReady(s.state))
+  const journeyAlert = useGameStore((s) => s.state.journey.chests.red > 0 || s.state.journey.chests.normal >= 10)
   const legacyAlert = useGameStore((s) => isReincarnationForced(s.state))
   const tribulationResult = useGameStore((s) => s.tribulationResult)
   const resolveBolt = useGameStore((s) => s.resolveBolt)
   const dismissTribulationResult = useGameStore((s) => s.dismissTribulationResult)
-  const expeditionReport = useGameStore((s) => s.expeditionReport)
-  const dismissExpeditionReport = useGameStore((s) => s.dismissExpeditionReport)
+  const chestResult = useGameStore((s) => s.chestResult)
+  const dismissChestResult = useGameStore((s) => s.dismissChestResult)
+  const openChests = useGameStore((s) => s.openChests)
+  const equip = useGameStore((s) => s.equip)
+  const salvage = useGameStore((s) => s.salvage)
   const offlineReport = useGameStore((s) => s.offlineReport)
   const dismissOffline = useGameStore((s) => s.dismissOffline)
   const notice = useGameStore((s) => s.notice)
@@ -80,7 +83,7 @@ export default function App() {
             {formatNumber(stones)}
           </p>
           <div className="hidden md:block">
-            <NavBar current={screen} onChange={setScreen} alchemyReady={alchemyReady} expeditionReady={expeditionReady} legacyAlert={legacyAlert} />
+            <NavBar current={screen} onChange={setScreen} alchemyReady={alchemyReady} journeyAlert={journeyAlert} legacyAlert={legacyAlert} />
           </div>
         </div>
       </header>
@@ -90,13 +93,23 @@ export default function App() {
       </main>
 
       <div className="md:hidden">
-        <NavBar current={screen} onChange={setScreen} alchemyReady={alchemyReady} expeditionReady={expeditionReady} legacyAlert={legacyAlert} />
+        <NavBar current={screen} onChange={setScreen} alchemyReady={alchemyReady} journeyAlert={journeyAlert} legacyAlert={legacyAlert} />
       </div>
 
       <OfflineModal report={offlineReport} onClose={dismissOffline} />
-      <ExpeditionReportModal report={expeditionReport} onClose={dismissExpeditionReport} />
+      <ChestModal
+        result={chestResult}
+        state={state}
+        onEquip={equip}
+        onSalvage={(uid) => salvage([uid])}
+        onOpenMore={() => {
+          if (state.journey.chests.red > 0) openChests('red', state.journey.chests.red)
+          else openChests('normal', Math.min(10, state.journey.chests.normal))
+        }}
+        onClose={dismissChestResult}
+      />
       <TribulationModal state={state} result={tribulationResult} onAct={resolveBolt} onDismissResult={dismissTribulationResult} />
-      {!offlineReport && !expeditionReport && (
+      {!offlineReport && !chestResult && (
         <EventModal
           event={pendingEvent}
           result={eventResult}

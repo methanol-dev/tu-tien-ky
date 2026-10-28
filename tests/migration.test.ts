@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createInitialState, deserialize, SAVE_VERSION } from '@/engine'
+import raw from './fixtures/save-v5.json?raw'
 
 describe('save migration chain', () => {
   it('upgrades a v1 save (pre-economy) to the current version with sane defaults', () => {
@@ -47,9 +48,7 @@ describe('save migration chain', () => {
 })
 
 describe('v5 -> v6 (Phase 9: journey + gear)', () => {
-  it('converts treasures into equipped named gear and drops expeditions, keeping everything else', async () => {
-    const { readFileSync } = await import('node:fs')
-    const raw = readFileSync(new URL('./fixtures/save-v5.json', import.meta.url), 'utf8')
+  it('converts treasures into equipped named gear and drops expeditions, keeping everything else', () => {
     const before = JSON.parse(raw)
     expect(before.version).toBe(5)
     const r = deserialize(raw)

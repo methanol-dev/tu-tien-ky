@@ -5,7 +5,7 @@ const TABS: { id: Screen; label: string; glyph: string }[] = [
   { id: 'techniques', label: 'Công pháp', glyph: '法' },
   { id: 'inventory', label: 'Túi đồ', glyph: '囊' },
   { id: 'alchemy', label: 'Luyện đan', glyph: '丹' },
-  { id: 'expedition', label: 'Bí cảnh', glyph: '境' },
+  { id: 'journey', label: 'Hành tẩu', glyph: '行' },
   { id: 'legacy', label: 'Luân hồi', glyph: '輪' },
   { id: 'settings', label: 'Cài đặt', glyph: '設' },
 ]
@@ -14,11 +14,11 @@ interface NavBarProps {
   current: Screen
   onChange: (s: Screen) => void
   alchemyReady?: boolean
-  expeditionReady?: boolean
+  journeyAlert?: boolean
   legacyAlert?: boolean
 }
 
-export function NavBar({ current, onChange, alchemyReady, expeditionReady, legacyAlert }: NavBarProps) {
+export function NavBar({ current, onChange, alchemyReady, journeyAlert, legacyAlert }: NavBarProps) {
   return (
     <nav
       aria-label="Điều hướng"
@@ -41,7 +41,7 @@ export function NavBar({ current, onChange, alchemyReady, expeditionReady, legac
                   {t.glyph}
                 </span>
                 <span className="text-[10px] md:text-sm">{t.label}</span>
-                {((t.id === 'alchemy' && alchemyReady) || (t.id === 'expedition' && expeditionReady) || (t.id === 'legacy' && legacyAlert)) && (
+                {((t.id === 'alchemy' && alchemyReady) || (t.id === 'journey' && journeyAlert) || (t.id === 'legacy' && legacyAlert)) && (
                   <span
                     aria-label="Sẵn sàng"
                     className="absolute top-2 right-3 h-2 w-2 animate-pulse rounded-full bg-gold-400 md:top-1 md:right-1"

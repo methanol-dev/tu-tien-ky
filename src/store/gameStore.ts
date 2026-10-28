@@ -1,4 +1,7 @@
 import { create } from 'zustand'
+import type { ChestKind, Rarity } from '@/content/affixes'
+import type { GearSlot } from '@/content/gear'
+import type { Difficulty } from '@/content/regions'
 import {
   type ActionResult,
   applyOfflineProgress,
@@ -11,30 +14,36 @@ import {
   resolveBolt as engineResolveBolt,
   type TribulationAction,
   collectAlchemy as engineCollectAlchemy,
-  completeExpedition as engineCompleteExpedition,
   createInitialState,
   createLocalStorage,
   defaultRng,
   deserialize,
+  equip as engineEquip,
   exportSave as engineExportSave,
   gather as engineGather,
   type GameState,
+  type GearInstance,
   importSave as engineImportSave,
+  journeyTick,
   meditate as engineMeditate,
   MIN_OFFLINE_REPORT_MS,
   type EventResolution,
-  type ExpeditionReport,
   type OfflineReport,
+  openChests as engineOpenChests,
   resolveEvent as engineResolveEvent,
   rollEvent,
+  salvage as engineSalvage,
+  salvageByRarity as engineSalvageByRarity,
+  setAutoAdvance as engineSetAutoAdvance,
   shouldRollEvent,
   pushLog,
   type Rng,
   type SaveStorage,
   serialize,
   startAlchemy as engineStartAlchemy,
-  startExpedition as engineStartExpedition,
+  startRegion as engineStartRegion,
   tick as engineTick,
+  unequip as engineUnequip,
   upgradeTechnique as engineUpgradeTechnique,
   usePill as engineUsePill,
 } from '@/engine'
@@ -44,7 +53,7 @@ export type Screen =
   | 'techniques'
   | 'inventory'
   | 'alchemy'
-  | 'expedition'
+  | 'journey'
   | 'legacy'
   | 'settings'
 
@@ -68,8 +77,8 @@ export interface GameStore {
   notice: Notice | null
   /** Outcome of the last resolved event, shown until dismissed. */
   eventResult: EventResolution | null
-  /** Report of the last finished expedition, shown until dismissed. */
-  expeditionReport: ExpeditionReport | null
+  /** Gear from the last chest opening, shown until dismissed. */
+  chestResult: GearInstance[] | null
   /** Last bolt outcome, for the tribulation dialog's final screen. */
   tribulationResult: BoltResult | null
   hydrate: (now?: number) => void
@@ -86,9 +95,14 @@ export interface GameStore {
   resolveEvent: (choiceId: string) => boolean
   dismissEventResult: () => void
   setPauseOnEvent: (value: boolean) => void
-  startExpedition: (dungeonId: string) => boolean
-  completeExpedition: () => boolean
-  dismissExpeditionReport: () => void
+  startRegion: (regionId: string, difficulty: Difficulty) => boolean
+  setAutoAdvance: (value: boolean) => void
+  openChests: (kind: ChestKind, count: number) => boolean
+  dismissChestResult: () => void
+  equip: (uid: string) => boolean
+  unequip: (slot: GearSlot) => boolean
+  salvage: (uids: string[]) => boolean
+  salvageByRarity: (rarities: Rarity[]) => boolean
   resolveBolt: (action: TribulationAction) => boolean
   dismissTribulationResult: () => void
   reincarnate: () => boolean
@@ -141,7 +155,7 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       fx: null,
       notice: null,
       eventResult: null,
-      expeditionReport: null,
+      chestResult: null,
       tribulationResult: null,
 
       hydrate: (now = Date.now()) => {
@@ -158,7 +172,7 @@ export function createGameStore(deps: GameStoreDeps = {}) {
           })
           return
         }
-        const { state, report } = applyOfflineProgress(parsed.state, now)
+        const { state, report } = applyOfflineProgress(parsed.state, now, undefined, rng)
         set({
           state,
           hydrated: true,
@@ -168,12 +182,12 @@ export function createGameStore(deps: GameStoreDeps = {}) {
 
       tick: (dtMs) =>
         set((s) => {
-          const ticked = engineTick(s.state, dtMs)
+          const ticked = journeyTick(engineTick(s.state, dtMs), dtMs, rng)
           return { state: shouldRollEvent(ticked) ? rollEvent(ticked, rng) : ticked }
         }),
 
       resume: (now = Date.now()) => {
-        const { state, report } = applyOfflineProgress(get().state, now)
+        const { state, report } = applyOfflineProgress(get().state, now, undefined, rng)
         set({
           state,
           offlineReport: report.appliedMs >= MIN_OFFLINE_REPORT_MS ? report : get().offlineReport,
@@ -226,15 +240,37 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       },
       dismissEventResult: () => set({ eventResult: null }),
 
-      startExpedition: (dungeonId) => apply(engineStartExpedition(get().state, dungeonId)),
-      completeExpedition: () => {
-        const r = engineCompleteExpedition(get().state, rng)
-        if (!r.ok) return apply(r)
-        set({ state: r.state.state, expeditionReport: r.state.report })
+      startRegion: (regionId, difficulty) => apply(engineStartRegion(get().state, regionId, difficulty)),
+      setAutoAdvance: (value) => set((s) => ({ state: engineSetAutoAdvance(s.state, value) })),
+
+      openChests: (kind, count) => {
+        const r = engineOpenChests(get().state, kind, count, rng)
+        if (r.error) {
+          get().notify(r.error, 'error')
+          return false
+        }
+        set({ state: r.state, chestResult: [...(get().chestResult ?? []), ...r.opened] })
         get().save()
         return true
       },
-      dismissExpeditionReport: () => set({ expeditionReport: null }),
+      dismissChestResult: () => set({ chestResult: null }),
+
+      equip: (uid) => apply(engineEquip(get().state, uid)),
+      unequip: (slot) => apply(engineUnequip(get().state, slot)),
+      salvage: (uids) => {
+        const r = engineSalvage(get().state, uids)
+        if (!r.ok) return apply(r)
+        set({ state: r.state.state })
+        get().notify(`Phân giải ${r.state.count} món, thu ${Math.round(r.state.stones)} linh thạch.`, 'success')
+        return true
+      },
+      salvageByRarity: (rarities) => {
+        const r = engineSalvageByRarity(get().state, rarities)
+        if (!r.ok) return apply(r)
+        set({ state: r.state.state })
+        get().notify(`Phân giải ${r.state.count} món, thu ${Math.round(r.state.stones)} linh thạch.`, 'success')
+        return true
+      },
 
       resolveBolt: (action) => {
         const r = engineResolveBolt(get().state, action, rng)
@@ -255,7 +291,7 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       reincarnate: () => {
         const r = engineReincarnate(get().state, Date.now())
         if (!r.ok) return apply(r)
-        set({ state: r.state, offlineReport: null, eventResult: null, expeditionReport: null, screen: 'cultivate' })
+        set({ state: r.state, offlineReport: null, eventResult: null, chestResult: null, screen: 'cultivate' })
         get().save()
         get().notify('Chuyển thế thành công. Một kiếp mới bắt đầu.', 'success')
         return true
@@ -285,7 +321,7 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       importSave: (text) => {
         const parsed = engineImportSave(text)
         if (!parsed.ok) return parsed
-        const { state, report } = applyOfflineProgress(parsed.state, Date.now())
+        const { state, report } = applyOfflineProgress(parsed.state, Date.now(), undefined, rng)
         set({
           state: pushLog(state, 'Đã nhập save thành công.', 'info'),
           offlineReport: report.appliedMs >= MIN_OFFLINE_REPORT_MS ? report : null,
@@ -297,7 +333,7 @@ export function createGameStore(deps: GameStoreDeps = {}) {
 
       resetGame: (now = Date.now()) => {
         storage.clear()
-        set({ state: freshState(now), offlineReport: null, fx: null, screen: 'cultivate' })
+        set({ state: freshState(now), offlineReport: null, fx: null, chestResult: null, screen: 'cultivate' })
         get().save(now)
       },
     }

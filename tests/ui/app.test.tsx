@@ -66,6 +66,13 @@ describe('App smoke', () => {
       button('Túi đồ').click()
     })
     expect(container.textContent).toContain('Phường thị')
+    expect(container.textContent).toContain('Pháp bảo')
+    await act(async () => {
+      button('Hành tẩu').click()
+    })
+    expect(container.textContent).toContain('Hậu Sơn Lâm')
+    expect(container.textContent).toContain('Tĩnh tọa')
+    expect(container.querySelector('[role="img"]')).not.toBeNull()
     await act(async () => {
       button('Cài đặt').click()
     })
