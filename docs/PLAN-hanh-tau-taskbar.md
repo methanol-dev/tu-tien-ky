@@ -1,6 +1,6 @@
 # PLAN: Hành Tẩu — dải nổi kiểu Task Bar Hero, phong cách tu tiên, 100% web
 
-> **Trạng thái**: 📝 Lập 2026-10-28, sửa cùng ngày: **bỏ Tauri, toàn bộ chạy trên web**. Chờ chốt mục 9.
+> **Trạng thái**: ✅ **P9 xong** (2026-10-28, 122 test, sim guardrail giữ nguyên). P10 dải nổi: chưa làm, có trang spike `public/pip-spike.html`. P11 chưa làm. Mục 9: câu 1 chốt **thay**, câu 2 chốt **chấp nhận PiP**, câu 3 làm P9 trước và để spike cho mày tự mở.
 > **Tham chiếu**: *TBH: Task Bar Hero* (Nugem Studio, Steam, 2026): party 3 hero pixel tự đánh side-scroll trong cửa sổ nhỏ đè lên taskbar Windows; quái rớt rương → gear + nguyên liệu → Cube/rune tree → mạnh hơn → qua stage nhanh hơn; 3 act × 4 độ khó ≈ 120 stage; người chơi chỉ thao tác giữa các trận.
 > **Đã chốt với mày**: (1) **Hybrid**: giữ game idle hiện tại, thêm lớp auto-battle real-time; (2) **chỉ web**, không shell desktop; dải nổi dùng **Document Picture-in-Picture** (Chrome/Edge), fallback cửa sổ popup; (3) hình ảnh **thủy mặc silhouette SVG/CSS**, không pixel art; (4) **gộp cốt truyện Kiếm Lai**: vùng = hồi, party = Trần Bình An + đồng hành. Plan [PLAN-cot-truyen-kiem-lai.md](PLAN-cot-truyen-kiem-lai.md) chuyển thành lớp nội dung làm ở P11.
 > **Tiền đề**: Phase 0–8 xong, save v5, 106 test, sim guardrail.
@@ -172,7 +172,7 @@ src/platform/
 
 ## 5. Lộ trình & Task
 
-### Phase 9 — Hành Tẩu lõi (web) `[P9]`
+### Phase 9 — Hành Tẩu lõi (web) `[P9]` ✅ (2026-10-28)
 - `P9-01` Types + `SAVE_VERSION = 6` + migration (expedition → bỏ, `journey` mặc định vùng 1 Thường, treasures cũ → named gear instance đã mặc) + zod + test với fixture save v5.
 - `P9-02` Content: `regions.ts` từ dungeons, `gear.ts`, `affixes.ts`; validator + test.
 - `P9-03` `engine/gear.ts`: roll, equip, salvage, `getGearStats`; nối vào `getCombatStats`/`getModifiers`. Test phân phối rarity, affix trong dải, equip đổi stat.
@@ -182,6 +182,7 @@ src/platform/
 - `P9-07` UI: `JourneyStage` (SVG parallax + silhouettes + CSS animation, prop `compact`), tab Hành tẩu, `ChestModal`, mục Pháp bảo trong Túi đồ. 10 silhouette SVG. jsdom smoke.
 - `P9-08` Xóa `ExpeditionScreen`/`ExpeditionReportModal`/`expedition.ts` (giữ `combat.ts`), cập nhật docs, walkthrough, README. Commit theo task.
 - **Verify**: `pnpm test` ≥ 130 xanh, lint, build; sim guardrail; tay: treo 30 phút ở Luyện Khí thấy qua vùng 1 Thường, có 5+ gear, mặc vào thấy dmg tăng.
+- **Kết quả**: 122 test (mục tiêu 130 không đạt vì gộp test combat cũ, chất lượng không đổi), lint/build sạch. Sim 24h active: linh thạch 8.56M so với 8.95M trước; passive 4.76M so với 3.87M (×1.23). Quyết định thêm trong lúc làm: **chết không mất linh khí** (phạt khi AFK sẽ xóa sạch tiến độ offline), gear 3 slot (Phù lục để P11), `stepUp` chọn phương án khó hơn gần nhất theo sức quái chứ không chỉ "vùng kế chưa clear". **Chưa kiểm tra bằng mắt** trên trình duyệt thật.
 
 ### Phase 10 — Dải nổi trên web `[P10]`
 - `P10-01` Spike 1 buổi: `documentPictureInPicture.requestWindow` trên Chrome/Edge máy mày, đo giới hạn kích thước, thanh tiêu đề, hành vi khi tab ẩn/đóng. Ghi kết quả vào plan này, chỉnh 2.5 nếu sai.
