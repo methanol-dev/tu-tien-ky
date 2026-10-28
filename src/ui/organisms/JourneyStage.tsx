@@ -41,12 +41,19 @@ function EnemyFigure({
   enemy: { id: string; name: string; imageUrl?: string }
   silhouette: SilhouetteId
 }) {
-  const [imgError, setImgError] = useState(false)
   const candidateUrl = enemy.imageUrl ?? `/assets/monsters/${enemy.id}.png`
+  const [prevUrl, setPrevUrl] = useState(candidateUrl)
+  const [imgError, setImgError] = useState(false)
+
+  if (prevUrl !== candidateUrl) {
+    setPrevUrl(candidateUrl)
+    setImgError(false)
+  }
 
   if (!imgError) {
     return (
       <img
+        key={candidateUrl}
         src={candidateUrl}
         alt={enemy.name}
         className="h-full w-auto max-w-none object-contain pointer-events-none -scale-x-100 transition-transform duration-200 drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]"
@@ -191,9 +198,10 @@ export function JourneyStage({ state, compact = false }: Props) {
               <div className="flex h-9 w-9 items-center justify-center rounded-full border border-vermilion-500/50 bg-ink-900 text-sm overflow-hidden">
                 {(() => {
                   const tmpl = region.boss.id === mainEnemy.id ? region.boss : region.enemies.find((e) => e.id === mainEnemy.id)
-                  const img = tmpl?.imageUrl ?? `/assets/monsters/${mainEnemy.id}.png`
+                  const img = tmpl?.imageUrl ?? mainEnemy.imageUrl ?? `/assets/monsters/${mainEnemy.id}.png`
                   return (
                     <img
+                      key={img}
                       src={img}
                       alt={mainEnemy.name}
                       className="h-full w-full object-cover object-top"
@@ -286,6 +294,11 @@ export function JourneyStage({ state, compact = false }: Props) {
         const hitNow = lastPlayerHit?.target === i
         const dead = e.hp <= 0
         const size = e.boss ? (compact ? 'h-[95%]' : 'h-[78%]') : figure
+        const tmpl = region.boss.id === e.id ? region.boss : region.enemies.find((x) => x.id === e.id)
+        const enemyWithImg = {
+          ...e,
+          imageUrl: tmpl?.imageUrl ?? e.imageUrl ?? `/assets/monsters/${e.id}.png`,
+        }
         return (
           <div
             key={`${j.stage}-${i}-${e.id}`}
@@ -299,7 +312,7 @@ export function JourneyStage({ state, compact = false }: Props) {
                 : `drop-shadow(0 0 ${compact ? 2 : 6}px ${p.accent}66)`,
             }}
           >
-            <EnemyFigure enemy={e} silhouette={e.silhouette} />
+            <EnemyFigure enemy={enemyWithImg} silhouette={e.silhouette} />
 
             {/* Vòng hào quang hắc ám dưới chân Boss */}
             {e.boss && !dead && (

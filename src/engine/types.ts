@@ -107,6 +107,7 @@ export interface JourneyEnemy {
   id: string
   name: string
   silhouette: SilhouetteId
+  imageUrl?: string
   hp: number
   maxHp: number
   atk: number

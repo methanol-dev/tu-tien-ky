@@ -47,6 +47,7 @@ const enemySchema = z.object({
   id: z.string().max(64),
   name: z.string().max(100),
   silhouette: z.enum(['wolf', 'bear', 'bat', 'snake', 'cultist', 'skeleton', 'skeleton-lord', 'yeti', 'serpent', 'lizard', 'dragonling', 'demon', 'demon-general']),
+  imageUrl: z.string().optional(),
   hp: z.number().nonnegative().finite(),
   maxHp: z.number().positive().finite(),
   atk: z.number().nonnegative().finite(),

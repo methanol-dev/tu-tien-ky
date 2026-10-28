@@ -135,7 +135,7 @@ export const REGIONS: readonly RegionDef[] = [
     enemies: [
       mob('da-tu-cuop-bao', 'Dã tu cướp báu', 'cultist', 0.35, 0.5, 0.25, '/assets/monsters/da-tu-cuop-bao.png'),
       mob('hac-son-xa', 'Hắc sơn xà', 'snake', 0.4, 0.55, 0.3, '/assets/monsters/bach-mang.png'),
-      mob('da-dieu-yeu', 'Dạ điểu yêu', 'bat', 0.3, 0.5, 0.2),
+      mob('da-dieu-yeu', 'Dạ điểu yêu', 'bat', 0.3, 0.5, 0.2, '/assets/monsters/da-dieu-yeu.png'),
     ],
     boss: boss('hac-son-lao-quai', 'Hắc Sơn Lão Quái', 'cultist', 1.05, 0.7, 0.5, '/assets/monsters/hac-son-lao-quai.png'),
     loot: [{ itemId: 'huyet-tinh-chi', chance: 1, min: 1, max: 3 }, { itemId: 'tu-linh-chi', chance: 0.25, min: 1, max: 1 }, { itemId: 'tu-khi-dan', chance: 0.3, min: 1, max: 1 }],
@@ -152,7 +152,7 @@ export const REGIONS: readonly RegionDef[] = [
     backdropUrl: 'assets/regions/thu-gian-ho.jpg',
     enemies: [
       mob('thuy-phi-ta-tu', 'Thủy phỉ tà tu', 'skeleton', 0.35, 0.4, 0.3, '/assets/monsters/thuy-phi-ta-tu.png'),
-      mob('thuy-quy-tuong', 'Thủy quỷ tướng', 'skeleton', 0.5, 0.5, 0.4, '/assets/monsters/thuy-phi-ta-tu.png'),
+      mob('thuy-quy-tuong', 'Thủy quỷ tướng', 'skeleton', 0.5, 0.5, 0.4, '/assets/monsters/thuy-quy-tuong.png'),
     ],
     boss: boss('luu-chi-mau', 'Lưu Chí Mậu', 'skeleton-lord', 1.1, 0.65, 0.55, '/assets/monsters/luu-chi-mau.png'),
     loot: [{ itemId: 'tu-linh-chi', chance: 1, min: 1, max: 2 }, { itemId: 'pha-canh-dan', chance: 0.2, min: 1, max: 1 }],
@@ -169,7 +169,7 @@ export const REGIONS: readonly RegionDef[] = [
     backdropUrl: 'assets/regions/lac-phach-son.svg',
     enemies: [
       mob('son-da-di-thu', 'Sơn dã dị thú', 'wolf', 0.35, 0.4, 0.3, '/assets/monsters/da-khuyen.png'),
-      mob('tuyet-yeu-ho-son', 'Tuyết yêu hộ sơn', 'yeti', 0.45, 0.5, 0.4),
+      mob('tuyet-yeu-ho-son', 'Tuyết yêu hộ sơn', 'yeti', 0.45, 0.5, 0.4, '/assets/monsters/bac-nhac-co-than.png'),
     ],
     boss: boss('bac-nhac-co-than', 'Bắc Nhạc Cổ Thần', 'serpent', 1.05, 0.65, 0.6, '/assets/monsters/bac-nhac-co-than.png'),
     loot: [{ itemId: 'thien-tam-lien', chance: 0.8, min: 1, max: 2 }, { itemId: 'tu-linh-chi', chance: 1, min: 1, max: 2 }, { itemId: 'ngung-than-dan', chance: 0.3, min: 1, max: 1 }],
