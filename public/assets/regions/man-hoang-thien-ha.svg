@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid slice" width="100%" height="100%">
+  <defs>
+    <linearGradient id="sky-man-hoang" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#160d14"/>
+      <stop offset="60%" stop-color="#2d172a"/>
+      <stop offset="100%" stop-color="#0e080d"/>
+    </linearGradient>
+    <radialGradient id="blood-moon" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e04b40" stop-opacity="0.9"/>
+      <stop offset="70%" stop-color="#8c1c1c" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#160d14" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="400" fill="url(#sky-man-hoang)"/>
+
+  <!-- Trăng máu ma mị (Huyết Nguyệt) -->
+  <circle cx="850" cy="110" r="75" fill="url(#blood-moon)"/>
+  <circle cx="850" cy="110" r="42" fill="#c43b31" opacity="0.85"/>
+
+  <!-- Dãy núi yêu ma gai nhọn sừng sững -->
+  <path d="M0 240 L120 180 L220 230 L360 160 L480 220 L620 170 L780 230 L920 150 L1040 210 L1200 170 L1200 400 L0 400 Z" fill="#20111d" opacity="0.7"/>
+  <path d="M0 280 L160 220 L280 270 L420 210 L580 260 L740 200 L900 250 L1060 210 L1200 240 L1200 400 L0 400 Z" fill="#130911" opacity="0.9"/>
+
+  <!-- Làn khói yêu khí tím than dâng tràn -->
+  <path d="M0 360 Q250 310 500 340 T1000 320 T1200 350 L1200 400 L0 400 Z" fill="#3b1b36" opacity="0.45"/>
+</svg>
+

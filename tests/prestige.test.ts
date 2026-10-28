@@ -54,7 +54,7 @@ describe('prestige', () => {
         { uid: 'g1', defId: 'thiet-kiem', rarity: 'linh' as const, tier: 1, affixes: [{ key: 'atk' as const, value: 0.2 }] },
         { uid: 'g2', defId: 'moc-phu', rarity: 'pham' as const, tier: 1, affixes: [{ key: 'hp' as const, value: 0.1 }] },
       ],
-      equipped: { kiem: 'g1', giap: null, 'phap-khi': null },
+      equipped: { ...createInitialState(0).equipped, 'vu-khi': 'g1' },
       nextGearUid: 3,
       legacy: { daoVan: 4, lives: 1, upgrades: { 'tuc-the-ky-uc': 3, 'tien-the-di-san': 2, 'tang-bao-cac': 1 }, bestRealmIndex: 0 },
     }
@@ -68,7 +68,7 @@ describe('prestige', () => {
     expect(n.techniques).toEqual({})
     expect(n.inventory).toEqual({})
     expect(n.gear.map((g) => g.uid)).toEqual(['g1'])
-    expect(n.equipped.kiem).toBe('g1')
+    expect(n.equipped['vu-khi']).toBe('g1')
     expect(n.nextGearUid).toBe(3)
     expect(n.legacy.lives).toBe(2)
     expect(n.legacy.daoVan).toBe(4 + computeDaoVan(s))
@@ -103,7 +103,7 @@ describe('prestige', () => {
     delete stats.tribulationsFailed
     v4.stats = stats
     const r = deserialize(JSON.stringify(v4))
-    expect(r.ok).toBe(true)
+    expect(r.ok, !r.ok ? r.error : '').toBe(true)
     if (r.ok) {
       expect(r.state.version).toBe(SAVE_VERSION)
       expect(r.state.legacy.lives).toBe(1)

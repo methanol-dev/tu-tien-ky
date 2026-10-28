@@ -61,7 +61,7 @@ describe('App smoke', () => {
     await act(async () => {
       button('Luyện đan').click()
     })
-    expect(container.textContent).toContain('Đan lô')
+    expect(container.textContent).toContain('Đan Lô')
     await act(async () => {
       button('Túi đồ').click()
     })
@@ -131,9 +131,9 @@ describe('App smoke', () => {
     await act(async () => {
       button('🛡️ Pháp Bảo').click()
     })
-    expect(container.textContent).toContain('Kiếm')
-    expect(container.textContent).toContain('Giáp')
-    expect(container.textContent).toContain('Pháp khí')
+    expect(container.textContent).toContain('Vũ khí')
+    expect(container.textContent).toContain('Áo')
+    expect(container.textContent).toContain('Phù lục')
 
     // Close modal
     await act(async () => {

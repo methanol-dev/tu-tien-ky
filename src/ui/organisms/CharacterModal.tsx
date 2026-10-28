@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { RARITY_NAME } from '@/content/affixes'
+import { AVATARS, AVATAR_BY_ID } from '@/content/avatars'
+import { CLASSES, CLASS_BY_ID } from '@/content/classes'
 import { GEAR_SLOTS, SLOT_NAME } from '@/content/gear'
 import {
   MARTIAL_STAGES,
@@ -12,6 +14,7 @@ import { TECHNIQUE_BY_ID } from '@/content/techniques'
 import {
   type GameState,
   getActiveBuffs,
+  getActiveSetBonuses,
   getAffixTotals,
   getBreakthroughChance,
   getCombatStats,
@@ -27,8 +30,10 @@ import {
 import { describeAffix, RARITY_BG, RARITY_CLASS } from '@/lib/gearUi'
 import { describeTechniqueEffect } from '@/lib/describe'
 import { formatAge, formatDurationMs, formatNumber, formatPercent, formatRate } from '@/lib/format'
+import { useGameStore } from '@/store/gameStore'
 import { Button } from '@/ui/atoms/Button'
 import { Modal } from '@/ui/atoms/Modal'
+import { AvatarModal } from './AvatarModal'
 
 interface CharacterModalProps {
   open: boolean
@@ -36,10 +41,13 @@ interface CharacterModalProps {
   state: GameState
 }
 
-type Tab = 'combat' | 'cultivation' | 'martial' | 'gear'
+type Tab = 'combat' | 'cultivation' | 'martial' | 'gear' | 'class'
 
 export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
   const [tab, setTab] = useState<Tab>('combat')
+  const [avatarModalOpen, setAvatarModalOpen] = useState(false)
+  const setAvatar = useGameStore((s) => s.setAvatar)
+  const changeClass = useGameStore((s) => s.changeClass)
 
   if (!open) return null
 
@@ -58,51 +66,81 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
   const nextMartial = getNextMartialRealm(punches)
 
   const byUid = new Map(state.gear.map((g) => [g.uid, g]))
+  const activeSets = getActiveSetBonuses(state)
   const learnedTechniques = Object.entries(state.techniques)
     .filter(([, lvl]) => lvl > 0)
     .map(([id, lvl]) => ({ def: TECHNIQUE_BY_ID[id], lvl }))
     .filter((t) => t.def !== undefined)
 
+  const avatar = AVATAR_BY_ID[state.settings.avatarId ?? 'tran-binh-an'] ?? AVATARS[0]
+
   return (
-    <Modal
-      open={open}
-      title="Đạo Thân · Chỉ Số Nhân Vật"
-      onClose={onClose}
-      maxWidth="max-w-2xl"
-      footer={
-        <Button variant="primary" onClick={onClose} autoFocus>
-          Đóng
-        </Button>
-      }
-    >
-      {/* Căn cốt tổng quan */}
-      <div className="rounded-lg border border-gold-500/20 bg-ink-900/80 p-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-han text-xl font-bold text-paper-100">{realm.name}</span>
-              {realm.stageLabel && (
-                <span className="rounded bg-gold-500/10 px-2 py-0.5 text-xs text-gold-400 border border-gold-500/30">
-                  {realm.stageLabel}
-                </span>
+    <>
+      <Modal
+        open={open}
+        title="Đạo Thân · Chỉ Số Nhân Vật"
+        onClose={onClose}
+        maxWidth="max-w-2xl"
+        footer={
+          <Button variant="primary" onClick={onClose} autoFocus>
+            Đóng
+          </Button>
+        }
+      >
+        {/* Căn cốt tổng quan */}
+        <div className="rounded-lg border border-gold-500/20 bg-ink-900/80 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3.5">
+              <button
+                type="button"
+                onClick={() => setAvatarModalOpen(true)}
+                title="Bấm để đổi diện mạo"
+                className="group relative h-16 w-16 shrink-0 cursor-pointer overflow-hidden rounded-full border-2 border-gold-500/50 shadow-ink transition-transform hover:scale-105 hover:border-gold-400"
+              >
+                <img
+                  src={avatar.image}
+                  alt={avatar.name}
+                  className="h-full w-full object-cover object-top shadow-ink"
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+                  <span className="font-han text-[10px] text-gold-300">Đổi</span>
+                </div>
+              </button>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-han text-xl font-bold text-paper-100">{avatar.name}</span>
+                  <span className="font-han text-sm text-gold-400">({realm.name})</span>
+                  {realm.stageLabel && (
+                    <span className="rounded bg-gold-500/10 px-2 py-0.5 text-xs text-gold-400 border border-gold-500/30">
+                      {realm.stageLabel}
+                    </span>
+                  )}
+                </div>
+              {realm.kiemLaiRealm && (
+                <p className="mt-1 text-xs text-gold-300 font-serif">
+                  📜 Luyện Khí Sĩ: <span className="text-paper-100 font-medium">{realm.kiemLaiRealm}</span>
+                </p>
               )}
-            </div>
-            {realm.kiemLaiRealm && (
-              <p className="mt-1 text-xs text-gold-300 font-serif">
-                📜 Luyện Khí Sĩ: <span className="text-paper-100 font-medium">{realm.kiemLaiRealm}</span>
+              <p className="mt-0.5 text-xs text-vermilion-300 font-serif">
+                👊 Võ Đạo: <span className="text-paper-100 font-medium">{martial.name}</span> ({punches} quyền)
               </p>
-            )}
-            <p className="mt-0.5 text-xs text-vermilion-300 font-serif">
-              👊 Võ Đạo: <span className="text-paper-100 font-medium">{martial.name}</span> ({punches} quyền)
-            </p>
-            <p className="mt-1 text-xs text-paper-400">
-              Tuổi thọ:{' '}
-              <span className={`tabular-nums ${expired ? 'text-vermilion-400' : 'text-paper-200'}`}>
-                {formatAge(state.ageDays)}
-              </span>{' '}
-              / <span className="tabular-nums text-paper-300">{lifespanYears} năm</span>
-              {expired && <span className="ml-1 text-vermilion-400">(Đã tận)</span>}
-            </p>
+              {(() => {
+                const currentClass = CLASS_BY_ID[state.classId] ?? CLASS_BY_ID['kiem-tu']
+                return (
+                  <p className="mt-0.5 text-xs font-serif" style={{ color: currentClass.accentColor }}>
+                    🏮 Đạo Thống: <span className="text-paper-100 font-medium">{currentClass.name} · {currentClass.title}</span>
+                  </p>
+                )
+              })()}
+              <p className="mt-1 text-xs text-paper-400">
+                Tuổi thọ:{' '}
+                <span className={`tabular-nums ${expired ? 'text-vermilion-400' : 'text-paper-200'}`}>
+                  {formatAge(state.ageDays)}
+                </span>{' '}
+                / <span className="tabular-nums text-paper-300">{lifespanYears} năm</span>
+                {expired && <span className="ml-1 text-vermilion-400">(Đã tận)</span>}
+              </p>
+            </div>
           </div>
           <div className="text-right text-xs text-paper-400 space-y-0.5">
             <p>
@@ -165,7 +203,18 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
               : 'border-transparent text-paper-400 hover:text-paper-200'
           }`}
         >
-          🛡️ Pháp Bảo ({Object.values(state.equipped).filter(Boolean).length}/3)
+          🛡️ Pháp Bảo ({Object.values(state.equipped).filter(Boolean).length}/12)
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab('class')}
+          className={`flex-1 border-b-2 py-2 text-center font-medium transition-colors ${
+            tab === 'class'
+              ? 'border-gold-400 text-gold-400'
+              : 'border-transparent text-paper-400 hover:text-paper-200'
+          }`}
+        >
+          🏮 Đạo Thống (10 Phái)
         </button>
       </div>
 
@@ -533,7 +582,27 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
       {/* Tab 4: Pháp bảo */}
       {tab === 'gear' && (
         <div className="space-y-4 pt-1">
-          <ul className="grid gap-3 sm:grid-cols-3">
+          {/* Hiệu ứng Set Bonus kích hoạt */}
+          {activeSets.length > 0 && (
+            <div className="rounded-md border border-gold-500/30 bg-ink-950/70 p-3 shadow-inner">
+              <h4 className="font-han text-xs font-bold text-gold-300 mb-2">
+                Hiệu ứng bộ pháp bảo đang kích hoạt ({activeSets.length}):
+              </h4>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {activeSets.map((s, idx) => (
+                  <div key={idx} className="rounded border border-gold-500/20 bg-ink-900/60 p-2 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-gold-400">{s.setName}</span>
+                      <span className="text-[10px] text-paper-400">Mốc {s.threshold} món</span>
+                    </div>
+                    <p className="mt-1 text-paper-300">{s.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
             {GEAR_SLOTS.map((slot) => {
               const uid = state.equipped[slot]
               const g = uid ? byUid.get(uid) : undefined
@@ -541,10 +610,10 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
                 return (
                   <li
                     key={slot}
-                    className="flex min-h-28 flex-col items-center justify-center rounded-lg border border-dashed border-paper-400/20 bg-ink-900/30 p-3 text-center text-xs text-paper-400"
+                    className="flex min-h-20 flex-col items-center justify-center rounded-lg border border-dashed border-paper-400/20 bg-ink-900/30 p-2 text-center text-xs text-paper-400"
                   >
-                    <span className="font-han text-sm text-paper-300">{SLOT_NAME[slot]}</span>
-                    <span className="mt-1 text-paper-400">Chưa trang bị</span>
+                    <span className="font-han text-xs font-medium text-paper-300">{SLOT_NAME[slot]}</span>
+                    <span className="mt-0.5 text-[10px] text-paper-400">Trống</span>
                   </li>
                 )
               }
@@ -552,17 +621,17 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
               return (
                 <li
                   key={slot}
-                  className={`flex flex-col justify-between rounded-lg border p-3 ${RARITY_CLASS[g.rarity]} ${RARITY_BG[g.rarity]}`}
+                  className={`flex flex-col justify-between rounded-lg border p-2.5 ${RARITY_CLASS[g.rarity]} ${RARITY_BG[g.rarity]}`}
                 >
                   <div>
                     <div className="flex items-start justify-between gap-1">
-                      <h4 className="font-han text-sm font-semibold">{def.name}</h4>
-                      <span className="text-[10px] uppercase">{RARITY_NAME[g.rarity]}</span>
+                      <h4 className="font-han text-xs font-bold truncate">{def.name}</h4>
+                      <span className="text-[9px] uppercase font-mono">{RARITY_NAME[g.rarity]}</span>
                     </div>
-                    <p className="mt-0.5 text-[11px] text-paper-400">
+                    <p className="mt-0.5 text-[10px] text-paper-400">
                       {SLOT_NAME[slot]} · Bậc {g.tier}
                     </p>
-                    <ul className="mt-2 space-y-0.5 text-xs">
+                    <ul className="mt-1 space-y-0.5 text-[11px]">
                       {g.affixes.map((a, i) => (
                         <li key={i} className="text-paper-200">
                           {describeAffix(a)}
@@ -597,6 +666,112 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
           </div>
         </div>
       )}
-    </Modal>
+
+      {/* Tab 5: Đạo Thống (10 Phái & Chư Tử Bách Gia) */}
+      {tab === 'class' && (
+        <div className="space-y-4 pt-1">
+          <div className="rounded-lg border border-gold-500/20 bg-ink-900/60 p-3">
+            <h4 className="font-han text-sm text-gold-300">Chư Tử Bách Gia & Đạo Thống Kiếm Lai</h4>
+            <p className="mt-1 text-xs text-paper-300">
+              Trời đất bao la, đạo hữu có thể quy y Phật môn, nhập thế Nho gia, thuận theo Đạo pháp tự nhiên, hoặc đúc rèn ngạo cốt Kiếm Tu / Võ Phu thuần túy. Mỗi phái mang theo thiên phú chân truyền và kỹ năng trấn phái độc nhất vô nhị.
+            </p>
+          </div>
+
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {CLASSES.map((c) => {
+              const active = state.classId === c.id
+              return (
+                <li
+                  key={c.id}
+                  className={`relative flex flex-col justify-between rounded-xl border p-4 transition-all ${
+                    active
+                      ? 'border-gold-400 bg-ink-900/95 ring-2 ring-gold-500/30 shadow-lg'
+                      : 'border-paper-400/20 bg-ink-950/70 hover:border-gold-500/40'
+                  }`}
+                  style={
+                    active
+                      ? {
+                          borderColor: c.accentColor,
+                          boxShadow: `0 0 16px ${c.accentColor}33`,
+                        }
+                      : undefined
+                  }
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2.5">
+                        <span
+                          className="flex h-9 w-9 items-center justify-center rounded-lg font-han font-bold text-lg border"
+                          style={{
+                            borderColor: c.accentColor + '88',
+                            color: c.accentColor,
+                            backgroundColor: c.accentColor + '22',
+                          }}
+                        >
+                          {c.glyph}
+                        </span>
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <h5 className="font-han text-base font-bold text-paper-100">{c.name}</h5>
+                            <span className="text-[11px] text-paper-400">({c.faction})</span>
+                          </div>
+                          <p className="text-xs font-serif" style={{ color: c.accentColor }}>
+                            {c.title}
+                          </p>
+                        </div>
+                      </div>
+
+                      {active && (
+                        <span className="shrink-0 rounded-full bg-gold-500/20 px-2 py-0.5 text-[10px] font-bold text-gold-400 border border-gold-500/40">
+                          Chính Thống
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-xs text-paper-300 leading-relaxed">{c.description}</p>
+
+                    <div className="space-y-1 rounded-md border border-paper-400/10 bg-ink-950/80 p-2.5 text-xs">
+                      <div className="text-paper-200">
+                        <span className="text-paper-400">Trấn phái: </span>
+                        <strong className="text-gold-300 font-medium">{c.signatureSkill}</strong>
+                      </div>
+                      <div className="text-paper-200">
+                        <span className="text-paper-400">Chân truyền: </span>
+                        <strong className="text-jade-400 font-medium">{c.passiveName}</strong>
+                      </div>
+                      <p className="text-[11px] text-paper-300/90 font-serif pt-0.5">{c.passiveDesc}</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 pt-2.5 border-t border-paper-400/10 flex justify-end">
+                    {active ? (
+                      <span className="text-xs font-han text-gold-400 flex items-center gap-1">
+                        <span>✓</span> Đang theo đuổi
+                      </span>
+                    ) : (
+                      <Button
+                        variant="secondary"
+                        className="px-2.5 py-1 text-xs"
+                        onClick={() => changeClass(c.id)}
+                      >
+                        Gia Nhập Đạo Thống
+                      </Button>
+                    )}
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      )}
+      </Modal>
+
+      <AvatarModal
+        open={avatarModalOpen}
+        onClose={() => setAvatarModalOpen(false)}
+        currentAvatarId={state.settings.avatarId ?? 'tran-binh-an'}
+        onSelectAvatar={setAvatar}
+      />
+    </>
   )
 }

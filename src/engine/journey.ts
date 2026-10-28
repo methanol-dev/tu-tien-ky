@@ -115,7 +115,18 @@ export function setAutoAdvance(state: GameState, autoAdvance: boolean): GameStat
 function spawnEnemies(region: RegionDef, stage: number, d: Difficulty, now: number, rng: Rng): JourneyEnemy[] {
   const make = (t: RegionDef['boss'], i: number): JourneyEnemy => {
     const st = enemyStats(region, t, stage, d)
-    return { id: t.id, name: t.name, silhouette: t.silhouette, hp: st.hp, maxHp: st.hp, atk: st.atk, def: st.def, boss: Boolean(t.boss), nextAttackAtMs: now + ENEMY_ATTACK_MS + i * 300 }
+    return {
+      id: t.id,
+      name: t.name,
+      silhouette: t.silhouette,
+      imageUrl: t.imageUrl,
+      hp: st.hp,
+      maxHp: st.hp,
+      atk: st.atk,
+      def: st.def,
+      boss: Boolean(t.boss),
+      nextAttackAtMs: now + ENEMY_ATTACK_MS + i * 300,
+    }
   }
   if (stage >= STAGES_PER_REGION) return [make(region.boss, 0)]
   const pick = () => region.enemies[Math.floor(rng() * region.enemies.length)]

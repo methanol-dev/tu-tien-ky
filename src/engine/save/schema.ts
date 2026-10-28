@@ -47,6 +47,7 @@ const enemySchema = z.object({
   id: z.string().max(64),
   name: z.string().max(100),
   silhouette: z.enum(['wolf', 'bear', 'bat', 'snake', 'cultist', 'skeleton', 'skeleton-lord', 'yeti', 'serpent', 'lizard', 'dragonling', 'demon', 'demon-general']),
+  imageUrl: z.string().optional(),
   hp: z.number().nonnegative().finite(),
   maxHp: z.number().positive().finite(),
   atk: z.number().nonnegative().finite(),
@@ -83,10 +84,22 @@ const journeySchema = z.object({
 
 /** Schema for the CURRENT save version. Older versions go through migrations first. */
 export const gameStateSchema = z.object({
-  version: z.literal(6),
+  version: z.literal(8),
   createdAt: z.number().int().nonnegative(),
   lastSavedAt: z.number().int().nonnegative(),
   playedMs: z.number().nonnegative(),
+  classId: z.enum([
+    'kiem-tu',
+    'vo-phu',
+    'nho-gia',
+    'dao-gia',
+    'phat-gia',
+    'binh-gia',
+    'duoc-gia',
+    'thuong-gia',
+    'mac-gia',
+    'am-duong-gia',
+  ]),
   realmIndex: z.number().int().nonnegative(),
   qi: z.number().nonnegative().finite(),
   ageDays: z.number().nonnegative().finite(),
@@ -96,9 +109,18 @@ export const gameStateSchema = z.object({
   inventory: countMap,
   gear: z.array(gearInstanceSchema).max(GEAR_CAP + 10),
   equipped: z.object({
-    kiem: z.string().max(32).nullable(),
-    giap: z.string().max(32).nullable(),
-    'phap-khi': z.string().max(32).nullable(),
+    'vu-khi': z.string().max(32).nullable(),
+    dau: z.string().max(32).nullable(),
+    ao: z.string().max(32).nullable(),
+    quan: z.string().max(32).nullable(),
+    giay: z.string().max(32).nullable(),
+    'dai-lung': z.string().max(32).nullable(),
+    'phu-luc': z.string().max(32).nullable(),
+    'day-chuyen': z.string().max(32).nullable(),
+    'nhan-1': z.string().max(32).nullable(),
+    'nhan-2': z.string().max(32).nullable(),
+    'bong-tai-1': z.string().max(32).nullable(),
+    'bong-tai-2': z.string().max(32).nullable(),
   }),
   nextGearUid: z.number().int().positive(),
   buffs: z.array(buffSchema).max(50),
@@ -148,6 +170,7 @@ export const gameStateSchema = z.object({
   settings: z.object({
     timeScale: z.number().positive().max(1000),
     pauseOnEvent: z.boolean(),
+    avatarId: z.string().optional(),
   }),
 })
 

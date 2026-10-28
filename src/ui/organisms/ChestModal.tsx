@@ -1,3 +1,4 @@
+import { getSlotsForType } from '@/content/gear'
 import { type GameState, type GearInstance, getGearDef } from '@/engine'
 import { Button } from '@/ui/atoms/Button'
 import { Modal } from '@/ui/atoms/Modal'
@@ -40,8 +41,8 @@ export function ChestModal({ result, state, onEquip, onSalvage, onOpenMore, onCl
       ) : (
         <ul className="max-h-[55vh] space-y-2 overflow-y-auto pr-1">
           {stillOwned.map((g) => {
-            const slot = getGearDef(g).slot
-            const wornUid = state.equipped[slot]
+            const targetSlots = getSlotsForType(getGearDef(g).slot)
+            const wornUid = targetSlots.map((s) => state.equipped[s]).find(Boolean) ?? null
             const worn = wornUid ? state.gear.find((x) => x.uid === wornUid) ?? null : null
             return (
               <GearCard key={g.uid} gear={g} worn={worn} equipped={wornUid === g.uid} onEquip={onEquip} onSalvage={onSalvage} dense />

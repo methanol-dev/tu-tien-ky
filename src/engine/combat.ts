@@ -1,4 +1,5 @@
 import { baselineStats } from '@/content/regions'
+import { CLASS_BY_ID } from '@/content/classes'
 import { getMartialPunches, getMartialRealm } from '@/content/martialRealms'
 import {
   BASE_CRIT_CHANCE,
@@ -31,14 +32,16 @@ export function getCombatStats(state: GameState): CombatStats {
   const punches = getMartialPunches(state.stats)
   const martial = getMartialRealm(punches)
   const mb = martial.bonus
+  const classDef = CLASS_BY_ID[state.classId] ?? CLASS_BY_ID['kiem-tu']
+  const cm = classDef.multipliers
 
   return {
-    hp: Math.round(b.hp * (1 + t.hp + mb.hpPercent)),
-    atk: Math.round(b.atk * (1 + t.atk + mb.atkPercent)),
-    def: Math.round(b.def * (1 + t.def + mb.defPercent)),
-    crit: Math.min(MAX_CRIT_CHANCE, BASE_CRIT_CHANCE + t.crit),
+    hp: Math.round(b.hp * (1 + t.hp + mb.hpPercent) * (cm.hp ?? 1)),
+    atk: Math.round(b.atk * (1 + t.atk + mb.atkPercent) * (cm.atk ?? 1)),
+    def: Math.round(b.def * (1 + t.def + mb.defPercent) * (cm.def ?? 1)),
+    crit: Math.min(MAX_CRIT_CHANCE, BASE_CRIT_CHANCE + t.crit + (cm.crit ?? 0)),
     critMult: BASE_CRIT_MULT + t.critDmg,
-    attackMs: Math.round(PLAYER_ATTACK_MS / Math.min(MAX_ATTACK_SPEED_MULT, 1 + t.atkSpeed)),
+    attackMs: Math.round(PLAYER_ATTACK_MS / Math.min(MAX_ATTACK_SPEED_MULT, (1 + t.atkSpeed) * (cm.atkSpeed ?? 1))),
     lifesteal: Math.min(MAX_LIFESTEAL, t.lifesteal),
   }
 }

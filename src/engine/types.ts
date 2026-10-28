@@ -1,4 +1,5 @@
 import type { AffixKey, Rarity } from '@/content/affixes'
+import type { ClassId } from '@/content/classes'
 import type { GearSlot } from '@/content/gear'
 import type { Difficulty, SilhouetteId } from '@/content/regions'
 
@@ -17,6 +18,8 @@ export interface GameSettings {
   timeScale: number
   /** Freeze the simulation while an event awaits a decision. */
   pauseOnEvent: boolean
+  /** Selected character avatar ID (defaults to 'tran-binh-an'). */
+  avatarId?: string
 }
 
 export interface GameStats {
@@ -104,6 +107,7 @@ export interface JourneyEnemy {
   id: string
   name: string
   silhouette: SilhouetteId
+  imageUrl?: string
   hp: number
   maxHp: number
   atk: number
@@ -158,6 +162,8 @@ export interface GameState {
   lastSavedAt: number
   /** Total real time the simulation has advanced, in ms. Game-time clock for cooldowns. */
   playedMs: number
+  /** Origin tu đạo / class archetype. Defaults to 'kiem-tu'. */
+  classId: ClassId
   /** Index into REALMS. */
   realmIndex: number
   qi: number

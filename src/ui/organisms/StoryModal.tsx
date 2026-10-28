@@ -1,11 +1,33 @@
 import { useState } from 'react'
-import type { StoryScene } from '@/content/story'
+import { NPCS, type StoryScene } from '@/content/story'
 import { Button } from '@/ui/atoms/Button'
 import { Modal } from '@/ui/atoms/Modal'
 
 interface StoryModalProps {
   scene: StoryScene | null
   onResolve: (choiceId?: string) => void
+}
+
+function SpeakerAvatar({ speaker }: { speaker: string }) {
+  const [hasError, setHasError] = useState(false)
+  const npc = NPCS.find((n) => speaker.includes(n.name) || n.name.includes(speaker))
+
+  if (npc?.avatarUrl && !hasError) {
+    return (
+      <img
+        src={npc.avatarUrl}
+        alt={npc.name}
+        onError={() => setHasError(true)}
+        className="h-10 w-10 shrink-0 rounded-full border border-gold-500/50 object-cover shadow-sm"
+      />
+    )
+  }
+
+  return (
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gold-500/40 bg-gold-500/10 font-han text-sm font-bold text-gold-300">
+      {npc?.glyph ?? speaker[0]}
+    </div>
+  )
 }
 
 export function StoryModal({ scene, onResolve }: StoryModalProps) {
@@ -75,18 +97,21 @@ export function StoryModal({ scene, onResolve }: StoryModalProps) {
           return (
             <div
               key={i}
-              className={`rounded-lg border p-3.5 ${
+              className={`flex items-start gap-3 rounded-lg border p-3.5 ${
                 isMain
                   ? 'border-jade-500/30 bg-jade-950/20 text-jade-200'
                   : 'border-gold-500/30 bg-ink-900/70 text-paper-100'
               }`}
             >
-              <div className="mb-1 flex items-center gap-2">
-                <span className="font-han text-xs font-bold uppercase tracking-wider text-gold-400">
-                  {b.speaker}
-                </span>
+              <SpeakerAvatar speaker={b.speaker} />
+              <div className="flex-1 min-w-0">
+                <div className="mb-1 flex items-center gap-2">
+                  <span className="font-han text-xs font-bold uppercase tracking-wider text-gold-400">
+                    {b.speaker}
+                  </span>
+                </div>
+                <p className="font-han text-sm leading-relaxed">{b.text}</p>
               </div>
-              <p className="font-han text-sm leading-relaxed">{b.text}</p>
             </div>
           )
         })}

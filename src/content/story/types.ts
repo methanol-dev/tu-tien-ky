@@ -4,6 +4,7 @@ export interface NpcDef {
   glyph: string
   title: string
   description: string
+  avatarUrl?: string
 }
 
 export interface StoryChoice {

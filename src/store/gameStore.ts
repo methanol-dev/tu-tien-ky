@@ -1,21 +1,33 @@
 import { create } from 'zustand'
 import type { ChestKind, Rarity } from '@/content/affixes'
+import type { ClassId } from '@/content/classes'
 import type { GearSlot } from '@/content/gear'
 import type { Difficulty } from '@/content/regions'
 import {
   type ActionResult,
+  adminAddChests,
+  adminAddHerbsAndPills,
+  adminAddPunches,
+  adminAddQi,
+  adminAddStones,
+  adminGiveFullGear,
+  adminInstantBreakthrough,
+  adminSetRealm,
+  adminSetTimeScale,
+  adminUnlockAllRegions,
   applyOfflineProgress,
   attemptBreakthrough,
   type BreakthroughResult,
   buyItem as engineBuyItem,
   buyLegacyUpgrade as engineBuyLegacyUpgrade,
+  changeClass as engineChangeClass,
   type BoltResult,
   reincarnate as engineReincarnate,
   resolveBolt as engineResolveBolt,
   type TribulationAction,
   collectAlchemy as engineCollectAlchemy,
+  createHybridStorage,
   createInitialState,
-  createLocalStorage,
   defaultRng,
   deserialize,
   equip as engineEquip,
@@ -100,14 +112,16 @@ export interface GameStore {
   dismissEventResult: () => void
   resolveStoryScene: (sceneId: string, choiceId?: string) => void
   setPauseOnEvent: (value: boolean) => void
+  setAvatar: (avatarId: string) => void
   startRegion: (regionId: string, difficulty: Difficulty) => boolean
   setAutoAdvance: (value: boolean) => void
   openChests: (kind: ChestKind, count: number) => boolean
   dismissChestResult: () => void
-  equip: (uid: string) => boolean
+  equip: (uid: string, targetSlot?: GearSlot) => boolean
   unequip: (slot: GearSlot) => boolean
   salvage: (uids: string[]) => boolean
   salvageByRarity: (rarities: Rarity[]) => boolean
+  changeClass: (classId: ClassId) => boolean
   resolveBolt: (action: TribulationAction) => boolean
   dismissTribulationResult: () => void
   reincarnate: () => boolean
@@ -119,7 +133,18 @@ export interface GameStore {
   setScreen: (screen: Screen) => void
   exportSave: () => string
   importSave: (text: string) => { ok: true } | { ok: false; error: string }
+  recoverFromIdb: (now?: number) => Promise<boolean>
   resetGame: (now?: number) => void
+  adminAddStones: (amount: number) => void
+  adminAddQi: (amount: number) => void
+  adminSetRealm: (realmIndex: number) => void
+  adminAddPunches: (punches: number) => void
+  adminAddChests: (normal: number, red: number) => void
+  adminUnlockAllRegions: () => void
+  adminGiveFullGear: () => void
+  adminAddHerbsAndPills: (count?: number) => void
+  adminInstantBreakthrough: () => void
+  adminSetTimeScale: (scale: number) => void
 }
 
 export interface GameStoreDeps {
@@ -135,7 +160,7 @@ function freshState(now: number): GameState {
 }
 
 export function createGameStore(deps: GameStoreDeps = {}) {
-  const storage = deps.storage ?? createLocalStorage()
+  const storage = deps.storage ?? createHybridStorage()
   const rng = deps.rng ?? defaultRng
   let fxCounter = 0
   let noticeCounter = 0
@@ -168,6 +193,23 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       hydrate: (now = Date.now()) => {
         const raw = storage.load()
         if (!raw) {
+          // If synchronous localStorage is empty, try async IndexedDB healing
+          if (storage.loadAsync) {
+            void storage.loadAsync().then((idbRaw) => {
+              if (idbRaw) {
+                const parsed = deserialize(idbRaw)
+                if (parsed.ok) {
+                  const { state, report } = applyOfflineProgress(parsed.state, now, undefined, rng)
+                  set({
+                    state,
+                    hydrated: true,
+                    offlineReport: report.appliedMs >= MIN_OFFLINE_REPORT_MS ? report : null,
+                  })
+                  get().notify('Đã khôi phục đạo hạnh từ kho lưu trữ IndexedDB!', 'success')
+                }
+              }
+            })
+          }
           set({ state: freshState(now), hydrated: true, offlineReport: null })
           return
         }
@@ -267,7 +309,7 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       },
       dismissChestResult: () => set({ chestResult: null }),
 
-      equip: (uid) => apply(engineEquip(get().state, uid)),
+      equip: (uid, targetSlot) => apply(engineEquip(get().state, uid, targetSlot)),
       unequip: (slot) => apply(engineUnequip(get().state, slot)),
       salvage: (uids) => {
         const r = engineSalvage(get().state, uids)
@@ -283,6 +325,8 @@ export function createGameStore(deps: GameStoreDeps = {}) {
         get().notify(`Phân giải ${r.state.count} món, thu ${Math.round(r.state.stones)} linh thạch.`, 'success')
         return true
       },
+
+      changeClass: (classId) => apply(engineChangeClass(get().state, classId)),
 
       resolveBolt: (action) => {
         const r = engineResolveBolt(get().state, action, rng)
@@ -311,6 +355,11 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       buyLegacyUpgrade: (id) => apply(engineBuyLegacyUpgrade(get().state, id)),
       setPauseOnEvent: (value) =>
         set((s) => ({ state: { ...s.state, settings: { ...s.state.settings, pauseOnEvent: value } } })),
+
+      setAvatar: (avatarId) => {
+        set((s) => ({ state: { ...s.state, settings: { ...s.state.settings, avatarId } } }))
+        get().save()
+      },
 
       save: (now = Date.now()) => {
         const state = { ...get().state, lastSavedAt: now }
@@ -343,10 +392,74 @@ export function createGameStore(deps: GameStoreDeps = {}) {
         return { ok: true }
       },
 
+      recoverFromIdb: async (now = Date.now()) => {
+        if (!storage.loadAsync) return false
+        const idbRaw = await storage.loadAsync()
+        if (!idbRaw) {
+          get().notify('Không tìm thấy bản lưu nào trong IndexedDB.', 'error')
+          return false
+        }
+        const parsed = deserialize(idbRaw)
+        if (!parsed.ok) {
+          get().notify(`Bản lưu trong IndexedDB bị lỗi: ${parsed.error}`, 'error')
+          return false
+        }
+        const { state, report } = applyOfflineProgress(parsed.state, now, undefined, rng)
+        set({
+          state,
+          hydrated: true,
+          offlineReport: report.appliedMs >= MIN_OFFLINE_REPORT_MS ? report : null,
+        })
+        get().save()
+        get().notify('Đã khôi phục đạo hạnh thành công từ IndexedDB!', 'success')
+        return true
+      },
+
       resetGame: (now = Date.now()) => {
         storage.clear()
         set({ state: freshState(now), offlineReport: null, fx: null, chestResult: null, screen: 'cultivate' })
         get().save(now)
+      },
+
+      adminAddStones: (amount) => {
+        set({ state: adminAddStones(get().state, amount) })
+        get().save()
+      },
+      adminAddQi: (amount) => {
+        set({ state: adminAddQi(get().state, amount) })
+        get().save()
+      },
+      adminSetRealm: (realmIndex) => {
+        set({ state: adminSetRealm(get().state, realmIndex) })
+        get().save()
+      },
+      adminAddPunches: (punches) => {
+        set({ state: adminAddPunches(get().state, punches) })
+        get().save()
+      },
+      adminAddChests: (normal, red) => {
+        set({ state: adminAddChests(get().state, normal, red) })
+        get().save()
+      },
+      adminUnlockAllRegions: () => {
+        set({ state: adminUnlockAllRegions(get().state) })
+        get().save()
+      },
+      adminGiveFullGear: () => {
+        set({ state: adminGiveFullGear(get().state) })
+        get().save()
+      },
+      adminAddHerbsAndPills: (count) => {
+        set({ state: adminAddHerbsAndPills(get().state, count) })
+        get().save()
+      },
+      adminInstantBreakthrough: () => {
+        set({ state: adminInstantBreakthrough(get().state) })
+        get().save()
+      },
+      adminSetTimeScale: (scale) => {
+        set({ state: adminSetTimeScale(get().state, scale) })
+        get().save()
       },
     }
   })

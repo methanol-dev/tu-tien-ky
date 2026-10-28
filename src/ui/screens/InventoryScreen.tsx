@@ -4,6 +4,7 @@ import { describePillEffect, TIER_CLASS } from '@/lib/describe'
 import { formatDurationMs, formatNumber } from '@/lib/format'
 import { useGameStore } from '@/store/gameStore'
 import { Button } from '@/ui/atoms/Button'
+import { ItemIcon } from '@/ui/atoms/ItemIcon'
 import { GearPanel } from '@/ui/organisms/GearPanel'
 
 export function InventoryScreen() {
@@ -50,11 +51,14 @@ export function InventoryScreen() {
           <ul className="grid gap-3 sm:grid-cols-2">
             {ownedPills.map((p) => (
               <li key={p.id} className={`flex items-center justify-between gap-3 rounded-lg border bg-ink-800/60 p-3 ${TIER_CLASS[p.tier]}`}>
-                <div>
-                  <p className="font-han">
-                    {p.name} <span className="text-paper-400 tabular-nums">×{getItemCount(state, p.id)}</span>
-                  </p>
-                  {p.effect && <p className="text-xs text-paper-400">{describePillEffect(p.effect)}</p>}
+                <div className="flex items-center gap-3">
+                  <ItemIcon id={p.id} kind={p.kind} tier={p.tier} size="md" />
+                  <div>
+                    <p className="font-han">
+                      {p.name} <span className="text-paper-400 tabular-nums">×{getItemCount(state, p.id)}</span>
+                    </p>
+                    {p.effect && <p className="text-xs text-paper-400">{describePillEffect(p.effect)}</p>}
+                  </div>
                 </div>
                 <Button onClick={() => consume(p.id)}>Dùng</Button>
               </li>
@@ -71,9 +75,12 @@ export function InventoryScreen() {
           {HERBS.map((h) => {
             const n = getItemCount(state, h.id)
             return (
-              <li key={h.id} className={`rounded-md border px-3 py-2 ${TIER_CLASS[h.tier]} ${n === 0 ? 'opacity-50' : ''}`} title={h.description}>
-                <p className="font-han text-sm">{h.name}</p>
-                <p className="text-xs text-paper-400 tabular-nums">×{n}</p>
+              <li key={h.id} className={`flex items-center gap-2.5 rounded-md border p-2.5 ${TIER_CLASS[h.tier]} ${n === 0 ? 'opacity-50' : ''}`} title={h.description}>
+                <ItemIcon id={h.id} kind={h.kind} tier={h.tier} size="sm" />
+                <div className="min-w-0 flex-1">
+                  <p className="font-han text-sm truncate">{h.name}</p>
+                  <p className="text-xs text-paper-400 tabular-nums">×{n}</p>
+                </div>
               </li>
             )
           })}
@@ -86,9 +93,12 @@ export function InventoryScreen() {
         <ul className="space-y-2">
           {shopHerbs.map((h) => (
             <li key={h.id} className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-paper-400/10 bg-ink-800/40 px-3 py-2">
-              <span className={`font-han ${TIER_CLASS[h.tier].split(' ')[0]}`}>
-                {h.name} <span className="text-xs text-paper-400 tabular-nums">· {formatNumber(h.price!)} / viên</span>
-              </span>
+              <div className="flex items-center gap-2.5">
+                <ItemIcon id={h.id} kind={h.kind} tier={h.tier} size="sm" />
+                <span className={`font-han ${TIER_CLASS[h.tier].split(' ')[0]}`}>
+                  {h.name} <span className="text-xs text-paper-400 tabular-nums">· {formatNumber(h.price!)} / cây</span>
+                </span>
+              </div>
               <div className="flex gap-2">
                 <Button disabled={state.stones < h.price!} onClick={() => buy(h.id, 1)}>×1</Button>
                 <Button disabled={state.stones < h.price! * 10} onClick={() => buy(h.id, 10)}>×10</Button>
