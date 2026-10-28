@@ -18,39 +18,64 @@ function Frame({ children, ...rest }: Props) {
 
 /**
  * Trần Bình An: Thiếu niên giày cỏ ngõ Nê Bình, cõng gùi trúc nhỏ,
- * thủ thế quyền Hám Sơn, có bóng phi kiếm Lung Trung Tước lượn quanh đầu.
+ * thủ thế quyền Hám Sơn, có phi kiếm Lung Trung Tước lượn quanh đầu.
  */
 export function HeroSilhouette(props: Props) {
   return (
     <Frame {...props}>
-      {/* Phi kiếm Lung Trung Tước bay lượn trên vai */}
-      <g opacity="0.85">
-        <path d="M68 8 l16 -6 l-8 12 l-3 -3 z" />
-        <path d="M60 16 q12 -12 24 -14" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.6" strokeDasharray="3 2" />
+      {/* Phi kiếm Lung Trung Tước hoàng kim sắc bén bay lượn trên vai */}
+      <g className="animate-pulse">
+        <path d="M68 8 l16 -6 l-8 12 l-3 -3 z" fill="#fde047" stroke="#ffffff" strokeWidth="0.8" />
+        <path d="M60 16 q12 -12 24 -14" stroke="#facc15" strokeWidth="1.5" fill="none" opacity="0.8" strokeDasharray="3 2" />
+        <circle cx="76" cy="5" r="1.5" fill="#ffffff" />
       </g>
+
       {/* Gùi trúc (bamboo basket) sau lưng */}
       <path
         d="M20 32 h14 l-3 36 h-10 q-3 -16 -1 -36 z"
-        opacity="0.95"
+        fill="#92400e"
+        stroke="#78350f"
+        strokeWidth="1"
       />
+      {/* Hoa văn đan trúc */}
+      <path d="M22 42 h10 M21 52 h10 M23 62 h8" stroke="#b45309" strokeWidth="1" opacity="0.8" />
       {/* Dây đeo gùi trúc vắt qua vai */}
-      <path d="M30 32 l12 14 l-3 4 l-11 -12 z" opacity="0.8" />
-      {/* Đầu & búi tóc thiếu niên */}
-      <circle cx="48" cy="18" r="8.5" />
-      {/* Búi tóc nhỏ buộc dây vải */}
-      <path d="M42 10 q6 -6 10 2 z" />
-      <path d="M39 12 q-4 8 2 12" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.7" />
-      {/* Thân áo vải xắn gấu */}
-      <path d="M40 26 h18 l4 16 l-4 2 l-2 -8 l2 44 h-5 l-4 -22 l-5 22 h-5 l2 -40 l-4 6 l-4 -3 z" />
+      <path d="M30 32 l12 14 l-3 4 l-11 -12 z" fill="#78350f" opacity="0.9" />
+
+      {/* Thân áo trường sam / thanh y du hiệp */}
+      <path
+        d="M40 26 h18 l4 16 l-4 2 l-2 -8 l2 44 h-5 l-4 -22 l-5 22 h-5 l2 -40 l-4 6 l-4 -3 z"
+        fill="#0f766e"
+        stroke="#115e59"
+        strokeWidth="1.2"
+      />
+      {/* Thắt lưng da & đai ngọc */}
+      <rect x="39" y="48" width="20" height="4" fill="#78350f" rx="1" />
+      <circle cx="49" cy="50" r="1.5" fill="#34d399" />
+
+      {/* Đầu & khuôn mặt thiếu niên */}
+      <circle cx="48" cy="18" r="8.5" fill="#e5c9b0" />
+      {/* Tóc đen & búi tóc buộc dây vải đỏ */}
+      <path d="M42 10 q6 -6 10 2 z" fill="#1c1917" />
+      <path d="M43 14 Q48 10 53 14 Q56 18 56 22 L41 22 Q41 18 43 14 Z" fill="#1c1917" />
+      <path d="M39 12 q-4 8 2 12" stroke="#dc2626" strokeWidth="1.5" fill="none" opacity="0.9" />
+
+      {/* Tay sau giữ thế quyền */}
+      <path d="M36 36 l-8 8 l4 4 l8 -6 z" fill="#e5c9b0" />
+
       {/* Tay trước thủ thế Hám Sơn Quyền (nắm đấm vung về trước) */}
-      <path d="M54 36 l18 -4 l6 4 l-4 5 l-18 2 z" />
-      <circle cx="78" cy="36" r="3.5" /> {/* Nắm đấm */}
-      {/* Tay sau giữ thắt lưng / thế quyền */}
-      <path d="M36 36 l-8 8 l4 4 l8 -6 z" />
-      {/* Quần xắn gấu & chân mang giày cỏ */}
-      <path d="M42 84 l-4 16 h8 l2 -16 z M52 84 l-2 16 h8 l4 -16 z" />
-      {/* Vạt áo & dây đai bay nhẹ */}
-      <path d="M32 58 q-8 16 -3 36 h4 q-3 -18 3 -32 z" opacity="0.8" />
+      <path d="M54 36 l18 -4 l6 4 l-4 5 l-18 2 z" fill="#0f766e" />
+      <circle cx="78" cy="36" r="3.5" fill="#e5c9b0" stroke="#d97706" strokeWidth="0.8" /> {/* Nắm đấm có quyền phong */}
+
+      {/* Quần xắn gấu */}
+      <path d="M42 70 h7 v14 h-7 z M51 70 h7 v14 h-7 z" fill="#334155" />
+
+      {/* Bắp chân & chân mang giày cỏ bện */}
+      <path d="M43 84 l-2 16 h6 l1 -16 z M52 84 l-1 16 h6 l2 -16 z" fill="#e5c9b0" />
+      <path d="M40 96 l4 4 h6 l-2 -4 z M50 96 l3 4 h6 l-2 -4 z" fill="#78350f" stroke="#b45309" strokeWidth="0.8" />
+
+      {/* Vạt áo thanh y bay nhẹ đón gió */}
+      <path d="M32 58 q-8 16 -3 36 h4 q-3 -18 3 -32 z" fill="#0d9488" opacity="0.9" />
     </Frame>
   )
 }

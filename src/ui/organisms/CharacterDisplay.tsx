@@ -19,70 +19,71 @@ export function CharacterDisplay({
 }: CharacterDisplayProps) {
   const avatar = AVATAR_BY_ID[avatarId] ?? AVATARS[0]
   const stage = getEvolutionStage(realmIndex)
-  const auraOpacity = 0.3 + 0.5 * Math.min(1, Math.max(0, progress))
+  const auraOpacity = 0.35 + 0.55 * Math.min(1, Math.max(0, progress))
+
+  // Nếu người chơi dùng avatar mặc định Trần Bình An -> dùng ảnh tiến hóa 4 giai đoạn
+  // Nếu người chơi chọn các NPC huyền thoại khác (Ninh Diệu, A Lương...) -> dùng chân dung của NPC đó
+  const displayImage = avatarId === 'tran-binh-an' || !avatarId ? stage.image : avatar.image
+
+  const cardSize = compact
+    ? 'w-36 h-48 sm:w-40 sm:h-56'
+    : 'w-44 h-60 sm:w-52 sm:h-72'
 
   return (
-    <div className={`relative flex flex-col items-center text-center ${compact ? 'scale-90' : ''}`}>
-      {/* Vùng Hào Quang Bát Quái & Kiếm Trận */}
-      <div className="relative flex h-32 w-32 items-center justify-center sm:h-36 sm:w-36">
-        {/* Khí tràng Thái Cực / Vòng hào quang xoay chậm */}
+    <div className="relative flex flex-col items-center text-center select-none">
+      {/* Vùng Khí Tượng Dị Tượng Sau Lưng (Aura & Concentric Array) */}
+      <div className="relative flex items-center justify-center">
+        {/* Vòng Trận Đồ Bát Quái Xoay Vần (Tale of Immortal Background Disk) */}
         <div
           aria-hidden
-          className="pointer-events-none absolute -inset-3 flex items-center justify-center transition-opacity duration-700"
+          className="pointer-events-none absolute -inset-8 flex items-center justify-center transition-opacity duration-700"
           style={{
             opacity: auraOpacity,
-            filter: `drop-shadow(0 0 16px ${stage.ringColor})`,
+            filter: `drop-shadow(0 0 20px ${stage.ringColor})`,
           }}
         >
-          <svg viewBox="0 0 140 140" className="h-full w-full animate-[spin_24s_linear_infinite]">
-            {/* Vòng kinh văn Bát quái cổ */}
+          <svg viewBox="0 0 200 200" className="h-full w-full animate-[spin_30s_linear_infinite]">
             <circle
-              cx="70"
-              cy="70"
-              r="62"
+              cx="100"
+              cy="100"
+              r="90"
               fill="none"
               stroke={stage.ringColor}
               strokeWidth="1.2"
-              strokeDasharray="8 4 2 4"
-              opacity="0.8"
+              strokeDasharray="10 5 2 5"
+              opacity="0.85"
             />
             <circle
-              cx="70"
-              cy="70"
-              r="54"
+              cx="100"
+              cy="100"
+              r="78"
               fill="none"
               stroke={stage.ringColor}
               strokeWidth="1"
-              strokeDasharray="3 3"
-              opacity="0.5"
+              strokeDasharray="4 4"
+              opacity="0.6"
             />
-            {/* 8 vạch quẻ hào */}
+            {/* 8 quẻ hào thiên địa bát quái */}
             {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
-              <line
-                key={deg}
-                x1="70"
-                y1="8"
-                x2="70"
-                y2="14"
-                stroke={stage.ringColor}
-                strokeWidth="2"
-                transform={`rotate(${deg} 70 70)`}
-              />
+              <g key={deg} transform={`rotate(${deg} 100 100)`}>
+                <line x1="100" y1="12" x2="100" y2="22" stroke={stage.ringColor} strokeWidth="2.5" />
+                <circle cx="100" cy="28" r="2" fill={stage.ringColor} />
+              </g>
             ))}
           </svg>
         </div>
 
-        {/* Vầng hào quang sáng rực khi đạt 100% linh khí sẵn sàng Đột Phá */}
+        {/* Hào quang rực sáng khi 100% linh khí sẵn sàng Đột Phá */}
         {ready && (
           <div
-            className="pointer-events-none absolute -inset-2 rounded-full blur-md animate-pulse"
+            className="pointer-events-none absolute -inset-3 rounded-2xl blur-lg animate-pulse"
             style={{ backgroundColor: stage.glowColor }}
           />
         )}
 
-        {/* Các Phi Kiếm bay lượn quanh Đạo Thân */}
+        {/* Các Phi Kiếm Hoàng Kim bay lượn quanh Đạo Thân */}
         {stage.swordCount > 0 && (
-          <div className="pointer-events-none absolute inset-0 animate-[spin_10s_linear_infinite]">
+          <div className="pointer-events-none absolute -inset-4 animate-[spin_12s_linear_infinite] z-20">
             {Array.from({ length: stage.swordCount }).map((_, idx) => {
               const angle = (360 / stage.swordCount) * idx
               return (
@@ -92,17 +93,17 @@ export function CharacterDisplay({
                   style={{ transform: `rotate(${angle}deg)` }}
                 >
                   <svg
-                    viewBox="0 0 16 32"
-                    className="h-6 w-3 -translate-y-2 drop-shadow-[0_0_8px_#e0bf4a]"
+                    viewBox="0 0 16 36"
+                    className="h-8 w-4 -translate-y-3 drop-shadow-[0_0_10px_#fde047]"
                     fill="none"
                   >
                     <path
-                      d="M8 2 L12 10 L10 26 L8 30 L6 26 L4 10 Z"
+                      d="M8 2 L13 12 L10 30 L8 34 L6 30 L3 12 Z"
                       fill={stage.ringColor}
-                      stroke="#fff"
-                      strokeWidth="0.8"
+                      stroke="#ffffff"
+                      strokeWidth="1"
                     />
-                    <path d="M8 6 L8 24" stroke="#fff" strokeWidth="0.8" />
+                    <path d="M8 6 L8 28" stroke="#ffffff" strokeWidth="1" />
                   </svg>
                 </div>
               )
@@ -110,66 +111,86 @@ export function CharacterDisplay({
           </div>
         )}
 
-        {/* Khung Chân Dung Nhân Vật Thủy Mặc */}
+        {/* ================= TRANH LẬP HỘI ĐỨNG BÁN THÂN (3:4 STANDING BUST) ================= */}
         <button
           type="button"
           onClick={onAvatarClick}
-          title={`${avatar.name} · Bấm để đổi diện mạo`}
-          className={`group relative z-10 flex h-24 w-24 sm:h-28 sm:w-28 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 transition-all duration-300 hover:scale-105 ${
+          title={`${avatar.name} · Bấm để hoán đổi diện mạo`}
+          className={`group relative z-10 flex ${cardSize} cursor-pointer flex-col overflow-hidden rounded-xl border-2 transition-all duration-300 hover:scale-[1.03] ${
             ready
-              ? 'border-gold-400 ring-4 ring-gold-400/40 shadow-[0_0_20px_#e0bf4a]'
-              : 'border-gold-500/50 hover:border-gold-400 shadow-ink'
+              ? 'border-gold-400 ring-4 ring-gold-400/50 shadow-[0_0_30px_#e0bf4a]'
+              : 'border-gold-500/40 hover:border-gold-400 shadow-ink'
           }`}
-          style={{ backgroundColor: '#141210' }}
+          style={{ backgroundColor: '#12100e' }}
         >
+          {/* Bức Tranh Lập Hội Nhân Vật */}
           <img
-            src={avatar.image}
+            src={displayImage}
             alt={avatar.name}
-            className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
+            className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
           />
 
-          {/* Lớp phủ sương khói thủy mặc chân dung */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-950/80 via-transparent to-black/20" />
+          {/* Lớp sương khói thủy mặc hòa tan vạt áo ở chân tranh */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-ink-950 via-ink-950/80 to-transparent" />
 
-          {/* Icon bút cọ đổi avatar khi hover */}
+          {/* Viền hoa văn cổ phong quanh tranh */}
+          <div className="pointer-events-none absolute inset-1.5 rounded-lg border border-gold-500/20" />
+
+          {/* Nút bấm Đổi Diện Mạo khi hover */}
           <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 backdrop-blur-[1px] transition-opacity duration-200 group-hover:opacity-100">
-            <span className="font-han text-xs font-bold text-gold-300">Đổi Diện Mạo</span>
+            <span className="rounded-md border border-gold-400 bg-ink-950/90 px-3 py-1 font-han text-xs font-bold text-gold-300 shadow-lg">
+              Hoán Đổi Đạo Thân
+            </span>
           </div>
 
-          {/* Huy hiệu nhỏ khi sẵn sàng đột phá */}
+          {/* Huy hiệu Đột Phá Khí Tràng */}
           {ready && (
-            <span className="absolute bottom-1 rounded-full bg-vermilion-600 px-2 py-0.5 text-[9px] font-bold text-paper-100 shadow-md animate-bounce">
-              ĐỘT PHÁ
-            </span>
+            <div className="absolute top-2 right-2 rounded-full bg-vermilion-600 px-2.5 py-0.5 text-[10px] font-bold text-paper-100 shadow-lg border border-vermilion-300 animate-bounce">
+              ⚡ ĐỘT PHÁ
+            </div>
           )}
+
+          {/* Tag Giai Đoạn Đạo Thân dưới đáy tranh */}
+          <div className="absolute bottom-2 inset-x-2 z-10 text-center">
+            <span
+              className="inline-block rounded-full px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase border backdrop-blur-md shadow-md"
+              style={{
+                color: stage.ringColor,
+                borderColor: `${stage.ringColor}66`,
+                backgroundColor: 'rgba(10, 10, 10, 0.75)',
+              }}
+            >
+              {stage.name}
+            </span>
+          </div>
         </button>
       </div>
 
-      {/* Thông tin Giai Đoạn Đạo Thân Kiếm Lai */}
-      <div className="mt-2 space-y-1">
-        <div className="flex items-center justify-center gap-1.5">
-          <span className="font-han text-sm font-bold text-gold-400 sm:text-base">
+      {/* Thông tin Đạo Hiệu & Thần Vật Bản Mệnh */}
+      <div className="mt-3 space-y-1">
+        <div className="flex items-center justify-center gap-2">
+          <h3 className="font-han text-lg font-bold text-paper-100">
             {avatar.name}
-          </span>
-          <span
-            className="rounded px-1.5 py-0.2 text-[10px] font-medium border"
-            style={{
-              color: stage.ringColor,
-              borderColor: `${stage.ringColor}55`,
-              backgroundColor: `${stage.ringColor}15`,
-            }}
-          >
-            {stage.name}
+          </h3>
+          <span className="text-[11px] text-paper-400 font-serif">
+            ({avatar.origin})
           </span>
         </div>
 
-        <p className="text-[11px] text-paper-400 font-serif">
+        <p className="text-xs text-paper-300 font-serif line-clamp-1">
           {stage.subtitle}
         </p>
 
-        <div className="inline-flex items-center gap-1.5 text-[10px] text-paper-300">
-          <span className="text-gold-400">🗡️</span>
-          <span>{stage.weapon}</span>
+        <div className="flex items-center justify-center gap-3 text-[11px] text-paper-300 pt-0.5">
+          <span className="flex items-center gap-1 text-gold-400">
+            <span>🗡️</span>
+            <span className="text-paper-200">{stage.weapon}</span>
+          </span>
+          <span className="text-paper-400/50">·</span>
+          <span className="flex items-center gap-1 text-jade-400">
+            <span>👘</span>
+            <span className="text-paper-200">{stage.outfit}</span>
+          </span>
         </div>
       </div>
     </div>

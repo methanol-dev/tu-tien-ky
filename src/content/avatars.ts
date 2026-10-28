@@ -87,6 +87,7 @@ export interface EvolutionStage {
   ringColor: string
   glowColor: string
   swordCount: number
+  image: string
 }
 
 export function getEvolutionStage(realmIndex: number): EvolutionStage {
@@ -100,6 +101,7 @@ export function getEvolutionStage(realmIndex: number): EvolutionStage {
       ringColor: '#bfae88',
       glowColor: 'rgba(191, 174, 136, 0.25)',
       swordCount: 0,
+      image: 'assets/characters/stage-1.jpg',
     }
   }
   if (realmIndex < 7) {
@@ -112,6 +114,7 @@ export function getEvolutionStage(realmIndex: number): EvolutionStage {
       ringColor: '#34d399',
       glowColor: 'rgba(52, 211, 153, 0.3)',
       swordCount: 1,
+      image: 'assets/characters/stage-2.jpg',
     }
   }
   if (realmIndex < 12) {
@@ -124,6 +127,7 @@ export function getEvolutionStage(realmIndex: number): EvolutionStage {
       ringColor: '#e0bf4a',
       glowColor: 'rgba(224, 191, 74, 0.4)',
       swordCount: 2,
+      image: 'assets/characters/stage-3.jpg',
     }
   }
   return {
@@ -135,5 +139,6 @@ export function getEvolutionStage(realmIndex: number): EvolutionStage {
     ringColor: '#c084fc',
     glowColor: 'rgba(192, 132, 252, 0.45)',
     swordCount: 4,
+    image: 'assets/characters/stage-4.jpg',
   }
 }
