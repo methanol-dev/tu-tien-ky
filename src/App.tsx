@@ -4,6 +4,7 @@ import { getPendingEvent, getPendingStoryScene, isAlchemyReady, isReincarnationF
 import { formatNumber } from '@/lib/format'
 import { startGameLoop } from '@/store/gameLoop'
 import { useGameStore } from '@/store/gameStore'
+import { CLASS_ICONS, IconDaoistBody, IconFlyingSword } from '@/ui/atoms/icons'
 import { InkSplash } from '@/ui/atoms/InkSplash'
 import { NavBar } from '@/ui/molecules/NavBar'
 import { Toast } from '@/ui/molecules/Toast'
@@ -146,6 +147,7 @@ export default function App() {
         <div className="flex items-center gap-3">
           {(() => {
             const curClass = CLASS_BY_ID[state.classId] ?? CLASS_BY_ID['kiem-tu']
+            const ClassIcon = CLASS_ICONS[state.classId] ?? CLASS_ICONS['kiem-tu']
             return (
               <button
                 type="button"
@@ -158,8 +160,8 @@ export default function App() {
                 }}
                 title={`Đạo Thống: ${curClass.name} (${curClass.faction}) - Bấm để xem và chuyển đổi`}
               >
-                <span className="font-han font-bold">{curClass.glyph}</span>
-                <span>{curClass.name}</span>
+                {ClassIcon && <ClassIcon className="h-3.5 w-3.5" />}
+                <span className="font-serif font-bold">{curClass.name}</span>
               </button>
             )
           })()}
@@ -169,8 +171,8 @@ export default function App() {
             className="flex min-h-8 items-center gap-1.5 rounded-md border border-jade-500/30 bg-ink-800/80 px-2.5 py-1 text-xs text-jade-300 transition-colors hover:border-jade-400 hover:text-jade-200"
             title="Khí Phủ Kiếm Thai - Xem và uẩn dưỡng Phi Kiếm Bản Mệnh"
           >
-            <span aria-hidden className="text-sm">🗡️</span>
-            <span className="hidden sm:inline">Kiếm Thai</span>
+            <IconFlyingSword className="h-3.5 w-3.5 text-jade-400" />
+            <span className="hidden sm:inline font-serif font-medium">Kiếm Thai</span>
             <span className="text-[10px] font-mono text-jade-400">({state.natalSwords?.length ?? 0})</span>
           </button>
           <button
@@ -179,8 +181,8 @@ export default function App() {
             className="flex min-h-8 items-center gap-1.5 rounded-md border border-gold-500/30 bg-ink-800/80 px-2.5 py-1 text-xs text-paper-200 transition-colors hover:border-gold-500 hover:text-gold-400"
             title="Xem chỉ số nhân vật (Đạo thân)"
           >
-            <span aria-hidden className="text-sm">👤</span>
-            <span>Chỉ số</span>
+            <IconDaoistBody className="h-3.5 w-3.5 text-gold-400" />
+            <span className="font-serif font-medium">Chỉ số</span>
           </button>
           <p className="font-han text-sm text-paper-300 tabular-nums" title="Linh thạch">
             <span aria-hidden className="mr-1 text-gold-400">◆</span>

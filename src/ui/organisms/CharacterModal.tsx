@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { resolveAsset } from '@/lib/assets'
 import { AVATARS, AVATAR_BY_ID } from '@/content/avatars'
 import { CLASSES, CLASS_BY_ID } from '@/content/classes'
+import { CLASS_ICONS } from '@/ui/atoms/icons'
 import {
   MARTIAL_STAGES,
   getMartialPunches,
@@ -634,16 +635,21 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
                   <div className="space-y-2">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-2.5">
-                        <span
-                          className="flex h-9 w-9 items-center justify-center rounded-lg font-han font-bold text-lg border"
-                          style={{
-                            borderColor: c.accentColor + '88',
-                            color: c.accentColor,
-                            backgroundColor: c.accentColor + '22',
-                          }}
-                        >
-                          {c.glyph}
-                        </span>
+                        {(() => {
+                          const Icon = CLASS_ICONS[c.id]
+                          return (
+                            <span
+                              className="flex h-9 w-9 items-center justify-center rounded-lg border p-1.5 shadow-sm"
+                              style={{
+                                borderColor: c.accentColor + '88',
+                                color: c.accentColor,
+                                backgroundColor: c.accentColor + '22',
+                              }}
+                            >
+                              {Icon ? <Icon className="h-5 w-5" /> : <span>{c.name[0]}</span>}
+                            </span>
+                          )
+                        })()}
                         <div>
                           <div className="flex items-center gap-1.5">
                             <h5 className="font-han text-base font-bold text-paper-100">{c.name}</h5>

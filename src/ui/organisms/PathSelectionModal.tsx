@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { CLASSES, type ClassId, type CultivationPath } from '@/content/classes'
+import { CLASS_ICONS, IconClassKiemTu, IconClassVoPhu } from '@/ui/atoms/icons'
 import { useGameStore } from '@/store/gameStore'
 
 interface Props {
@@ -78,8 +79,8 @@ export function PathSelectionModal({ open, onClose }: Props) {
             <div>
               <div className="flex items-center justify-between">
                 <span className="font-han text-base sm:text-lg font-bold text-vermilion-400 flex items-center gap-2">
-                  <span className="inline-block px-1.5 py-0.5 rounded bg-vermilion-500/20 text-xs border border-vermilion-500/40">
-                    👊
+                  <span className="flex items-center justify-center p-1 rounded bg-vermilion-500/20 border border-vermilion-500/40">
+                    <IconClassVoPhu className="h-4 w-4 text-vermilion-400" />
                   </span>
                   THUẦN TÚY VÕ ĐẠO
                 </span>
@@ -134,8 +135,8 @@ export function PathSelectionModal({ open, onClose }: Props) {
             <div>
               <div className="flex items-center justify-between">
                 <span className="font-han text-base sm:text-lg font-bold text-gold-400 flex items-center gap-2">
-                  <span className="inline-block px-1.5 py-0.5 rounded bg-gold-500/20 text-xs border border-gold-500/40">
-                    ✨
+                  <span className="flex items-center justify-center p-1 rounded bg-gold-500/20 border border-gold-500/40">
+                    <IconClassKiemTu className="h-4 w-4 text-gold-400" />
                   </span>
                   LUYỆN KHÍ TIÊN ĐẠO
                 </span>
@@ -224,10 +225,15 @@ export function PathSelectionModal({ open, onClose }: Props) {
                   >
                     <div>
                       <div className="flex items-center justify-between">
-                        <span className="font-han text-xs font-bold text-gold-300 flex items-center gap-1">
-                          <span className="text-[11px] opacity-80">{c.glyph}</span>
-                          {c.name}
-                        </span>
+                        {(() => {
+                          const Icon = CLASS_ICONS[c.id]
+                          return (
+                            <span className="font-han text-xs font-bold text-gold-300 flex items-center gap-1.5">
+                              {Icon && <Icon className="h-3.5 w-3.5 shrink-0" style={{ color: c.accentColor }} />}
+                              {c.name}
+                            </span>
+                          )
+                        })()}
                         <span className="text-[9px] text-paper-400 font-mono">{c.combatRange === 'melee' ? 'Cận chiến' : 'Đánh xa'}</span>
                       </div>
                       <p className="text-[10px] text-paper-400 line-clamp-2 mt-1">{c.signatureMechanic}</p>

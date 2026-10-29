@@ -9,6 +9,7 @@ import { formatNumber, formatPercent } from '@/lib/format'
 import { useGameStore } from '@/store/gameStore'
 import { Button } from '@/ui/atoms/Button'
 import { ChestIcon } from '@/ui/atoms/ChestIcon'
+import { WORLD_ICONS } from '@/ui/atoms/icons'
 import { ItemIcon } from '@/ui/atoms/ItemIcon'
 import { StatRow } from '@/ui/molecules/StatRow'
 import { GearCard } from '@/ui/organisms/GearCard'
@@ -265,7 +266,10 @@ export function JourneyScreen() {
                     : undefined
                 }
               >
-                <span className="font-han font-bold">{w.glyph}</span>
+                {(() => {
+                  const WorldIcon = WORLD_ICONS[w.id]
+                  return WorldIcon ? <WorldIcon className="h-3.5 w-3.5 shrink-0" /> : null
+                })()}
                 <span>{w.name}</span>
                 <span className="text-[10px] opacity-70">({count})</span>
               </button>
@@ -285,16 +289,21 @@ export function JourneyScreen() {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <span
-                    className="flex h-7 w-7 items-center justify-center rounded-lg font-han font-bold text-sm border"
-                    style={{
-                      borderColor: WORLD_BY_ID[selectedWorld].accentColor,
-                      color: WORLD_BY_ID[selectedWorld].accentColor,
-                      backgroundColor: WORLD_BY_ID[selectedWorld].accentColor + '22',
-                    }}
-                  >
-                    {WORLD_BY_ID[selectedWorld].glyph}
-                  </span>
+                  {(() => {
+                    const WorldIcon = WORLD_ICONS[selectedWorld]
+                    return (
+                      <span
+                        className="flex h-7 w-7 items-center justify-center rounded-lg border p-1"
+                        style={{
+                          borderColor: WORLD_BY_ID[selectedWorld].accentColor,
+                          color: WORLD_BY_ID[selectedWorld].accentColor,
+                          backgroundColor: WORLD_BY_ID[selectedWorld].accentColor + '22',
+                        }}
+                      >
+                        {WorldIcon ? <WorldIcon className="h-4 w-4" /> : null}
+                      </span>
+                    )
+                  })()}
                   <h4 className="font-han text-lg font-bold text-paper-100">
                     {WORLD_BY_ID[selectedWorld].name}
                   </h4>

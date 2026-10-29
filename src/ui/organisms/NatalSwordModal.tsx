@@ -13,6 +13,7 @@ import {
 import { formatNumber } from '@/lib/format'
 import { useGameStore } from '@/store/gameStore'
 import { Button } from '@/ui/atoms/Button'
+import { IconFlyingSword, SWORD_ICONS } from '@/ui/atoms/icons'
 
 export function NatalSwordModal() {
   const state = useGameStore((s) => s.state)
@@ -52,10 +53,10 @@ export function NatalSwordModal() {
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-3">
               <div
-                className="flex h-12 w-12 items-center justify-center rounded-xl border border-gold-400/60 bg-ink-950 text-2xl shadow-inner"
+                className="flex h-12 w-12 items-center justify-center rounded-xl border bg-ink-950 p-2.5 shadow-inner"
                 style={{ color: rank.color, borderColor: rank.color }}
               >
-                🗡️
+                <IconFlyingSword className="h-full w-full" />
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
@@ -146,12 +147,17 @@ export function NatalSwordModal() {
                         {/* Tiêu đề phi kiếm */}
                         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-paper-400/10 pb-2.5">
                           <div className="flex items-center gap-2.5">
-                            <span
-                              className="flex h-9 w-9 items-center justify-center rounded-lg border text-base shadow-sm"
-                              style={{ color: def?.color ?? '#f59e0b', borderColor: def?.color ?? '#f59e0b' }}
-                            >
-                              🗡️
-                            </span>
+                            {(() => {
+                              const SwordIcon = (def ? SWORD_ICONS[def.id] : null) ?? IconFlyingSword
+                              return (
+                                <span
+                                  className="flex h-9 w-9 items-center justify-center rounded-lg border p-1.5 shadow-sm"
+                                  style={{ color: def?.color ?? '#f59e0b', borderColor: def?.color ?? '#f59e0b' }}
+                                >
+                                  <SwordIcon className="h-5 w-5" />
+                                </span>
+                              )
+                            })()}
                             <div>
                               <div className="flex items-center gap-2">
                                 <h3 className="font-han text-base font-bold text-paper-100">{s.name}</h3>
@@ -284,12 +290,17 @@ export function NatalSwordModal() {
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <span
-                              className="flex h-8 w-8 items-center justify-center rounded-lg border text-sm"
-                              style={{ color: def.color, borderColor: def.color }}
-                            >
-                              🗡️
-                            </span>
+                            {(() => {
+                              const SwordIcon = SWORD_ICONS[def.id] ?? IconFlyingSword
+                              return (
+                                <span
+                                  className="flex h-8 w-8 items-center justify-center rounded-lg border p-1.5 shadow-sm"
+                                  style={{ color: def.color, borderColor: def.color }}
+                                >
+                                  <SwordIcon className="h-4 w-4" />
+                                </span>
+                              )
+                            })()}
                             <div>
                               <h4 className="font-han text-sm font-bold text-paper-100">{def.name}</h4>
                               <span className="text-[11px] text-paper-400 font-serif">{def.element}</span>

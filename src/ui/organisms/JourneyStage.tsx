@@ -427,14 +427,13 @@ export function JourneyStage({ state, compact = false }: Props) {
               style={{ left: x, animationDelay: `-${Math.min(FLOAT_MS, now - e.atMs)}ms` }}
               aria-hidden
             >
-              🪙 +{formatNumber(e.amount ?? 0)}
+              ◆ +{formatNumber(e.amount ?? 0)}
             </span>
           )
         }
 
         if (e.kind === 'loot-item') {
           const itemDef = ITEM_BY_ID[e.itemId ?? '']
-          const icon = itemDef?.kind === 'currency' ? '🪙' : itemDef?.kind === 'material' ? '🔮' : '🌿'
           return (
             <span
               key={`loot-item-${e.atMs}-${idx}`}
@@ -444,7 +443,7 @@ export function JourneyStage({ state, compact = false }: Props) {
               style={{ left: x, animationDelay: `-${Math.min(FLOAT_MS, now - e.atMs)}ms` }}
               aria-hidden
             >
-              {icon} +{e.amount ?? 1} {itemDef?.name ?? ''}
+              ✦ +{e.amount ?? 1} {itemDef?.name ?? ''}
             </span>
           )
         }
@@ -460,7 +459,7 @@ export function JourneyStage({ state, compact = false }: Props) {
               style={{ left: x, animationDelay: `-${Math.min(FLOAT_MS, now - e.atMs)}ms` }}
               aria-hidden
             >
-              📜 [Bí Tịch] {itemDef?.name ?? ''}!
+              ✦ [Bí Tịch] {itemDef?.name ?? ''}!
             </span>
           )
         }
@@ -475,7 +474,7 @@ export function JourneyStage({ state, compact = false }: Props) {
               style={{ left: x, animationDelay: `-${Math.min(FLOAT_MS, now - e.atMs)}ms` }}
               aria-hidden
             >
-              ⚡ [{e.label ?? 'Phi Kiếm'} · Xuất Kiếm]
+              ⚔ [{e.label ?? 'Phi Kiếm'} · Xuất Kiếm]
             </span>
           )
         }
