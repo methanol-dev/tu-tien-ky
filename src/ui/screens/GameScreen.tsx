@@ -19,6 +19,8 @@ import {
 import { formatAge, formatDurationMs, formatNumber, formatPercent, formatRate } from '@/lib/format'
 import { useGameStore } from '@/store/gameStore'
 import { Button } from '@/ui/atoms/Button'
+import { BottomSheet } from '@/ui/molecules/BottomSheet'
+import { MiniTicker } from '@/ui/molecules/MiniTicker'
 import { QiBar } from '@/ui/molecules/QiBar'
 import { StatRow } from '@/ui/molecules/StatRow'
 import { AvatarModal } from '@/ui/organisms/AvatarModal'
@@ -36,6 +38,7 @@ export function GameScreen() {
   const setAvatar = useGameStore((s) => s.setAvatar)
   const [avatarModalOpen, setAvatarModalOpen] = useState(false)
   const [pathModalOpen, setPathModalOpen] = useState(false)
+  const [logSheetOpen, setLogSheetOpen] = useState(false)
 
   const realm = getRealm(state)
   const nextRealm = getNextRealm(state)
@@ -51,7 +54,8 @@ export function GameScreen() {
 
   return (
     <div className="grid gap-6 md:grid-cols-[1.25fr_1fr] md:items-start">
-      <section className="space-y-5">
+      <section className="space-y-4">
+        {/* Khối Cảnh Giới & Đạo Thân */}
         <RealmPanel
           realm={realm}
           nextRealm={nextRealm}
@@ -68,6 +72,7 @@ export function GameScreen() {
           nextMartialStage={martialInfo.next}
         />
 
+        {/* Thanh Tiến Độ Tu Vi */}
         <QiBar
           qi={isMartial ? state.punches : state.qi}
           required={isMartial ? (martialInfo.next?.minPunches ?? state.punches) : realm.qiRequired}
@@ -76,6 +81,32 @@ export function GameScreen() {
           label={isMartial ? 'Khí huyết & Quyền ý' : 'Linh khí'}
           colorClass={isMartial ? 'bg-gradient-to-r from-vermilion-600 via-vermilion-500 to-gold-400' : undefined}
         />
+
+        {/* Cụm Nút Hành Động Trọng Tâm (Thumb Zone Sát Ngón Cái) */}
+        <div className="grid grid-cols-2 gap-3 pt-1">
+          <Button variant="secondary" onClick={meditate} disabled={expired} className="py-3.5 sm:py-4 text-base sm:text-lg">
+            {isMartial ? 'Luyện quyền' : 'Tu luyện'}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={breakthrough}
+            disabled={!ready}
+            className={`py-3.5 sm:py-4 text-base sm:text-lg ${ready ? 'animate-pulse' : ''}`}
+          >
+            {isMartial ? 'Đột phá Võ Đạo' : 'Đột phá'}
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={gather}
+            disabled={!canGather(state)}
+            className="col-span-2 border border-paper-400/15 py-2 text-xs sm:text-sm"
+          >
+            {gatherCd > 0 ? `Hái thuốc · ${formatDurationMs(gatherCd)}` : 'Hái thuốc'}
+          </Button>
+        </div>
+
+        {/* Mini Ticker Nhật Ký (Chỉ 1 dòng trên Mobile, bấm vào bung BottomSheet) */}
+        <MiniTicker entries={state.log} onOpenFullHistory={() => setLogSheetOpen(true)} />
 
         {buffs.length > 0 && (
           <ul className="flex flex-wrap gap-2 text-xs">
@@ -86,28 +117,6 @@ export function GameScreen() {
             ))}
           </ul>
         )}
-
-        <div className="grid grid-cols-2 gap-3">
-          <Button variant="secondary" onClick={meditate} disabled={expired} className="py-4 text-lg">
-            {isMartial ? 'Luyện quyền' : 'Tu luyện'}
-          </Button>
-          <Button
-            variant="primary"
-            onClick={breakthrough}
-            disabled={!ready}
-            className={`py-4 text-lg ${ready ? 'animate-pulse' : ''}`}
-          >
-            {isMartial ? 'Đột phá Võ Đạo' : 'Đột phá'}
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={gather}
-            disabled={!canGather(state)}
-            className="col-span-2 border border-paper-400/15"
-          >
-            {gatherCd > 0 ? `Hái thuốc · ${formatDurationMs(gatherCd)}` : 'Hái thuốc'}
-          </Button>
-        </div>
 
         {expired && (
           <p className="rounded-md border border-vermilion-500/40 bg-vermilion-500/10 px-4 py-3 text-sm text-vermilion-400">
@@ -153,6 +162,7 @@ export function GameScreen() {
           </div>
         </div>
 
+        {/* Căn Cơ & Chiến Lực */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="font-han text-sm text-paper-300">Căn cơ tu vi</h3>
@@ -196,7 +206,19 @@ export function GameScreen() {
         </div>
       </section>
 
-      <CultivationLog entries={state.log} />
+      {/* Trên Desktop: Hiển thị CultivationLog ở cột phải như cũ */}
+      <div className="hidden md:block">
+        <CultivationLog entries={state.log} />
+      </div>
+
+      {/* Trên Mobile: BottomSheet mở rộng để đọc full nhật ký khi người chơi muốn */}
+      <BottomSheet
+        open={logSheetOpen}
+        onClose={() => setLogSheetOpen(false)}
+        title="Nhật ký tu luyện"
+      >
+        <CultivationLog entries={state.log} />
+      </BottomSheet>
 
       <AvatarModal
         open={avatarModalOpen}

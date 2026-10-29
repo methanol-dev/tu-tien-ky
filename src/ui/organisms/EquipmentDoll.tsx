@@ -117,21 +117,21 @@ export function EquipmentDoll({ state }: EquipmentDollProps) {
   return (
     <div className="space-y-4">
       {/* ================= PAPER DOLL EQUIPMENT CONTAINER ================= */}
-      <div className="relative overflow-hidden rounded-2xl border border-gold-500/30 bg-gradient-to-b from-ink-950/95 via-ink-900/90 to-ink-950/95 p-4 sm:p-6 shadow-2xl">
+      <div className="relative overflow-hidden rounded-2xl border border-gold-500/30 bg-gradient-to-b from-ink-950/95 via-ink-900/90 to-ink-950/95 p-2.5 sm:p-6 shadow-2xl">
         {/* Hoa văn nền thủy mặc cổ phong Kiếm Lai */}
         <div className="pointer-events-none absolute inset-0 opacity-10 bg-[radial-gradient(#e0bf4a_1px,transparent_1px)] [background-size:16px_16px]" />
 
         {/* Thanh tiêu đề & các nút thao tác nhanh Võ Lâm */}
-        <div className="relative z-10 mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-paper-400/15 pb-3">
+        <div className="relative z-10 mb-3 sm:mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-paper-400/15 pb-2.5 sm:pb-3">
           <div>
-            <h3 className="font-han text-base sm:text-lg font-bold text-gold-400 flex items-center gap-2">
-              <span>🥋 Pháp bảo · Đạo Thân Trang Bị</span>
-              <span className="rounded-full bg-gold-500/20 px-2 py-0.5 font-mono text-xs text-gold-300">
+            <h3 className="font-han text-sm sm:text-lg font-bold text-gold-400 flex items-center gap-1.5 sm:gap-2">
+              <span>🥋 Pháp bảo · Đạo Thân</span>
+              <span className="rounded-full bg-gold-500/20 px-2 py-0.5 font-mono text-[11px] sm:text-xs text-gold-300">
                 {equippedCount}/12 Ô
               </span>
             </h3>
-            <p className="text-[11px] text-paper-400 font-serif">
-              Bấm vào từng vị trí để thay đổi hoặc gỡ trang bị theo phong cách hiệp khách
+            <p className="text-[10px] sm:text-[11px] text-paper-400 font-serif">
+              Bấm vào từng vị trí để thay đổi hoặc gỡ trang bị
             </p>
           </div>
 

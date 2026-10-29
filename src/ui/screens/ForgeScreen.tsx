@@ -13,6 +13,7 @@ import {
 } from '@/engine/forge'
 import { compareGearStats, gearScore } from '@/engine/gear'
 import { getStoneRate } from '@/engine/economy'
+import { calculateGearDelta, formatCPDelta, formatCombatPower } from '@/engine/combatPower'
 import type { GearInstance } from '@/engine/types'
 import { formatNumber } from '@/lib/format'
 import { useGameStore } from '@/store/gameStore'
@@ -66,11 +67,22 @@ export function ForgeScreen() {
     return uid ? state.gear.find((g) => g.uid === uid) ?? null : null
   }, [state, targetSlot])
 
-  // So sánh chỉ số
+  // So sánh chỉ số thô
   const comparison = useMemo(() => {
     if (!pendingGear) return null
     return compareGearStats(equippedGear, pendingGear)
   }, [equippedGear, pendingGear])
+
+  // Tính toán Lực Chiến Tổng Hợp (CP Delta)
+  const cpDelta = useMemo(() => {
+    if (!pendingGear) return null
+    return calculateGearDelta(state, pendingGear)
+  }, [state, pendingGear])
+
+  const formattedDelta = useMemo(() => {
+    if (!cpDelta) return null
+    return formatCPDelta(cpDelta.delta)
+  }, [cpDelta])
 
   // Dừng Auto-Forge khi unmount
   useEffect(() => {
@@ -144,35 +156,35 @@ export function ForgeScreen() {
   const expPercent = maxLevel ? 100 : Math.min(100, Math.floor((currentExp / neededExp) * 100))
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-6 md:py-8">
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-4 px-2 sm:px-4 py-4 md:py-6 pb-28 md:pb-8">
       {/* 1. Header Lò Luyện Khí & EXP */}
-      <div className="relative rounded-2xl border border-paper-400/20 bg-ink-900/80 p-5 backdrop-blur-md shadow-2xl">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="relative rounded-2xl border border-paper-400/20 bg-ink-900/80 p-4 sm:p-5 backdrop-blur-md shadow-2xl">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-vermilion-950/60 border border-vermilion-500/40 text-vermilion-400">
-                <IconFlame className="h-5 w-5 animate-pulse" />
+              <span className="inline-flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-vermilion-950/60 border border-vermilion-500/40 text-vermilion-400">
+                <IconFlame className="h-4 w-4 sm:h-5 sm:w-5 animate-pulse" />
               </span>
-              <h1 className="font-serif text-xl font-bold text-paper-100 tracking-wide">
+              <h1 className="font-serif text-lg sm:text-xl font-bold text-paper-100 tracking-wide">
                 Đan Lô Luyện Khí
               </h1>
-              <span className="rounded-full bg-gold-500/10 border border-gold-500/30 px-2.5 py-0.5 font-serif text-xs font-semibold text-gold-400">
+              <span className="rounded-full bg-gold-500/10 border border-gold-500/30 px-2 py-0.5 font-serif text-[11px] sm:text-xs font-semibold text-gold-400">
                 Cấp {forge.level} {maxLevel ? '(Đỉnh phong)' : ''}
               </span>
             </div>
-            <p className="mt-1 text-xs text-paper-400">
+            <p className="mt-1 text-[11px] sm:text-xs text-paper-400">
               Thiêu đốt Chân Hỏa tôi luyện thiên địa thần binh · Phẩm chất tăng theo cấp lò
             </p>
           </div>
 
           {/* Cụm Chân Hỏa & Mua thêm */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 rounded-xl border border-vermilion-500/30 bg-ink-950/70 px-3.5 py-2">
-              <span className="text-base">🔥</span>
+          <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
+            <div className="flex items-center gap-1.5 rounded-xl border border-vermilion-500/30 bg-ink-950/70 px-3 py-1.5">
+              <span className="text-sm">🔥</span>
               <span className="font-mono text-sm font-bold text-vermilion-300">
                 {forge.fireCount}
               </span>
-              <span className="text-xs text-paper-400">Chân Hỏa</span>
+              <span className="text-[11px] text-paper-400">Chân Hỏa</span>
             </div>
 
             <div className="flex gap-1.5">
@@ -180,7 +192,7 @@ export function ForgeScreen() {
                 type="button"
                 onClick={() => buyFire(10)}
                 disabled={state.stones < cost10}
-                className="rounded-lg border border-paper-400/20 bg-ink-800/80 px-2.5 py-1.5 text-xs font-medium text-paper-200 transition hover:border-gold-500/50 hover:text-gold-300 disabled:opacity-40"
+                className="rounded-lg border border-paper-400/20 bg-ink-800/80 px-2.5 py-1 text-xs font-medium text-paper-200 transition hover:border-gold-500/50 hover:text-gold-300 disabled:opacity-40"
                 title={`Mua 10 Chân Hỏa giá ${formatNumber(cost10)} linh thạch`}
               >
                 +10 🔥
@@ -189,7 +201,7 @@ export function ForgeScreen() {
                 type="button"
                 onClick={() => buyFire(50)}
                 disabled={state.stones < cost50}
-                className="rounded-lg border border-paper-400/20 bg-ink-800/80 px-2.5 py-1.5 text-xs font-medium text-paper-200 transition hover:border-gold-500/50 hover:text-gold-300 disabled:opacity-40"
+                className="rounded-lg border border-paper-400/20 bg-ink-800/80 px-2.5 py-1 text-xs font-medium text-paper-200 transition hover:border-gold-500/50 hover:text-gold-300 disabled:opacity-40"
                 title={`Mua 50 Chân Hỏa giá ${formatNumber(cost50)} linh thạch`}
               >
                 +50 🔥
@@ -199,14 +211,14 @@ export function ForgeScreen() {
         </div>
 
         {/* Thanh tiến trình EXP Lò */}
-        <div className="mt-4">
-          <div className="flex justify-between text-xs text-paper-400">
+        <div className="mt-3">
+          <div className="flex justify-between text-[11px] sm:text-xs text-paper-400">
             <span>Tiến độ thăng cấp lò</span>
             <span className="font-mono">
               {maxLevel ? 'Đã đạt cấp tối đa' : `${currentExp} / ${neededExp} EXP (${expPercent}%)`}
             </span>
           </div>
-          <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-ink-950/80 border border-paper-400/10">
+          <div className="mt-1 h-1.5 sm:h-2 w-full overflow-hidden rounded-full bg-ink-950/80 border border-paper-400/10">
             <div
               className="h-full bg-gradient-to-r from-amber-600 via-gold-500 to-amber-300 transition-all duration-300"
               style={{ width: `${expPercent}%` }}
@@ -215,11 +227,11 @@ export function ForgeScreen() {
         </div>
 
         {/* Nút bật popup bảng tỷ lệ */}
-        <div className="mt-3 flex justify-end">
+        <div className="mt-2 flex justify-end">
           <button
             type="button"
             onClick={() => setShowRarityTable(!showRarityTable)}
-            className="text-xs text-gold-400/80 hover:text-gold-300 underline underline-offset-4"
+            className="text-[11px] sm:text-xs text-gold-400/80 hover:text-gold-300 underline underline-offset-4"
           >
             {showRarityTable ? 'Đóng bảng xác suất' : 'Xem xác suất phẩm chất lò cấp ' + forge.level}
           </button>
@@ -227,15 +239,15 @@ export function ForgeScreen() {
 
         {/* Bảng xác suất phẩm chất */}
         {showRarityTable && (
-          <div className="mt-3 rounded-xl border border-paper-400/20 bg-ink-950/90 p-3.5 text-xs">
-            <div className="grid grid-cols-5 gap-2 text-center">
+          <div className="mt-2.5 rounded-xl border border-paper-400/20 bg-ink-950/90 p-3 text-xs">
+            <div className="grid grid-cols-5 gap-1.5 sm:gap-2 text-center">
               {RARITIES.map((r, idx) => {
                 const tableIndex = Math.min(FORGE_MAX_LEVEL - 1, Math.max(0, forge.level - 1))
                 const rate = FORGE_RARITY_TABLE[tableIndex][idx]
                 return (
-                  <div key={r} className="rounded-lg border border-paper-400/10 p-2 bg-ink-900/60">
-                    <div className="font-serif font-bold text-paper-200">{RARITY_NAME[r]}</div>
-                    <div className="mt-1 font-mono text-gold-400 font-semibold">{rate}%</div>
+                  <div key={r} className="rounded-lg border border-paper-400/10 p-1.5 sm:p-2 bg-ink-900/60">
+                    <div className="font-serif font-bold text-[10px] sm:text-xs text-paper-200">{RARITY_NAME[r]}</div>
+                    <div className="mt-0.5 font-mono text-[11px] sm:text-xs text-gold-400 font-semibold">{rate}%</div>
                   </div>
                 )
               })}
@@ -244,101 +256,110 @@ export function ForgeScreen() {
         )}
       </div>
 
-      {/* 2. KHUNG TRUNG TÂM: SO SÁNH TRANG BỊ HOẶC LÒ ĐANG CHỜ ĐẬP */}
+      {/* 2. KHUNG TRUNG TÂM: SO SÁNH TRANG BỊ SIDE-BY-SIDE GỌN GÀNG */}
       {pendingGear && comparison ? (
-        <div className="rounded-2xl border border-gold-500/40 bg-ink-900/90 p-5 backdrop-blur-md shadow-2xl animate-fade-in">
-          <div className="text-center">
-            <span className="inline-block rounded-full bg-vermilion-500/20 border border-vermilion-500/40 px-3 py-1 text-xs font-serif text-vermilion-300">
-              Lò Lửa Bùng Nổ · Bảo Vật Vừa Xuất Lò
+        <div className="rounded-2xl border border-gold-500/40 bg-ink-900/90 p-3.5 sm:p-5 backdrop-blur-md shadow-2xl animate-fade-in">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-1 text-center sm:text-left border-b border-paper-400/15 pb-2.5 mb-3">
+            <span className="inline-block rounded-full bg-vermilion-500/20 border border-vermilion-500/40 px-2.5 py-0.5 text-xs font-serif text-vermilion-300">
+              🔥 Bảo Vật Vừa Xuất Lò · Ô {targetSlot ? SLOT_NAME[targetSlot] : ''}
             </span>
+
+            {/* Tag Chênh Lệch Lực Chiến Tổng Hợp (CP Delta) */}
+            {formattedDelta && (
+              <div className="flex items-center gap-1.5">
+                <span
+                  className={`rounded-full px-2.5 py-0.5 font-mono text-xs font-bold border shadow ${
+                    formattedDelta.isPositive
+                      ? 'bg-emerald-950/90 border-emerald-500/60 text-emerald-400 animate-pulse'
+                      : formattedDelta.isZero
+                        ? 'bg-ink-800 border-paper-500/30 text-paper-300'
+                        : 'bg-vermilion-950/90 border-vermilion-500/60 text-vermilion-400'
+                  }`}
+                >
+                  {formattedDelta.text}
+                </span>
+              </div>
+            )}
           </div>
 
-          <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+          {/* Bố Cục Side-by-Side 2 Cột Song Song Ngay Cả Trên Mobile */}
+          <div className="grid grid-cols-2 gap-2 sm:gap-4">
             {/* Cột Trái: Đang mặc trên người */}
-            <div className="rounded-xl border border-paper-400/20 bg-ink-950/70 p-4">
-              <div className="flex items-center justify-between border-b border-paper-400/10 pb-2">
-                <span className="text-xs font-serif text-paper-400">Đang trang bị ({targetSlot ? SLOT_NAME[targetSlot] : ''})</span>
-                {equippedGear && (
-                  <span className="font-mono text-xs text-gold-400">
-                    LC: {formatNumber(gearScore(equippedGear))}
-                  </span>
+            <div className="rounded-xl border border-paper-400/20 bg-ink-950/70 p-2.5 sm:p-4 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between border-b border-paper-400/10 pb-1.5 mb-1.5">
+                  <span className="text-[10px] sm:text-xs font-serif text-paper-400">Đang mặc</span>
+                  {equippedGear && (
+                    <span className="font-mono text-[10px] sm:text-xs text-gold-400">
+                      LC: {formatNumber(gearScore(equippedGear))}
+                    </span>
+                  )}
+                </div>
+
+                {equippedGear ? (
+                  <GearCardItem gear={equippedGear} />
+                ) : (
+                  <div className="flex h-24 sm:h-36 items-center justify-center text-[11px] text-paper-500 italic text-center">
+                    Ô này đang trống
+                  </div>
                 )}
               </div>
-
-              {equippedGear ? (
-                <GearCardItem gear={equippedGear} />
-              ) : (
-                <div className="flex h-36 items-center justify-center text-xs text-paper-500 italic">
-                  Chưa có trang bị ở ô này
-                </div>
-              )}
             </div>
 
             {/* Cột Phải: Món Mới Xuất Lò */}
             <div
-              className={`rounded-xl border ${RARITY_BORDER_CLASSES[pendingGear.rarity]} ${RARITY_BG_CLASSES[pendingGear.rarity]} p-4 relative overflow-hidden`}
+              className={`rounded-xl border ${RARITY_BORDER_CLASSES[pendingGear.rarity]} ${RARITY_BG_CLASSES[pendingGear.rarity]} p-2.5 sm:p-4 relative overflow-hidden flex flex-col justify-between`}
             >
-              <div className="flex items-center justify-between border-b border-paper-400/20 pb-2">
-                <span className="text-xs font-serif font-semibold text-paper-200">
-                  Món mới rèn ra ({targetSlot ? SLOT_NAME[targetSlot] : ''})
-                </span>
-                <span className="font-mono text-xs font-bold text-gold-300">
-                  LC: {formatNumber(gearScore(pendingGear))}
-                </span>
-              </div>
+              <div>
+                <div className="flex items-center justify-between border-b border-paper-400/20 pb-1.5 mb-1.5">
+                  <span className="text-[10px] sm:text-xs font-serif font-semibold text-paper-200">
+                    Vừa rèn
+                  </span>
+                  <span className="font-mono text-[10px] sm:text-xs font-bold text-gold-300">
+                    LC: {formatNumber(gearScore(pendingGear))}
+                  </span>
+                </div>
 
-              <GearCardItem gear={pendingGear} />
-
-              {/* Tag chênh lệch lực chiến */}
-              <div className="mt-3 flex items-center justify-center">
-                {comparison.scoreDiff > 0 ? (
-                  <span className="rounded-full bg-emerald-950/80 border border-emerald-500/50 px-3 py-1 font-mono text-xs font-bold text-emerald-400 shadow-lg animate-pulse">
-                    ▲ +{comparison.scoreDiff} Lực Chiến (Mạnh hơn)
-                  </span>
-                ) : comparison.scoreDiff < 0 ? (
-                  <span className="rounded-full bg-vermilion-950/80 border border-vermilion-500/50 px-3 py-1 font-mono text-xs font-bold text-vermilion-400">
-                    ▼ {comparison.scoreDiff} Lực Chiến (Yếu hơn)
-                  </span>
-                ) : (
-                  <span className="rounded-full bg-paper-800/80 border border-paper-400/30 px-3 py-1 font-mono text-xs text-paper-300">
-                    Ngang bằng lực chiến
-                  </span>
-                )}
+                <GearCardItem gear={pendingGear} isNew />
               </div>
             </div>
           </div>
 
-          {/* Hai Nút Quyết Định: MẶC VÀO vs PHÂN GIẢI */}
-          <div className="mt-5 flex gap-3">
+          {/* STICKY ACTION BAR TRÊN MOBILE (Hoặc inline trên Desktop): Bấm 1 chạm không cần cuộn */}
+          <div className="mt-4 flex gap-2 sm:gap-3">
             <button
               type="button"
               onClick={equipPendingGear}
-              className="flex-1 rounded-xl border border-emerald-500/50 bg-gradient-to-r from-emerald-700 to-teal-600 py-3 font-serif text-sm font-bold text-paper-100 shadow-lg transition-transform active:scale-95 hover:from-emerald-600 hover:to-teal-500"
+              className={`flex-[1.4] rounded-xl border py-3 sm:py-3.5 font-serif text-xs sm:text-sm font-bold text-paper-100 shadow-xl transition-all active:scale-95 ${
+                cpDelta?.isUpgrade
+                  ? 'border-emerald-400/80 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 animate-pulse'
+                  : 'border-emerald-500/50 bg-gradient-to-r from-emerald-700 to-teal-700'
+              }`}
             >
-              🗡️ Mặc Vào (Tự giải đồ cũ)
+              🗡️ Mặc Vào {cpDelta?.delta && cpDelta.delta > 0 ? `(+${formatCombatPower(cpDelta.delta)} ⚔️)` : ''}
             </button>
             <button
               type="button"
               onClick={salvagePendingGear}
-              className="flex-1 rounded-xl border border-paper-400/30 bg-ink-800/90 py-3 font-serif text-sm font-medium text-paper-300 shadow transition-colors active:scale-95 hover:bg-ink-700 hover:text-paper-100"
+              className="flex-1 rounded-xl border border-paper-400/30 bg-ink-800/90 py-3 sm:py-3.5 font-serif text-xs sm:text-sm font-medium text-paper-300 shadow transition-colors active:scale-95 hover:bg-ink-700 hover:text-paper-100"
             >
-              ♻️ Phân Giải (Nhận EXP + Linh thạch)
+              ♻️ Phân Giải
             </button>
           </div>
         </div>
       ) : (
         /* KHI CHƯA CÓ PENDING GEAR: NÚT ĐẬP ĐỒ TO BẢN HOÀNH TRÁNG */
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-paper-400/20 bg-ink-900/60 p-8 text-center backdrop-blur-md">
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-paper-400/20 bg-ink-900/60 p-6 sm:p-8 text-center backdrop-blur-md">
           {/* Lò luyện khí khói lửa */}
-          <div className="relative mb-6 flex h-36 w-36 items-center justify-center rounded-full bg-gradient-to-b from-ink-800 to-ink-950 border-2 border-gold-500/30 shadow-[0_0_30px_rgba(245,158,11,0.15)]">
-            <IconCauldron className="h-20 w-20 text-gold-400/80 drop-shadow-[0_0_15px_rgba(245,158,11,0.4)]" />
+          <div className="relative mb-4 sm:mb-6 flex h-28 w-28 sm:h-36 sm:w-36 items-center justify-center rounded-full bg-gradient-to-b from-ink-800 to-ink-950 border-2 border-gold-500/30 shadow-[0_0_30px_rgba(245,158,11,0.15)]">
+            <IconCauldron className="h-16 w-16 sm:h-20 sm:w-20 text-gold-400/80 drop-shadow-[0_0_15px_rgba(245,158,11,0.4)]" />
             <div className="absolute inset-0 rounded-full border border-gold-500/20 animate-ping opacity-20 pointer-events-none" />
           </div>
 
-          <h2 className="font-serif text-lg font-bold text-paper-200">
+          <h2 className="font-serif text-base sm:text-lg font-bold text-paper-200">
             Cửu U Chân Hỏa Lô
           </h2>
-          <p className="mt-1 max-w-md text-xs text-paper-400">
+          <p className="mt-1 max-w-md text-[11px] sm:text-xs text-paper-400">
             Mỗi lần khai lò tiêu hao 1 Chân Hỏa, rèn ra trang bị ngẫu nhiên 12 ô phù hợp cảnh giới hiện tại (Cấp {getForgeGearTier(state)}).
           </p>
 
@@ -346,24 +367,24 @@ export function ForgeScreen() {
             type="button"
             onClick={() => forgeGear()}
             disabled={forge.fireCount <= 0 || isAutoForging}
-            className="mt-6 flex items-center justify-center gap-2 rounded-2xl border-2 border-gold-500/60 bg-gradient-to-r from-amber-600 via-gold-600 to-amber-700 px-8 py-3.5 font-serif text-base font-bold text-ink-950 shadow-[0_0_20px_rgba(245,158,11,0.4)] transition-all active:scale-95 hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="mt-5 flex items-center justify-center gap-2 rounded-2xl border-2 border-gold-500/60 bg-gradient-to-r from-amber-600 via-gold-600 to-amber-700 px-6 sm:px-8 py-3 sm:py-3.5 font-serif text-sm sm:text-base font-bold text-ink-950 shadow-[0_0_20px_rgba(245,158,11,0.4)] transition-all active:scale-95 hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            <span className="text-xl">🔥</span>
+            <span className="text-lg sm:text-xl">🔥</span>
             <span>ĐẬP LÔ LUYỆN KHÍ</span>
-            <span className="text-xs font-mono font-normal opacity-90">(-1 🔥)</span>
+            <span className="text-[11px] sm:text-xs font-mono font-normal opacity-90">(-1 🔥)</span>
           </button>
         </div>
       )}
 
       {/* 3. BẢNG ĐIỀU KHIỂN AUTO-FORGE (TỰ ĐỘNG ĐẬP ĐỒ) */}
-      <div className="rounded-2xl border border-paper-400/20 bg-ink-900/80 p-5 backdrop-blur-md shadow-xl">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="rounded-2xl border border-paper-400/20 bg-ink-900/80 p-4 sm:p-5 backdrop-blur-md shadow-xl">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h3 className="font-serif text-sm font-bold text-paper-200 flex items-center gap-2">
+            <h3 className="font-serif text-xs sm:text-sm font-bold text-paper-200 flex items-center gap-2">
               <IconRefresh className="h-4 w-4 text-cyan-400" />
               Tự Động Đập Lô (Auto-Forge)
             </h3>
-            <p className="mt-0.5 text-xs text-paper-400">
+            <p className="mt-0.5 text-[11px] sm:text-xs text-paper-400">
               Tự động khai lò liên tục, phân giải đồ yếu và dừng lại khi trúng bảo vật
             </p>
           </div>
@@ -372,7 +393,7 @@ export function ForgeScreen() {
             type="button"
             onClick={() => setIsAutoForging(!isAutoForging)}
             disabled={forge.fireCount <= 0 && !pendingGear}
-            className={`rounded-xl px-5 py-2.5 font-serif text-xs font-bold transition-all active:scale-95 shadow ${
+            className={`rounded-xl px-4 sm:px-5 py-2 sm:py-2.5 font-serif text-xs font-bold transition-all active:scale-95 shadow ${
               isAutoForging
                 ? 'bg-vermilion-600 text-paper-100 hover:bg-vermilion-500 animate-pulse'
                 : 'bg-gold-500 text-ink-950 hover:bg-gold-400'
@@ -382,8 +403,8 @@ export function ForgeScreen() {
           </button>
         </div>
 
-        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 pt-3 border-t border-paper-400/10">
-          <label className="flex items-center gap-2.5 text-xs text-paper-300 cursor-pointer">
+        <div className="mt-3.5 grid grid-cols-1 gap-2.5 sm:grid-cols-2 pt-3 border-t border-paper-400/10">
+          <label className="flex items-center gap-2 text-xs text-paper-300 cursor-pointer">
             <input
               type="checkbox"
               checked={forge.autoFilters.stopOnHigherScore}
@@ -398,7 +419,7 @@ export function ForgeScreen() {
             <select
               value={forge.autoFilters.minRarity}
               onChange={(e) => updateForgeFilters({ minRarity: e.target.value as Rarity })}
-              className="rounded-lg border border-paper-400/20 bg-ink-950 px-2.5 py-1 text-xs text-gold-400 focus:outline-none"
+              className="rounded-lg border border-paper-400/20 bg-ink-950 px-2 py-1 text-xs text-gold-400 focus:outline-none"
             >
               {RARITIES.map((r) => (
                 <option key={r} value={r}>
@@ -414,29 +435,31 @@ export function ForgeScreen() {
 }
 
 /** Component hiển thị chi tiết thông tin 1 món trang bị */
-const GearCardItem: FC<{ gear: GearInstance }> = ({ gear }) => {
+const GearCardItem: FC<{ gear: GearInstance; isNew?: boolean }> = ({ gear, isNew }) => {
   const def = GEAR_DEF_BY_ID[gear.defId]
   return (
-    <div className="mt-2 flex flex-col gap-2">
-      <div className="flex items-center gap-2">
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-ink-900 border border-paper-400/20 text-sm font-serif">
+    <div className="flex flex-col gap-1 sm:gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2">
+        <span className="flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-lg bg-ink-900 border border-paper-400/20 text-xs sm:text-sm font-serif">
           {def?.glyph ?? '⚔️'}
         </span>
-        <div>
-          <div className="font-serif text-sm font-bold text-paper-100">
+        <div className="overflow-hidden">
+          <div className="font-serif text-xs sm:text-sm font-bold text-paper-100 truncate" title={def?.name ?? gear.defId}>
             {def?.name ?? gear.defId}
           </div>
-          <div className="text-[11px] text-paper-400">
+          <div className="text-[10px] sm:text-[11px] text-paper-400 truncate">
             {RARITY_NAME[gear.rarity]} · Bậc {gear.tier}
           </div>
         </div>
       </div>
 
-      <div className="mt-1 space-y-0.5 rounded-lg bg-ink-950/50 p-2 text-xs">
+      <div className="mt-1 space-y-0.5 rounded-lg bg-ink-950/60 p-1.5 sm:p-2 text-[10px] sm:text-xs">
         {gear.affixes.map((affix, idx) => (
-          <div key={idx} className="flex justify-between text-[11px] text-paper-300">
-            <span>{affix.key.toUpperCase()}</span>
-            <span className="font-mono text-gold-400">+{Math.round(affix.value * 100)}%</span>
+          <div key={idx} className="flex justify-between text-paper-300">
+            <span className="truncate pr-1">{affix.key.toUpperCase()}</span>
+            <span className={`font-mono font-semibold ${isNew ? 'text-gold-300' : 'text-paper-300'}`}>
+              +{Math.round(affix.value * 100)}%
+            </span>
           </div>
         ))}
       </div>
