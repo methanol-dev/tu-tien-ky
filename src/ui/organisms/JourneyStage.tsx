@@ -1,5 +1,6 @@
 import { useState, type CSSProperties } from 'react'
 import { AVATARS, AVATAR_BY_ID } from '@/content/avatars'
+import { CLASS_BY_ID } from '@/content/classes'
 import { REALMS } from '@/content/realms'
 import { DIFFICULTY_NAMES, STAGES_PER_REGION, type SilhouetteId } from '@/content/regions'
 import { type GameState, getPhaseProgress, getRegion, isRegionUnlocked } from '@/engine'
@@ -83,8 +84,19 @@ export function JourneyStage({ state, compact = false }: Props) {
   const lastHurt = j.events.filter((e) => e.kind === 'hurt' && now - e.atMs < FLASH_MS).at(-1)
   const lastDeath = j.events.filter((e) => e.kind === 'death' && now - e.atMs < 1500).at(-1)
 
+  const classDef = CLASS_BY_ID[state.classId]
+  const isMelee = state.cultivationPath === 'martial' || classDef?.combatRange === 'melee'
+
   const heroAnim =
-    j.phase === 'retreat' ? 'journey-limp' : j.phase === 'rest' ? 'journey-breathe' : walking ? 'journey-walk' : lastPlayerHit ? 'journey-lunge' : 'journey-breathe'
+    j.phase === 'retreat'
+      ? 'journey-limp'
+      : j.phase === 'rest'
+        ? 'journey-breathe'
+        : walking
+          ? 'journey-walk'
+          : lastPlayerHit
+            ? (isMelee ? 'journey-melee-rush' : 'journey-lunge')
+            : 'journey-breathe'
 
   const phaseText = (() => {
     if (!unlocked) return `Tĩnh tọa · cần ${REALMS[region.minRealmIndex].name}`
@@ -223,36 +235,43 @@ export function JourneyStage({ state, compact = false }: Props) {
 
       {/* ================= COMBAT VFX (KIẾM QUANG & QUYỀN Ý) ================= */}
       {lastPlayerHit && (
-        <div
-          key={`hit-fx-${lastPlayerHit.atMs}`}
-          className="pointer-events-none absolute bottom-[18%] left-[22%] h-[40%] w-[52%] overflow-visible animate-pulse z-15"
-          aria-hidden
-        >
-          <svg viewBox="0 0 200 100" className="h-full w-full drop-shadow-[0_0_14px_#fde047]">
-            {/* Vệt chém Kiếm Khí bán nguyệt lấp lánh */}
-            <path
-              d="M12 78 Q95 12 188 38 Q108 28 12 78 Z"
-              fill="url(#journey-sword-grad)"
-              opacity="0.95"
-            />
-            {lastPlayerHit.kind === 'crit' && (
-              <path
-                d="M35 88 L125 18 L175 48"
-                stroke="#ffffff"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                opacity="0.95"
+        isMelee ? (
+          /* Cận chiến: Quyền kình hồng lô bùng nổ trực tiếp trên người quái vật (Zero screen-shake) */
+          <div
+            key={`punch-fx-${lastPlayerHit.atMs}`}
+            className="pointer-events-none absolute bottom-[24%] z-20"
+            style={{
+              left: ENEMY_X[typeof lastPlayerHit.target === 'number' ? lastPlayerHit.target : 0] ?? '70%',
+            }}
+            aria-hidden
+          >
+            <div className="relative flex items-center justify-center">
+              <div className="punch-impact-ring absolute h-24 w-24 rounded-full border-2 border-vermilion-500 bg-vermilion-500/20 shadow-[0_0_20px_#ef4444]" />
+              <div
+                className="punch-impact-ring absolute h-14 w-14 rounded-full border-2 border-gold-300 bg-gold-400/30"
+                style={{ animationDelay: '40ms' }}
               />
-            )}
-            <defs>
-              <linearGradient id="journey-sword-grad" x1="0" y1="1" x2="1" y2="0">
-                <stop offset="0%" stopColor="#eab308" />
-                <stop offset="50%" stopColor="#fef08a" />
-                <stop offset="100%" stopColor="#ffffff" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
+              {lastPlayerHit.kind === 'crit' && (
+                <div className="absolute text-xl font-black text-gold-300 animate-ping">💥</div>
+              )}
+            </div>
+          </div>
+        ) : (
+          /* Đánh xa: Bản Mệnh Phi Kiếm hoàng kim bay vút xé rách không gian */
+          <div
+            key={`bolt-fx-${lastPlayerHit.atMs}`}
+            className="pointer-events-none absolute bottom-[26%] left-[18%] h-12 w-[55%] overflow-visible z-20"
+            aria-hidden
+          >
+            <div className="flying-sword-bolt relative flex items-center">
+              <div className="h-1.5 w-24 rounded-full bg-gradient-to-r from-transparent via-gold-400 to-white shadow-[0_0_14px_#fde047]" />
+              <div className="h-3 w-3 -ml-1 rounded-full bg-white shadow-[0_0_16px_#ffffff]" />
+              {lastPlayerHit.kind === 'crit' && (
+                <div className="h-2 w-12 -ml-2 rounded-full bg-vermilion-400 blur-[1px]" />
+              )}
+            </div>
+          </div>
+        )
       )}
 
       {/* ================= HERO (ĐẠO THÂN) ================= */}

@@ -278,6 +278,65 @@ body::before {
 .journey-lunge {
   animation: journey-lunge 0.26s ease-out both;
 }
+
+/* Melee rush: Võ phu & Cận chiến lướt thần tốc áp sát quái vật đấm bộc phá */
+@keyframes journey-melee-rush {
+  0% {
+    transform: translateX(0);
+  }
+  35% {
+    transform: translateX(165%) skewX(-10deg) scale(1.06);
+  }
+  60% {
+    transform: translateX(150%) skewX(-4deg);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+.journey-melee-rush {
+  animation: journey-melee-rush 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* Quyền kình nổ tung ngay trên người quái vật (Zero screen-shake) */
+@keyframes punch-impact-ring {
+  0% {
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 0.95;
+  }
+  50% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.2);
+    opacity: 0;
+  }
+}
+.punch-impact-ring {
+  animation: punch-impact-ring 0.35s ease-out forwards;
+}
+
+/* Bản Mệnh Phi Kiếm xé gió phóng từ xa */
+@keyframes flying-sword-bolt {
+  0% {
+    transform: translateX(0) scaleX(0.4);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  85% {
+    transform: translateX(180%) scaleX(1.4);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(210%) scaleX(0.8);
+    opacity: 0;
+  }
+}
+.flying-sword-bolt {
+  animation: flying-sword-bolt 0.28s ease-in forwards;
+}
 @keyframes journey-hurt {
   0%,
   100% {
