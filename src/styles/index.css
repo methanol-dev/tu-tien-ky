@@ -443,3 +443,25 @@ body.afk-mode .animate-spin {
 body.afk-mode .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
 }
+
+/* Ink-wash custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(10, 11, 14, 0.3);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(215, 199, 164, 0.2);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(224, 191, 74, 0.4);
+}
+
+/* Firefox standard scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(215, 199, 164, 0.2) rgba(10, 11, 14, 0.3);
+}

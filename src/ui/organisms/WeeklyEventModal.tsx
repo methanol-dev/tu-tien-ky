@@ -26,6 +26,7 @@ export const WeeklyEventModal: FC = () => {
       open={open}
       onClose={() => setOpen(false)}
       title="SỰ KIỆN TUẦN HOÀN · BẢNG VINH DANH KIẾM LAI"
+      maxWidth="max-w-3xl"
       footer={
         <div className="flex w-full items-center justify-between">
           <span className="text-xs text-paper-400">
@@ -38,7 +39,7 @@ export const WeeklyEventModal: FC = () => {
         </div>
       }
     >
-      <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+      <div className="space-y-4">
         {/* Banner sự kiện tuần hiện tại */}
         <div className="rounded-xl border border-gold-500/30 bg-gradient-to-r from-ink-900 via-ink-950 to-ink-900 p-4 shadow-ink">
           <div className="flex items-center gap-3">

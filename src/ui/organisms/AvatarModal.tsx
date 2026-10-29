@@ -35,7 +35,7 @@ export function AvatarModal({
           Chọn một diện mạo nhân vật để hiển thị làm chân dung đại diện cho đạo thân của ngươi trên hành trình cầu đạo.
         </p>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 max-h-[60vh] overflow-y-auto pr-1">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {AVATARS.map((a: AvatarDef) => {
             const isSelected = a.id === currentAvatarId
 

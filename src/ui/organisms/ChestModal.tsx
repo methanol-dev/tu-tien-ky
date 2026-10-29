@@ -39,7 +39,7 @@ export function ChestModal({ result, state, onEquip, onSalvage, onOpenMore, onCl
       {stillOwned.length === 0 ? (
         <p className="text-sm text-paper-400">Đã xử lý hết.</p>
       ) : (
-        <ul className="max-h-[55vh] space-y-2 overflow-y-auto pr-1">
+        <ul className="space-y-2 pr-1">
           {stillOwned.map((g) => {
             const targetSlots = getSlotsForType(getGearDef(g).slot)
             const wornUid = targetSlots.map((s) => state.equipped[s]).find(Boolean) ?? null
