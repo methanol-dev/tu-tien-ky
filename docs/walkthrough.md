@@ -13,13 +13,15 @@ Game 2D Xianxia Idle / Incremental RPG phong cách Thủy Mặc Cổ Phong dựa
 |---|---|
 | **Cảnh Giới Luyện Khí Sĩ** | **15 Cảnh Giới Kiếm Lai** (Đồng Bì $\rightarrow$ Thập Ngũ Cảnh, 43 tầng). Xóa bỏ hoàn toàn các cảnh giới tiên hiệp cũ. |
 | **Cảnh Giới Thuần Túy Võ Đạo** | **11 Cảnh Giới Võ Đạo** (Nê Phôi $\rightarrow$ Kim Thân $\rightarrow$ Sơn Điên $\rightarrow$ Chỉ Cảnh $\rightarrow$ Võ Thần). Luyện quyền tích lũy Khí Huyết & Quyền Ý, không chịu Lôi Kiếp. |
+| **Bản Mệnh Phi Kiếm (Kiếm Tu)** | **Khí Phủ Kiếm Thai (Tối đa 4 kiếm)**: Sơ Thập, Thập Ngũ, Tỉnh Để, Mạch Thượng, Ánh Tuyết, Huyền Hoàng Trảm Tiên. Đa thần thông tự động thức tỉnh ở cấp 3 & 6, Kiếm Tu Bảng 7 bậc danh xưng thiên hạ. |
+| **Giao Diện Đạo Thân Võ Lâm** | **Paper Doll 3 Cột Kinh Điển (Võ Lâm Truyền Kỳ)**: Đạo thân avatar ở giữa với vòng Bát Quái tu vi, 12 ô xếp 2 bên cân đối với Silhouette mờ khi trống; Nút **Mặc Nhanh** & **Gỡ Hết** thần tốc; Popup so sánh thuộc tính hơn kém trực quan. |
 | **Khởi Lập Đạo Đồ** | Modal vấn đạo khi New Game: Tự do chọn con đường **Thuần Túy Võ Phu** (Cận chiến) hoặc **Luyện Khí Tiên Đạo** (Tầm xa). |
 | **Kiếm Võ Song Tu** | Đạo cốt huyền thoại mở khóa ở Luân Hồi Kiếp 2+ cho phép đồng thời tu cả 2 con đường như Trần Bình An. |
 | **Lục Đại Hệ Phái** | 6 class chuẩn GDD: Kiếm Tu, Võ Phu, Đạo Gia Phương Sĩ, Nho Sĩ, Binh Gia, Mặc Gia Cơ Quan Sư. |
 | **Combat Melee vs Ranged** | Phân hóa rõ rệt: Cận chiến áp sát (`journey-melee-rush`) kích hoạt **Áp Chế 10 Trượng (+35% Atk)** và quyền kình sóng xung kích (không rung màn hình); Đánh xa phóng Bản Mệnh Phi Kiếm hoàng kim (`flying-sword-bolt`). |
 | **12 Ô Trang Bị & Set Bonus** | Đầu, áo, quần, giày, đai, vũ khí, phù lục, dây chuyền, 2 nhẫn, 2 bông tai; Set bonus kích hoạt theo số món. |
 | **Hành Tẩu Sơn Thủy** | Các vùng đất chuẩn Kiếm Lai: Ly Châu Động Thiên, Thư Giản Hồ, Kiếm Khí Trường Thành... kèm tranh vẽ lập hội Thủy Mặc nhân vật và quái vật. |
-| **Lưu Trữ & Migration** | **Save v10**. Chuỗi di chuyển dữ liệu tự động từ v1 đến v10 an toàn 100%, bảo toàn tiến trình người chơi. |
+| **Lưu Trữ & Migration** | **Save v11**. Chuỗi di chuyển dữ liệu tự động từ v1 đến v11 an toàn 100%, bảo toàn tiến trình người chơi. |
 
 ---
 
@@ -28,7 +30,7 @@ Game 2D Xianxia Idle / Incremental RPG phong cách Thủy Mặc Cổ Phong dựa
 ```bash
 pnpm install
 pnpm dev            # http://localhost:5173
-pnpm test           # 161 tests Vitest (Engine, Combat, Migration v1-v10, Balance Sim)
+pnpm test           # 176 tests Vitest (Engine, Combat, Migration v1-v11, Balance Sim, Gear Paper Doll)
 pnpm lint           # ESLint 0 errors / 0 warnings
 pnpm build          # tsc + vite + PWA build ra dist/
 pnpm sim 24 1       # Mô phỏng bot 24h active (seed 1)

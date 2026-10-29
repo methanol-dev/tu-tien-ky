@@ -17,6 +17,8 @@ import {
   adminUnlockAllRegions,
   applyOfflineProgress,
   attemptBreakthrough,
+  autoEquipBestGear as engineAutoEquipBestGear,
+  unequipAllGear as engineUnequipAllGear,
   type BreakthroughResult,
   buyItem as engineBuyItem,
   buyLegacyUpgrade as engineBuyLegacyUpgrade,
@@ -128,6 +130,8 @@ export interface GameStore {
   openChests: (kind: ChestKind, count: number) => boolean
   dismissChestResult: () => void
   equip: (uid: string, targetSlot?: GearSlot) => boolean
+  autoEquipBest: () => boolean
+  unequipAll: () => void
   unequip: (slot: GearSlot) => boolean
   salvage: (uids: string[]) => boolean
   salvageByRarity: (rarities: Rarity[]) => boolean
@@ -326,6 +330,23 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       dismissChestResult: () => set({ chestResult: null }),
 
       equip: (uid, targetSlot) => apply(engineEquip(get().state, uid, targetSlot)),
+      autoEquipBest: () => {
+        const { state, equippedCount } = engineAutoEquipBestGear(get().state)
+        set({ state })
+        get().save()
+        if (equippedCount > 0) {
+          get().notify(`Đã tự động trang bị ${equippedCount} món pháp bảo tối ưu!`, 'success')
+        } else {
+          get().notify('Đang mặc các món pháp bảo tốt nhất hiện có rồi.', 'info')
+        }
+        return equippedCount > 0
+      },
+      unequipAll: () => {
+        const nextState = engineUnequipAllGear(get().state)
+        set({ state: nextState })
+        get().save()
+        get().notify('Đã tháo toàn bộ 12 ô trang bị vào túi đồ.', 'info')
+      },
       unequip: (slot) => apply(engineUnequip(get().state, slot)),
       salvage: (uids) => {
         const r = engineSalvage(get().state, uids)

@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { AFFIX_BY_KEY, AFFIX_COUNT, RARITIES, type Rarity } from '@/content/affixes'
 import { GEAR_DEF_BY_ID, getSlotsForType } from '@/content/gear'
 import {
+  autoEquipBestGear,
+  compareGearStats,
   createInitialState,
   createSeededRng,
   equip,
@@ -18,6 +20,7 @@ import {
   salvage,
   salvageByRarity,
   unequip,
+  unequipAllGear,
 } from '@/engine'
 
 const withChests = (normal: number, red: number) => {
@@ -193,5 +196,52 @@ describe('equip & salvage', () => {
     expect(salvage(all.state.state, [s.gear[0].uid]).ok).toBe(false)
     const byRarity = salvageByRarity(worn.state, ['pham', 'linh', 'bao', 'tien', 'than'])
     expect(byRarity.ok && byRarity.state.count).toBe(2)
+  })
+
+  it('autoEquipBestGear equips highest score items into empty or weaker slots', () => {
+    const s = createInitialState(0)
+    const swordWeak = { uid: 'w1', defId: 'thiet-kiem-tho', rarity: 'pham' as const, tier: 1, affixes: [{ key: 'atk' as const, value: 0.05 }] }
+    const swordStrong = { uid: 'w2', defId: 'thanh-cuong-kiem', rarity: 'bao' as const, tier: 3, affixes: [{ key: 'atk' as const, value: 0.25 }] }
+    const robe = { uid: 'r1', defId: 'bo-giap', rarity: 'linh' as const, tier: 1, affixes: [{ key: 'def' as const, value: 0.10 }] }
+
+    const cur = {
+      ...s,
+      gear: [swordWeak, swordStrong, robe],
+      equipped: { ...s.equipped, 'vu-khi': 'w1' }, // Đang mặc kiếm yếu
+    }
+
+    const res = autoEquipBestGear(cur)
+    expect(res.equippedCount).toBe(2) // Thay kiếm mạnh hơn và mặc áo mới
+    expect(res.state.equipped['vu-khi']).toBe('w2')
+    expect(res.state.equipped.ao).toBe('r1')
+  })
+
+  it('unequipAllGear clears all 12 equipped slots', () => {
+    const s = createInitialState(0)
+    const cur = {
+      ...s,
+      equipped: {
+        ...s.equipped,
+        'vu-khi': 'w1',
+        ao: 'r1',
+        dau: 'h1',
+      },
+    }
+    const cleared = unequipAllGear(cur)
+    for (const slot of Object.keys(cleared.equipped)) {
+      expect(cleared.equipped[slot as keyof typeof cleared.equipped]).toBeNull()
+    }
+  })
+
+  it('compareGearStats correctly identifies better candidate and affix diffs', () => {
+    const swordWeak = { uid: 'w1', defId: 'thiet-kiem-tho', rarity: 'pham' as const, tier: 1, affixes: [{ key: 'atk' as const, value: 0.05 }] }
+    const swordStrong = { uid: 'w2', defId: 'thanh-cuong-kiem', rarity: 'bao' as const, tier: 3, affixes: [{ key: 'atk' as const, value: 0.25 }] }
+
+    const cmp = compareGearStats(swordWeak, swordStrong)
+    expect(cmp.isBetter).toBe(true)
+    expect(cmp.scoreDiff).toBeGreaterThan(0)
+    const atkDiff = cmp.diffs.find((d) => d.key === 'atk')
+    expect(atkDiff).toBeDefined()
+    expect(atkDiff?.diff).toBeCloseTo(0.20)
   })
 })

@@ -1,9 +1,7 @@
 import { useState } from 'react'
 import { resolveAsset } from '@/lib/assets'
-import { RARITY_NAME } from '@/content/affixes'
 import { AVATARS, AVATAR_BY_ID } from '@/content/avatars'
 import { CLASSES, CLASS_BY_ID } from '@/content/classes'
-import { GEAR_SLOTS, SLOT_NAME } from '@/content/gear'
 import {
   MARTIAL_STAGES,
   getMartialPunches,
@@ -15,7 +13,6 @@ import { TECHNIQUE_BY_ID } from '@/content/techniques'
 import {
   type GameState,
   getActiveBuffs,
-  getActiveSetBonuses,
   getAffixTotals,
   getBreakthroughChance,
   getCombatStats,
@@ -26,15 +23,14 @@ import {
   getRealm,
   getStoneRate,
   isLifespanExceeded,
-  getGearDef,
 } from '@/engine'
-import { describeAffix, RARITY_BG, RARITY_CLASS } from '@/lib/gearUi'
 import { describeTechniqueEffect } from '@/lib/describe'
 import { formatAge, formatDurationMs, formatNumber, formatPercent, formatRate } from '@/lib/format'
 import { useGameStore } from '@/store/gameStore'
 import { Button } from '@/ui/atoms/Button'
 import { Modal } from '@/ui/atoms/Modal'
 import { AvatarModal } from './AvatarModal'
+import { EquipmentDoll } from './EquipmentDoll'
 
 interface CharacterModalProps {
   open: boolean
@@ -66,8 +62,6 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
   const martial = getMartialRealm(punches)
   const nextMartial = getNextMartialRealm(punches)
 
-  const byUid = new Map(state.gear.map((g) => [g.uid, g]))
-  const activeSets = getActiveSetBonuses(state)
   const learnedTechniques = Object.entries(state.techniques)
     .filter(([, lvl]) => lvl > 0)
     .map(([id, lvl]) => ({ def: TECHNIQUE_BY_ID[id], lvl }))
@@ -581,67 +575,8 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
       {/* Tab 4: Pháp bảo */}
       {tab === 'gear' && (
         <div className="space-y-4 pt-1">
-          {/* Hiệu ứng Set Bonus kích hoạt */}
-          {activeSets.length > 0 && (
-            <div className="rounded-md border border-gold-500/30 bg-ink-950/70 p-3 shadow-inner">
-              <h4 className="font-han text-xs font-bold text-gold-300 mb-2">
-                Hiệu ứng bộ pháp bảo đang kích hoạt ({activeSets.length}):
-              </h4>
-              <div className="grid gap-2 sm:grid-cols-2">
-                {activeSets.map((s, idx) => (
-                  <div key={idx} className="rounded border border-gold-500/20 bg-ink-900/60 p-2 text-xs">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-gold-400">{s.setName}</span>
-                      <span className="text-[10px] text-paper-400">Mốc {s.threshold} món</span>
-                    </div>
-                    <p className="mt-1 text-paper-300">{s.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
-            {GEAR_SLOTS.map((slot) => {
-              const uid = state.equipped[slot]
-              const g = uid ? byUid.get(uid) : undefined
-              if (!g) {
-                return (
-                  <li
-                    key={slot}
-                    className="flex min-h-20 flex-col items-center justify-center rounded-lg border border-dashed border-paper-400/20 bg-ink-900/30 p-2 text-center text-xs text-paper-400"
-                  >
-                    <span className="font-han text-xs font-medium text-paper-300">{SLOT_NAME[slot]}</span>
-                    <span className="mt-0.5 text-[10px] text-paper-400">Trống</span>
-                  </li>
-                )
-              }
-              const def = getGearDef(g)
-              return (
-                <li
-                  key={slot}
-                  className={`flex flex-col justify-between rounded-lg border p-2.5 ${RARITY_CLASS[g.rarity]} ${RARITY_BG[g.rarity]}`}
-                >
-                  <div>
-                    <div className="flex items-start justify-between gap-1">
-                      <h4 className="font-han text-xs font-bold truncate">{def.name}</h4>
-                      <span className="text-[9px] uppercase font-mono">{RARITY_NAME[g.rarity]}</span>
-                    </div>
-                    <p className="mt-0.5 text-[10px] text-paper-400">
-                      {SLOT_NAME[slot]} · Bậc {g.tier}
-                    </p>
-                    <ul className="mt-1 space-y-0.5 text-[11px]">
-                      {g.affixes.map((a, i) => (
-                        <li key={i} className="text-paper-200">
-                          {describeAffix(a)}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </li>
-              )
-            })}
-          </ul>
+          {/* Paper Doll Đạo Thân Trang Bị Chuẩn Võ Lâm */}
+          <EquipmentDoll state={state} />
 
           <div className="rounded-md border border-paper-400/10 bg-ink-900/50 p-3">
             <h4 className="font-han text-xs font-semibold text-paper-300 mb-2">

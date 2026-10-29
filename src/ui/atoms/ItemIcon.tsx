@@ -22,9 +22,24 @@ export function ItemIcon({ id, kind, tier, size = 'md' }: ItemIconProps) {
 
   return (
     <div
-      className={`relative flex ${dim} shrink-0 items-center justify-center overflow-hidden rounded-lg border border-paper-400/20 bg-ink-950/80 shadow-inner`}
-      style={{ borderColor: `${color}44` }}
+      className={`relative flex ${dim} shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-gradient-to-b from-ink-900 to-ink-950 shadow-inner`}
+      style={{ borderColor: `${color}66`, boxShadow: `0 0 8px ${color}33` }}
     >
+      {/* 4 Góc Khung Chạm Trổ Cổ Phong */}
+      <svg
+        viewBox="0 0 40 40"
+        aria-hidden
+        className="pointer-events-none absolute inset-0 h-full w-full opacity-40"
+        fill="none"
+        stroke={color}
+        strokeWidth="1"
+      >
+        <path d="M 2 6 L 2 2 L 6 2" />
+        <path d="M 34 2 L 38 2 L 38 6" />
+        <path d="M 2 34 L 2 38 L 6 38" />
+        <path d="M 34 38 L 38 38 L 38 34" />
+      </svg>
+
       {/* Vòng hào quang phát sáng nhẹ theo Tier */}
       <div
         className="pointer-events-none absolute inset-0 rounded-lg opacity-20"

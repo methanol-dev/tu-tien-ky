@@ -21,13 +21,20 @@ export function InventoryScreen() {
 
   return (
     <div className="space-y-8">
-      <header className="flex items-baseline justify-between">
-        <h2 className="font-han text-2xl text-gold-400">Túi càn khôn</h2>
+      {/* Header Túi Càn Khôn */}
+      <header className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <h2 className="font-han text-2xl text-gold-400">Túi Càn Khôn</h2>
+          <p className="text-xs text-paper-400 font-serif">
+            Quản lý thần binh bảo giáp võ lâm và linh đan diệu dược
+          </p>
+        </div>
         <p className="text-sm text-paper-400">
-          Linh thạch: <span className="text-paper-100 tabular-nums font-mono font-bold">{formatNumber(state.stones)}</span>
+          Linh thạch: <span className="text-gold-300 tabular-nums font-mono font-bold text-base">{formatNumber(state.stones)}</span>
         </p>
       </header>
 
+      {/* Dược lực đang phát huy nếu có */}
       {(buffs.length > 0 || state.pendingBreakthroughBonus > 0) && (
         <section className="space-y-2">
           <h3 className="font-han text-lg text-paper-100">Dược lực đang phát huy</h3>
@@ -45,6 +52,9 @@ export function InventoryScreen() {
           </ul>
         </section>
       )}
+
+      {/* ================= GIAO DIỆN PAPER DOLL ĐẠO THÂN TRANG BỊ VÕ LÂM & KHO ĐỒ ================= */}
+      <GearPanel state={state} />
 
       {/* ================= TIỀN THẦN TIÊN KIẾM LAI ================= */}
       {ownedCurrencies.length > 0 && (
@@ -167,8 +177,6 @@ export function InventoryScreen() {
         )}
       </section>
 
-      <GearPanel state={state} />
-
       {/* ================= DƯỢC LIỆU & YÊU ĐAN LINH VẬT ================= */}
       <section className="space-y-2">
         <h3 className="font-han text-lg text-paper-100 flex items-center justify-between">
@@ -195,6 +203,7 @@ export function InventoryScreen() {
         </ul>
       </section>
 
+      {/* ================= PHƯỜNG THỊ ================= */}
       <section className="space-y-2">
         <h3 className="font-han text-lg text-paper-100">Phường thị</h3>
         <p className="text-xs text-paper-400">Mua dược liệu bằng linh thạch. Hàng hiếm hơn mở theo cảnh giới.</p>

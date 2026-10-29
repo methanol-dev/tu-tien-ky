@@ -21,6 +21,7 @@ import {
   type GearSlot,
   type GearType,
   getSlotsForType,
+  getTypeForSlot,
   NAMED_GEAR,
   rollableGearFor,
   SLOT_NAME,
@@ -270,6 +271,130 @@ export function equip(state: GameState, uid: string, targetSlot?: GearSlot): Act
 export function unequip(state: GameState, slot: GearSlot): ActionResult {
   if (!state.equipped[slot]) return { ok: false, error: 'Ô này đang trống' }
   return { ok: true, state: { ...state, equipped: { ...state.equipped, [slot]: null } } }
+}
+
+/**
+ * Tự động tìm và trang bị các món pháp bảo có gearScore cao nhất trong túi vào 12 ô
+ */
+export function autoEquipBestGear(state: GameState): { state: GameState; equippedCount: number } {
+  const currentEquipped = { ...state.equipped }
+  const byUid = new Map(state.gear.map((g) => [g.uid, g]))
+
+  // Danh sách các món đồ chưa mặc trong túi sắp xếp theo gearScore giảm dần
+  const availableGear = state.gear
+    .filter((g) => !isEquipped(state, g.uid))
+    .sort((a, b) => gearScore(b) - gearScore(a))
+
+  const usedUids = new Set<string>()
+  let equippedCount = 0
+
+  for (const slot of GEAR_SLOTS) {
+    const slotType = getTypeForSlot(slot)
+    const curUid = currentEquipped[slot]
+    const curGear = curUid ? byUid.get(curUid) : undefined
+    const curScore = curGear ? gearScore(curGear) : -1
+
+    // Tìm món đồ tốt nhất trong kho cho slot này mà chưa được gán trong lượt này
+    const candidate = availableGear.find(
+      (g) => !usedUids.has(g.uid) && getGearDef(g).slot === slotType,
+    )
+
+    if (candidate && gearScore(candidate) > curScore) {
+      currentEquipped[slot] = candidate.uid
+      usedUids.add(candidate.uid)
+      equippedCount++
+    }
+  }
+
+  return {
+    state: {
+      ...state,
+      equipped: currentEquipped,
+    },
+    equippedCount,
+  }
+}
+
+/**
+ * Tháo toàn bộ 12 ô trang bị cất lại vào túi đồ
+ */
+export function unequipAllGear(state: GameState): GameState {
+  const emptyEquipped: Record<GearSlot, string | null> = {
+    'vu-khi': null,
+    dau: null,
+    ao: null,
+    quan: null,
+    giay: null,
+    'dai-lung': null,
+    'phu-luc': null,
+    'day-chuyen': null,
+    'nhan-1': null,
+    'nhan-2': null,
+    'bong-tai-1': null,
+    'bong-tai-2': null,
+  }
+  return {
+    ...state,
+    equipped: emptyEquipped,
+  }
+}
+
+export interface GearStatDiff {
+  key: AffixKey
+  label: string
+  currentVal: number
+  candidateVal: number
+  diff: number
+}
+
+export interface GearCompareResult {
+  scoreDiff: number
+  isBetter: boolean
+  diffs: GearStatDiff[]
+}
+
+/**
+ * So sánh chi tiết thuộc tính giữa món đồ đang mặc (hoặc null) và món đồ đề cử
+ */
+export function compareGearStats(
+  current: GearInstance | null,
+  candidate: GearInstance,
+): GearCompareResult {
+  const curScore = current ? gearScore(current) : 0
+  const candScore = gearScore(candidate)
+  const scoreDiff = candScore - curScore
+
+  const curAffixes: Record<string, number> = {}
+  if (current) {
+    for (const a of current.affixes) {
+      curAffixes[a.key] = (curAffixes[a.key] ?? 0) + a.value
+    }
+  }
+
+  const candAffixes: Record<string, number> = {}
+  for (const a of candidate.affixes) {
+    candAffixes[a.key] = (candAffixes[a.key] ?? 0) + a.value
+  }
+
+  const allKeys = Array.from(new Set([...Object.keys(curAffixes), ...Object.keys(candAffixes)])) as AffixKey[]
+  const diffs: GearStatDiff[] = allKeys.map((key) => {
+    const cVal = curAffixes[key] ?? 0
+    const nVal = candAffixes[key] ?? 0
+    const def = AFFIX_BY_KEY[key]
+    return {
+      key,
+      label: def?.name ?? key,
+      currentVal: cVal,
+      candidateVal: nVal,
+      diff: nVal - cVal,
+    }
+  })
+
+  return {
+    scoreDiff,
+    isBetter: scoreDiff > 0,
+    diffs,
+  }
 }
 
 export function getSalvageValue(state: GameState, items: GearInstance[]): number {
