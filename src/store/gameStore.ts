@@ -90,6 +90,7 @@ export type Screen =
   | 'journey'
   | 'legacy'
   | 'settings'
+  | 'hub'
 
 export interface FxEvent {
   id: number

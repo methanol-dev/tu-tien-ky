@@ -466,6 +466,7 @@ export const SCREEN_ICONS: Record<Screen, FC<IconProps>> = {
   journey: IconCrossSwords,
   legacy: IconSamsaraWheel,
   settings: IconDivination,
+  hub: IconScroll,
 }
 
 export const CLASS_ICONS: Record<ClassId, FC<IconProps>> = {

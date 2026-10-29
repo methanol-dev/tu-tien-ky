@@ -3,6 +3,8 @@ import { CLASS_BY_ID } from '@/content/classes'
 import {
   canClaimGrowthFund,
   checkReliefTrigger,
+  formatCombatPower,
+  getCombatPower,
   getFeatureUnlockRequirement,
   getPendingEvent,
   getPendingStoryScene,
@@ -41,6 +43,7 @@ import { JourneyScreen } from '@/ui/screens/JourneyScreen'
 import { LegacyScreen } from '@/ui/screens/LegacyScreen'
 import { SettingsScreen } from '@/ui/screens/SettingsScreen'
 import { TechniquesScreen } from '@/ui/screens/TechniquesScreen'
+import { CraftingHubScreen } from '@/ui/screens/CraftingHubScreen'
 
 const SCREENS = {
   cultivate: GameScreen,
@@ -51,6 +54,7 @@ const SCREENS = {
   journey: JourneyScreen,
   legacy: LegacyScreen,
   settings: SettingsScreen,
+  hub: CraftingHubScreen,
 } as const
 
 export default function App() {
@@ -171,23 +175,41 @@ export default function App() {
   }
 
   const Screen = SCREENS[screen]
+  const combatPower = getCombatPower(state)
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col gap-6 px-4 pt-6 pb-24 md:pb-8">
-      <header className="flex items-center justify-between gap-4">
-        <div
-          className="flex items-baseline gap-3 cursor-pointer select-none group"
-          onClick={handleSecretLogoClick}
-          role="button"
-          tabIndex={0}
-          title="Kiếm Lai · Tu Tiên Ký"
-        >
-          <h1 className="font-han text-3xl font-black tracking-widest text-paper-100 transition-transform active:scale-95 group-hover:text-gold-300">
-            Kiếm Lai
-          </h1>
-          <span className="hidden font-han text-sm text-gold-400 sm:inline">· Tu Tiên Ký</span>
-        </div>
+      <header className="flex flex-wrap items-center justify-between gap-3">
+        {/* Nhóm Thương hiệu & Chiến Lực CP */}
         <div className="flex items-center gap-3">
+          <div
+            className="flex items-baseline gap-2 cursor-pointer select-none group"
+            onClick={handleSecretLogoClick}
+            role="button"
+            tabIndex={0}
+            title="Kiếm Lai · Tu Tiên Ký"
+          >
+            <h1 className="font-han text-2xl sm:text-3xl font-black tracking-widest text-paper-100 transition-transform active:scale-95 group-hover:text-gold-300">
+              Kiếm Lai
+            </h1>
+            <span className="hidden font-han text-xs sm:text-sm text-gold-400 sm:inline">· Tu Tiên Ký</span>
+          </div>
+
+          {/* Huy hiệu Lực Chiến Tổng Hợp (CP ⚔️) - Chạm 1 phát mở bảng chỉ số */}
+          <button
+            type="button"
+            onClick={() => setCharacterModalOpen(true)}
+            className="flex items-center gap-1.5 rounded-full border border-gold-500/40 bg-ink-800/90 px-2.5 py-1 text-xs text-gold-400 font-serif font-bold shadow-[0_0_8px_rgba(245,158,11,0.2)] hover:border-gold-400 active:scale-95 transition-transform"
+            title="Xem chỉ số nhân vật (Đạo thân)"
+          >
+            <span className="text-sm">⚔️</span>
+            <span>{formatCombatPower(combatPower)}</span>
+            <span className="hidden sm:inline text-[10px] text-paper-400 font-sans ml-0.5">Chỉ số</span>
+          </button>
+        </div>
+
+        {/* Nhóm Nút Nhanh & Linh Thạch */}
+        <div className="flex items-center gap-2 sm:gap-3">
           {(() => {
             const curClass = CLASS_BY_ID[state.classId] ?? CLASS_BY_ID['kiem-tu']
             const ClassIcon = CLASS_ICONS[state.classId] ?? CLASS_ICONS['kiem-tu']
@@ -208,25 +230,20 @@ export default function App() {
               </button>
             )
           })()}
+
+          {/* Kiếm Thai */}
           <button
             type="button"
             onClick={() => setNatalSwordModalOpen(true)}
-            className="flex min-h-8 items-center gap-1.5 rounded-md border border-jade-500/30 bg-ink-800/80 px-2.5 py-1 text-xs text-jade-300 transition-colors hover:border-jade-400 hover:text-jade-200"
+            className="flex h-8 sm:min-h-8 items-center gap-1 sm:gap-1.5 rounded-md border border-jade-500/30 bg-ink-800/80 px-2 sm:px-2.5 py-1 text-xs text-jade-300 transition-colors hover:border-jade-400 hover:text-jade-200"
             title="Khí Phủ Kiếm Thai - Xem và uẩn dưỡng Phi Kiếm Bản Mệnh"
           >
             <IconFlyingSword className="h-3.5 w-3.5 text-jade-400" />
             <span className="hidden sm:inline font-serif font-medium">Kiếm Thai</span>
             <span className="text-[10px] font-mono text-jade-400">({state.natalSwords?.length ?? 0})</span>
           </button>
-          <button
-            type="button"
-            onClick={() => setCharacterModalOpen(true)}
-            className="flex min-h-8 items-center gap-1.5 rounded-md border border-gold-500/30 bg-ink-800/80 px-2.5 py-1 text-xs text-paper-200 transition-colors hover:border-gold-500 hover:text-gold-400"
-            title="Xem chỉ số nhân vật (Đạo thân)"
-          >
-            <IconDaoistBody className="h-3.5 w-3.5 text-gold-400" />
-            <span className="font-serif font-medium">Chỉ số</span>
-          </button>
+
+          {/* Bố Trận */}
           <button
             type="button"
             onClick={() => {
@@ -236,7 +253,7 @@ export default function App() {
               }
               setFormationModalOpen(true)
             }}
-            className={`flex min-h-8 items-center gap-1.5 rounded-md border border-cyan-500/30 bg-ink-800/80 px-2.5 py-1 text-xs text-paper-200 transition-colors hover:border-cyan-500 hover:text-cyan-400 ${
+            className={`flex h-8 sm:min-h-8 items-center gap-1 sm:gap-1.5 rounded-md border border-cyan-500/30 bg-ink-800/80 px-2 sm:px-2.5 py-1 text-xs text-paper-200 transition-colors hover:border-cyan-500 hover:text-cyan-400 ${
               !isFeatureUnlocked(state, 'formation') ? 'opacity-50' : ''
             }`}
             title={
@@ -246,13 +263,15 @@ export default function App() {
             }
           >
             <span className="text-xs">☯️</span>
-            <span className="font-serif font-medium">Bố trận</span>
+            <span className="hidden sm:inline font-serif font-medium">Bố trận</span>
             {!isFeatureUnlocked(state, 'formation') && <span className="text-[10px]">🔒</span>}
           </button>
+
+          {/* Quỹ Đạo Đồ */}
           <button
             type="button"
             onClick={() => setGrowthFundModalOpen(true)}
-            className="relative flex min-h-8 items-center gap-1.5 rounded-md border border-amber-500/30 bg-ink-800/80 px-2.5 py-1 text-xs text-paper-200 transition-colors hover:border-amber-500 hover:text-amber-400"
+            className="relative flex h-8 sm:min-h-8 items-center gap-1 sm:gap-1.5 rounded-md border border-amber-500/30 bg-ink-800/80 px-2 sm:px-2.5 py-1 text-xs text-paper-200 transition-colors hover:border-amber-500 hover:text-amber-400"
             title="Quỹ Trưởng Thành · Đạo Đồ Cơ Duyên"
           >
             <span className="text-xs">🎁</span>
@@ -261,10 +280,12 @@ export default function App() {
               <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-vermilion-500 ring-2 ring-ink-950 animate-pulse" />
             )}
           </button>
+
+          {/* Sự Kiện */}
           <button
             type="button"
             onClick={() => setWeeklyEventModalOpen(true)}
-            className="relative flex min-h-8 items-center gap-1.5 rounded-md border border-gold-500/30 bg-ink-800/80 px-2.5 py-1 text-xs text-paper-200 transition-colors hover:border-gold-500 hover:text-gold-400"
+            className="relative flex h-8 sm:min-h-8 items-center gap-1 sm:gap-1.5 rounded-md border border-gold-500/30 bg-ink-800/80 px-2 sm:px-2.5 py-1 text-xs text-paper-200 transition-colors hover:border-gold-500 hover:text-gold-400"
             title="Sự Kiện Tuần Hoàn & Bảng Vinh Danh"
           >
             <span className="text-xs">🏆</span>
@@ -273,10 +294,24 @@ export default function App() {
               <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-vermilion-500 ring-2 ring-ink-950 animate-pulse" />
             )}
           </button>
-          <p className="font-han text-sm text-paper-300 tabular-nums" title="Linh thạch">
-            <span aria-hidden className="mr-1 text-gold-400">◆</span>
+
+          {/* Cài Đặt */}
+          <button
+            type="button"
+            onClick={() => setScreen('settings')}
+            className="flex h-8 sm:min-h-8 items-center gap-1 sm:gap-1.5 rounded-md border border-paper-400/20 bg-ink-800/80 px-2 sm:px-2.5 py-1 text-xs text-paper-300 transition-colors hover:border-paper-300 hover:text-paper-100"
+            title="Cài đặt hệ thống & Âm thanh"
+          >
+            <span className="text-xs">⚙️</span>
+            <span className="hidden sm:inline font-serif font-medium">Cài đặt</span>
+          </button>
+
+          {/* Linh thạch */}
+          <p className="font-han text-xs sm:text-sm text-paper-300 tabular-nums shrink-0 ml-1" title="Linh thạch">
+            <span aria-hidden className="mr-0.5 text-gold-400">◆</span>
             {formatNumber(stones)}
           </p>
+
           <div className="hidden md:block">
             <NavBar
               current={screen}
