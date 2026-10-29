@@ -163,3 +163,4 @@ export const WeeklyEventModal: FC = () => {
     </Modal>
   )
 }
+
