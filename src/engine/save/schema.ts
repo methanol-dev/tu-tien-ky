@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { GEAR_CAP, JOURNEY_EVENT_LIMIT } from '../constants'
+import { GEAR_CAP, JOURNEY_EVENT_LIMIT, SAVE_VERSION } from '../constants'
 
 const logEntrySchema = z.object({
   id: z.number().int().nonnegative(),
@@ -111,7 +111,7 @@ const natalSwordSchema = z.object({
 
 /** Schema for the CURRENT save version. Older versions go through migrations first. */
 export const gameStateSchema = z.object({
-  version: z.literal(13),
+  version: z.literal(SAVE_VERSION),
   createdAt: z.number().int().nonnegative(),
   lastSavedAt: z.number().int().nonnegative(),
   playedMs: z.number().nonnegative(),
@@ -223,6 +223,28 @@ export const gameStateSchema = z.object({
       'back-mid',
       'back-right',
     ]),
+  }),
+  growthFund: z.object({
+    premiumUnlocked: z.boolean(),
+    claimedFree: z.array(z.number().int().nonnegative()),
+    claimedPremium: z.array(z.number().int().nonnegative()),
+  }),
+  relief: z.object({
+    bossFailStreak: z.number().int().nonnegative(),
+    lastOfferedAtRealm: z.number().int(),
+    activePack: z
+      .object({
+        id: z.string().max(64),
+        name: z.string().max(100),
+        buffBattlesLeft: z.number().int().nonnegative(),
+        fireCount: z.number().int().nonnegative(),
+      })
+      .nullable(),
+  }),
+  weeklyEvent: z.object({
+    cycleWeek: z.number().int().nonnegative(),
+    points: z.number().int().nonnegative(),
+    claimedMilestones: z.array(z.number().int().nonnegative()),
   }),
 })
 

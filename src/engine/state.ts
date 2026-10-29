@@ -89,5 +89,20 @@ export function createInitialState(now: number = Date.now()): GameState {
     settings: { timeScale: 1, pauseOnEvent: false, battleSpeed: 1 },
     forge: createInitialForge(),
     formation: createInitialFormation(),
+    growthFund: {
+      premiumUnlocked: false,
+      claimedFree: [],
+      claimedPremium: [],
+    },
+    relief: {
+      bossFailStreak: 0,
+      lastOfferedAtRealm: -1,
+      activePack: null,
+    },
+    weeklyEvent: {
+      cycleWeek: 0,
+      points: 0,
+      claimedMilestones: [],
+    },
   }
 }

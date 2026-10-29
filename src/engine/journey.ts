@@ -21,6 +21,11 @@ import {
 import { type CombatStats, getCombatStats, rollDamage } from './combat'
 import { getClassCounterEffect, getEnemyClass } from './formation'
 import {
+  addWeeklyEventPoints,
+  consumeReliefBattleBuff,
+  recordBossDefeat,
+} from './retention'
+import {
   AUTO_OPEN_NORMAL_LEVEL,
   AUTO_OPEN_RED_LEVEL,
   AUTO_OPEN_TECHNIQUE,
@@ -314,10 +319,15 @@ function fightStep(state: GameState, now: number, ctx: StepContext, rng: Rng): G
           chests.normal = Math.min(CHEST_CAP, chests.normal + 1)
           j = pushEvent(j, { atMs: now, kind: 'chest', amount: 1 })
           currentFire += 5
+          s = recordBossDefeat(s, true)
+          s = addWeeklyEventPoints(s, 3, 50)
         } else if (rng() < CHEST_DROP_CHANCE * ctx.lootChanceMult) {
           chests.normal = Math.min(CHEST_CAP, chests.normal + 1)
           j = pushEvent(j, { atMs: now, kind: 'chest', amount: 0 })
           currentFire += 1
+          s = addWeeklyEventPoints(s, 3, 10)
+        } else {
+          s = addWeeklyEventPoints(s, 3, 10)
         }
         j = { ...j, chests }
         s = {
@@ -358,6 +368,11 @@ function fightStep(state: GameState, now: number, ctx: StepContext, rng: Rng): G
 
   if (player.hp <= 0) {
     const killer = enemies.find((e) => e.hp > 0)?.name ?? '?'
+    const hadBoss = enemies.some((e) => e.boss)
+    if (hadBoss) {
+      s = recordBossDefeat(s, false)
+    }
+    s = consumeReliefBattleBuff(s)
     const deaths = j.deaths + 1
     j = pushEvent({ ...j, deaths, runDeaths: j.runDeaths + 1, phase: 'retreat', phaseUntilMs: now + getRetreatMs(deaths), enemies: [] }, { atMs: now, kind: 'death', target: 'player' })
     s = pushLog({ ...s, journey: j }, `Gục ngã trước ${killer} tại ${region.name}. Lết về dưỡng thương.`, 'danger')
@@ -372,6 +387,7 @@ function fightStep(state: GameState, now: number, ctx: StepContext, rng: Rng): G
   }
 
   if (enemies.every((e) => e.hp <= 0)) {
+    s = consumeReliefBattleBuff(s)
     const bossStage = j.stage >= STAGES_PER_REGION
     const herbs = rollHerbs(region, bossStage, rng)
     s = addItems(s, herbs)

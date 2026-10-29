@@ -212,6 +212,29 @@ export interface JourneyState {
   events: JourneyEvent[]
 }
 
+export interface GrowthFundState {
+  premiumUnlocked: boolean
+  claimedFree: number[] // list of realmIndex claimed
+  claimedPremium: number[]
+}
+
+export interface EmergencyReliefState {
+  bossFailStreak: number
+  lastOfferedAtRealm: number
+  activePack: {
+    id: string
+    name: string
+    buffBattlesLeft: number
+    fireCount: number
+  } | null
+}
+
+export interface WeeklyEventState {
+  cycleWeek: number
+  points: number
+  claimedMilestones: number[]
+}
+
 export interface GameState {
   version: number
   /** Epoch ms when this save was created. */
@@ -270,6 +293,9 @@ export interface GameState {
   settings: GameSettings
   forge: ForgeState
   formation: FormationState
+  growthFund: GrowthFundState
+  relief: EmergencyReliefState
+  weeklyEvent: WeeklyEventState
 }
 
 /** Random source in [0, 1). Injected so tests and simulations are deterministic. */

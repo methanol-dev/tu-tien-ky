@@ -62,6 +62,10 @@ export function getCombatStats(state: GameState): CombatStats {
   // Hệ số trận thế vị trí (Hàng Tiền / Hàng Hậu)
   const posMod = state.formation ? getPositionModifiers(state.formation.playerSlot) : { hpMult: 1, defMult: 1, atkMult: 1, atkSpeedMult: 1, critBonus: 0 }
 
+  // Hệ số Gói Cứu Viện (Hộ Mệnh Phù Lục +20% Công Thủ trong 10 trận)
+  const reliefMod =
+    state.relief?.activePack && state.relief.activePack.buffBattlesLeft > 0 ? 1.2 : 1.0
+
   // Đặc trưng môn phái bổ trợ theo GDD
   const classCritBonus = 0
   const classCritMultBonus = state.classId === 'kiem-tu' ? 0.2 : 0
@@ -69,8 +73,8 @@ export function getCombatStats(state: GameState): CombatStats {
 
   return {
     hp: Math.round(b.hp * (1 + t.hp + mb.hpPercent) * (cm.hp ?? 1) * posMod.hpMult),
-    atk: Math.round(b.atk * (1 + t.atk + mb.atkPercent) * (cm.atk ?? 1) * meleeSuppressionMult * ns.atkMult * posMod.atkMult),
-    def: Math.round(b.def * (1 + t.def + mb.defPercent) * (cm.def ?? 1) * posMod.defMult),
+    atk: Math.round(b.atk * (1 + t.atk + mb.atkPercent) * (cm.atk ?? 1) * meleeSuppressionMult * ns.atkMult * posMod.atkMult * reliefMod),
+    def: Math.round(b.def * (1 + t.def + mb.defPercent) * (cm.def ?? 1) * posMod.defMult * reliefMod),
     crit: Math.min(MAX_CRIT_CHANCE, BASE_CRIT_CHANCE + t.crit + (cm.crit ?? 0) + classCritBonus + ns.critBonus + posMod.critBonus),
     critMult: BASE_CRIT_MULT + t.critDmg + classCritMultBonus + ns.critMultBonus,
     attackMs: Math.round(

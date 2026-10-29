@@ -44,6 +44,11 @@ import {
   updateForgeFilters as engineUpdateForgeFilters,
   type FormationSlot,
   setPlayerFormationSlot as engineSetPlayerFormationSlot,
+  claimGrowthFund as engineClaimGrowthFund,
+  unlockPremiumGrowthFund as engineUnlockPremiumGrowthFund,
+  claimReliefPack as engineClaimReliefPack,
+  dismissReliefPack as engineDismissReliefPack,
+  claimWeeklyMilestone as engineClaimWeeklyMilestone,
   forgeNatalSword as engineForgeNatalSword,
   temperNatalSword as engineTemperNatalSword,
   upgradeSwordTalent as engineUpgradeSwordTalent,
@@ -123,6 +128,20 @@ export interface GameStore {
   /** Whether the Battery Saver AFK overlay is active manually. */
   afkSaverOpen: boolean
   setAfkSaverOpen: (open: boolean) => void
+  /** Growth Fund modal state and actions. */
+  growthFundModalOpen: boolean
+  setGrowthFundModalOpen: (open: boolean) => void
+  claimGrowthFund: (realmIndex: number, isPremium: boolean) => boolean
+  unlockPremiumGrowthFund: (currency: 'daoVan' | 'stones') => boolean
+  /** Emergency Relief modal state and actions. */
+  reliefModalOpen: boolean
+  setReliefModalOpen: (open: boolean) => void
+  claimReliefPack: () => boolean
+  dismissReliefPack: () => void
+  /** Weekly LiveOps Event modal state and actions. */
+  weeklyEventModalOpen: boolean
+  setWeeklyEventModalOpen: (open: boolean) => void
+  claimWeeklyMilestone: (milestoneIdx: number) => boolean
   forgeNatalSword: (swordDefId: string) => boolean
   temperNatalSword: (swordUid: string) => boolean
   upgradeSwordTalent: (swordUid: string, talentId: string) => boolean
@@ -233,6 +252,42 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       setFormationModalOpen: (open) => set({ formationModalOpen: open }),
       afkSaverOpen: false,
       setAfkSaverOpen: (open) => set({ afkSaverOpen: open }),
+      growthFundModalOpen: false,
+      setGrowthFundModalOpen: (open) => set({ growthFundModalOpen: open }),
+      claimGrowthFund: (realmIndex, isPremium) => {
+        const ok = apply(engineClaimGrowthFund(get().state, realmIndex, isPremium))
+        if (ok) get().save()
+        return ok
+      },
+      unlockPremiumGrowthFund: (currency) => {
+        const ok = apply(engineUnlockPremiumGrowthFund(get().state, currency))
+        if (ok) get().save()
+        return ok
+      },
+      reliefModalOpen: false,
+      setReliefModalOpen: (open) => set({ reliefModalOpen: open }),
+      claimReliefPack: () => {
+        const ok = apply(engineClaimReliefPack(get().state))
+        if (ok) {
+          set({ reliefModalOpen: false })
+          get().save()
+        }
+        return ok
+      },
+      dismissReliefPack: () => {
+        set((s) => ({
+          reliefModalOpen: false,
+          state: engineDismissReliefPack(s.state),
+        }))
+        get().save()
+      },
+      weeklyEventModalOpen: false,
+      setWeeklyEventModalOpen: (open) => set({ weeklyEventModalOpen: open }),
+      claimWeeklyMilestone: (milestoneIdx) => {
+        const ok = apply(engineClaimWeeklyMilestone(get().state, milestoneIdx))
+        if (ok) get().save()
+        return ok
+      },
       setPlayerFormationSlot: (slot) => {
         set((s) => ({ state: engineSetPlayerFormationSlot(s.state, slot) }))
         get().save()

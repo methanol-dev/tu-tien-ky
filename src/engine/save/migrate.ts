@@ -32,6 +32,28 @@ function mapLegacyRealmIndex(oldIdx: unknown): number {
  * Bump SAVE_VERSION, add `MIGRATIONS[old] = ...`, update schema.ts. No exceptions.
  */
 export const MIGRATIONS: Record<number, Migration> = {
+  // 13 -> 14: Bổ sung Quỹ Trưởng Thành (GrowthFund), Gói Cứu Viện (Relief), Sự Kiện Tuần (WeeklyEvent)
+  13: (raw) => {
+    return {
+      ...raw,
+      version: 14,
+      growthFund: {
+        premiumUnlocked: false,
+        claimedFree: [],
+        claimedPremium: [],
+      },
+      relief: {
+        bossFailStreak: 0,
+        lastOfferedAtRealm: -1,
+        activePack: null,
+      },
+      weeklyEvent: {
+        cycleWeek: 0,
+        points: 0,
+        claimedMilestones: [],
+      },
+    }
+  },
   // 12 -> 13: Bổ sung Trận đồ Bát Quái 2x3 & Tương khắc Ngũ Môn (FormationState)
   12: (raw) => {
     const classId = (raw.classId as string) || 'kiem-tu'

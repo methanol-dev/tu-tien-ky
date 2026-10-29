@@ -7,6 +7,7 @@ import {
 import { getStoneRate } from './economy'
 import { compareGearStats, gearScore, getGearDef, isGearFull, rollGear } from './gear'
 import { pushLog } from './log'
+import { addWeeklyEventPoints } from './retention'
 import type { ActionResult, ForgeAutoFilters, ForgeState, GameState, GearInstance, Rng } from './types'
 
 export const FORGE_MAX_LEVEL = 20
@@ -181,6 +182,9 @@ export function forgeGear(state: GameState, rng: Rng): ActionResult<ForgeResult>
   }
 
   const rarityColor = rarity === 'than' || rarity === 'tien' ? 'event' : 'info'
+  const pts = rarity === 'than' || rarity === 'tien' || rarity === 'bao' ? 30 : 10
+  next = addWeeklyEventPoints(next, 0, pts)
+
   next = pushLog(
     next,
     `🔥 Đan Lô bùng nổ, rèn ra [${RARITY_NAME[rarity]}] phẩm trang bị! (${isUpgrade ? `+${comp.scoreDiff} Lực Chiến` : `${comp.scoreDiff} Lực Chiến`})`,

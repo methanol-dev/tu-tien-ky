@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { CLASS_BY_ID } from '@/content/classes'
 import {
+  canClaimGrowthFund,
+  checkReliefTrigger,
   getFeatureUnlockRequirement,
   getPendingEvent,
   getPendingStoryScene,
+  GROWTH_FUND_MILESTONES,
   isAlchemyReady,
   isFeatureUnlocked,
   isReincarnationForced,
   requestPersistentStorage,
+  WEEKLY_MILESTONES,
 } from '@/engine'
 import { formatNumber } from '@/lib/format'
 import { startGameLoop } from '@/store/gameLoop'
@@ -26,6 +30,9 @@ import { StoryModal } from '@/ui/organisms/StoryModal'
 import { ChestModal } from '@/ui/organisms/ChestModal'
 import { TribulationModal } from '@/ui/organisms/TribulationModal'
 import { OfflineModal } from '@/ui/organisms/OfflineModal'
+import { GrowthFundModal } from '@/ui/organisms/GrowthFundModal'
+import { ReliefModal } from '@/ui/organisms/ReliefModal'
+import { WeeklyEventModal } from '@/ui/organisms/WeeklyEventModal'
 import { AlchemyScreen } from '@/ui/screens/AlchemyScreen'
 import { ForgeScreen } from '@/ui/screens/ForgeScreen'
 import { GameScreen } from '@/ui/screens/GameScreen'
@@ -75,6 +82,9 @@ export default function App() {
   const formationModalOpen = useGameStore((s) => s.formationModalOpen)
   const setFormationModalOpen = useGameStore((s) => s.setFormationModalOpen)
   const setNatalSwordModalOpen = useGameStore((s) => s.setNatalSwordModalOpen)
+  const setGrowthFundModalOpen = useGameStore((s) => s.setGrowthFundModalOpen)
+  const setReliefModalOpen = useGameStore((s) => s.setReliefModalOpen)
+  const setWeeklyEventModalOpen = useGameStore((s) => s.setWeeklyEventModalOpen)
   const pendingEvent = useGameStore((s) => getPendingEvent(s.state))
   const pendingStory = getPendingStoryScene(state)
   const resolveStoryScene = useGameStore((s) => s.resolveStoryScene)
@@ -134,6 +144,23 @@ export default function App() {
     void requestPersistentStorage()
     return startGameLoop(useGameStore)
   }, [])
+
+  useEffect(() => {
+    if (checkReliefTrigger(state)) {
+      setReliefModalOpen(true)
+    }
+  }, [state, setReliefModalOpen])
+
+  const hasFundReward = GROWTH_FUND_MILESTONES.some(
+    (m) =>
+      canClaimGrowthFund(state, m.realmIndex, false) ||
+      canClaimGrowthFund(state, m.realmIndex, true),
+  )
+  const hasWeeklyReward = WEEKLY_MILESTONES.some(
+    (m, idx) =>
+      state.weeklyEvent.points >= m.points &&
+      !state.weeklyEvent.claimedMilestones.includes(idx),
+  )
 
   if (!hydrated) {
     return (
@@ -222,6 +249,30 @@ export default function App() {
             <span className="font-serif font-medium">Bố trận</span>
             {!isFeatureUnlocked(state, 'formation') && <span className="text-[10px]">🔒</span>}
           </button>
+          <button
+            type="button"
+            onClick={() => setGrowthFundModalOpen(true)}
+            className="relative flex min-h-8 items-center gap-1.5 rounded-md border border-amber-500/30 bg-ink-800/80 px-2.5 py-1 text-xs text-paper-200 transition-colors hover:border-amber-500 hover:text-amber-400"
+            title="Quỹ Trưởng Thành · Đạo Đồ Cơ Duyên"
+          >
+            <span className="text-xs">🎁</span>
+            <span className="hidden sm:inline font-serif font-medium">Quỹ Đạo Đồ</span>
+            {hasFundReward && (
+              <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-vermilion-500 ring-2 ring-ink-950 animate-pulse" />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => setWeeklyEventModalOpen(true)}
+            className="relative flex min-h-8 items-center gap-1.5 rounded-md border border-gold-500/30 bg-ink-800/80 px-2.5 py-1 text-xs text-paper-200 transition-colors hover:border-gold-500 hover:text-gold-400"
+            title="Sự Kiện Tuần Hoàn & Bảng Vinh Danh"
+          >
+            <span className="text-xs">🏆</span>
+            <span className="hidden sm:inline font-serif font-medium">Sự Kiện</span>
+            {hasWeeklyReward && (
+              <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-vermilion-500 ring-2 ring-ink-950 animate-pulse" />
+            )}
+          </button>
           <p className="font-han text-sm text-paper-300 tabular-nums" title="Linh thạch">
             <span aria-hidden className="mr-1 text-gold-400">◆</span>
             {formatNumber(stones)}
@@ -305,6 +356,9 @@ export default function App() {
       <Toast notice={notice} onDismiss={dismissNotice} />
       <InkSplash fx={fx} />
       <BatterySaverOverlay />
+      <GrowthFundModal />
+      <ReliefModal />
+      <WeeklyEventModal />
     </div>
   )
 }

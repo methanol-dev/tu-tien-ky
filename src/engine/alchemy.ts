@@ -2,6 +2,7 @@ import { ITEM_BY_ID } from '@/content/items'
 import { RECIPE_BY_ID, type RecipeDef } from '@/content/recipes'
 import { addItems, hasItems, removeItems } from './inventory'
 import { pushLog } from './log'
+import { addWeeklyEventPoints } from './retention'
 import type { ActionResult, GameState, Rng } from './types'
 
 export function isRecipeUnlocked(state: GameState, recipe: RecipeDef): boolean {
@@ -66,6 +67,7 @@ export function collectAlchemy(state: GameState, rng: Rng): ActionResult<Alchemy
   if (success) {
     next = addItems(next, { [recipe.output]: 1 })
     next = { ...next, stats: { ...next.stats, alchemyCrafted: next.stats.alchemyCrafted + 1 } }
+    next = addWeeklyEventPoints(next, 2, 40)
     next = pushLog(next, `Đan thành! Thu được 1 ${output?.name ?? recipe.output}.`, 'success')
   } else {
     next = pushLog(next, `Lửa quá mạnh, đan lô nổ. ${recipe.name} thất bại.`, 'danger')

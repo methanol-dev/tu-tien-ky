@@ -257,7 +257,7 @@ describe('v5 -> v6 (Phase 9: journey + gear)', () => {
     const rSword = deserialize(JSON.stringify(v12Sword))
     expect(rSword.ok).toBe(true)
     if (!rSword.ok) return
-    expect(rSword.state.version).toBe(13)
+    expect(rSword.state.version).toBe(SAVE_VERSION)
     expect(rSword.state.formation.playerSlot).toBe('back-mid')
 
     const v12Brawler = {
@@ -269,5 +269,22 @@ describe('v5 -> v6 (Phase 9: journey + gear)', () => {
     expect(rBrawler.ok).toBe(true)
     if (!rBrawler.ok) return
     expect(rBrawler.state.formation.playerSlot).toBe('front-mid')
+  })
+
+  it('migrates v13 to v14 initializing growthFund, relief, and weeklyEvent', () => {
+    const v13 = {
+      ...createInitialState(0),
+      version: 13,
+    }
+    const r = deserialize(JSON.stringify(v13))
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.state.version).toBe(SAVE_VERSION)
+    expect(r.state.growthFund.premiumUnlocked).toBe(false)
+    expect(r.state.growthFund.claimedFree).toEqual([])
+    expect(r.state.relief.bossFailStreak).toBe(0)
+    expect(r.state.relief.activePack).toBeNull()
+    expect(r.state.weeklyEvent.points).toBe(0)
+    expect(r.state.weeklyEvent.cycleWeek).toBe(0)
   })
 })

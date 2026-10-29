@@ -6,6 +6,7 @@ import {
 } from '@/content/natalSwords'
 import { getItemCount, removeItems } from './inventory'
 import { pushLog } from './log'
+import { addWeeklyEventPoints } from './retention'
 import type { ActionResult, GameState, NatalSwordInstance } from './types'
 
 /**
@@ -300,6 +301,8 @@ export function temperNatalSword(state: GameState, swordUid: string): ActionResu
     natalSwords: newSwords,
   }
 
+  next = addWeeklyEventPoints(next, 1, 50)
+
   next = pushLog(
     next,
     `Tôi luyện ${sword.name} thành công tiến lên cấp ${newLevel}!${awakenedTalentName ? ` Thức tỉnh thêm thần thông mới: [${awakenedTalentName}]!` : ''
@@ -350,6 +353,8 @@ export function upgradeSwordTalent(
     stones: state.stones - stoneCost,
     natalSwords: newSwords,
   }
+
+  next = addWeeklyEventPoints(next, 1, 50)
 
   next = pushLog(
     next,
