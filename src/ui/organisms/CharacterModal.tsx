@@ -729,8 +729,20 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
 
                     <p className="text-xs text-paper-300 leading-relaxed">{c.description}</p>
 
-                    <div className="space-y-1 rounded-md border border-paper-400/10 bg-ink-950/80 p-2.5 text-xs">
-                      <div className="text-paper-200">
+                    <div className="space-y-1.5 rounded-md border border-paper-400/10 bg-ink-950/80 p-2.5 text-xs">
+                      <div className="flex items-center justify-between text-[11px] text-paper-300 pb-1 border-b border-paper-400/10">
+                        <span className="text-gold-400 font-semibold">{c.role}</span>
+                        <span className="font-mono text-paper-400">{c.combatRange === 'melee' ? '⚔️ Cận chiến' : '🏹 Tầm xa'}</span>
+                      </div>
+                      <div className="text-paper-200 text-[11px]">
+                        <span className="text-paper-400">Vũ khí: </span>
+                        <span className="text-paper-200">{c.weapon}</span>
+                      </div>
+                      <div className="text-paper-200 text-[11px]">
+                        <span className="text-paper-400">Độc bản: </span>
+                        <span className="text-amber-300/90">{c.signatureMechanic}</span>
+                      </div>
+                      <div className="text-paper-200 pt-1 border-t border-paper-400/10">
                         <span className="text-paper-400">Trấn phái: </span>
                         <strong className="text-gold-300 font-medium">{c.signatureSkill}</strong>
                       </div>

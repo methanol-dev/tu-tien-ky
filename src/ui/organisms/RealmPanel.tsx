@@ -1,4 +1,5 @@
 import type { RealmStage } from '@/content/realms'
+import type { MartialStage } from '@/content/martialRealms'
 import { formatPercent } from '@/lib/format'
 import type { FxEvent } from '@/store/gameStore'
 import { QiMotes } from '@/ui/atoms/QiMotes'
@@ -15,6 +16,9 @@ interface RealmPanelProps {
   ready?: boolean
   avatarId?: string
   onAvatarClick?: () => void
+  cultivationPath?: 'martial' | 'qi' | 'dual'
+  martialStage?: MartialStage
+  nextMartialStage?: MartialStage | null
 }
 
 const FX_CLASS: Record<FxEvent['kind'], string> = {
@@ -33,15 +37,22 @@ export function RealmPanel({
   ready = false,
   avatarId,
   onAvatarClick,
+  cultivationPath = 'qi',
+  martialStage,
+  nextMartialStage,
 }: RealmPanelProps) {
+  const isMartial = cultivationPath === 'martial' && martialStage
+
   return (
     <section className="relative overflow-hidden rounded-lg border border-gold-500/20 bg-ink-800/70 p-5 sm:p-6 shadow-ink">
-      {/* Thủy mặc thư pháp chữ Đạo nền sau */}
+      {/* Thủy mặc thư pháp chữ Đạo hoặc Võ nền sau */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 flex items-center justify-center font-han text-[11rem] leading-none text-paper-100/[0.035] select-none"
+        className={`pointer-events-none absolute inset-0 flex items-center justify-center font-han text-[11rem] leading-none select-none ${
+          isMartial ? 'text-vermilion-500/[0.045]' : 'text-paper-100/[0.035]'
+        }`}
       >
-        道
+        {isMartial ? '武' : '道'}
       </div>
 
       <QiMotes progress={progress} />
@@ -60,36 +71,46 @@ export function RealmPanel({
 
         {/* Khối Thông Tin Cảnh Giới */}
         <div className="flex flex-1 flex-col items-center sm:items-start text-center sm:text-left">
-          <p className="text-xs tracking-[0.4em] text-paper-400 uppercase">Cảnh giới</p>
+          <p className="text-xs tracking-[0.4em] text-paper-400 uppercase">
+            {isMartial ? 'Cảnh giới Võ Đạo' : 'Cảnh giới Tiên Đạo'}
+          </p>
           <h2
             key={fx?.id ?? 'static'}
             className={`mt-1 font-han text-3xl font-black tracking-wider text-paper-100 sm:text-4xl lg:text-5xl ${
-              fx ? FX_CLASS[fx.kind] : ''
-            }`}
+              isMartial ? 'text-transparent bg-clip-text bg-gradient-to-r from-vermilion-400 via-paper-100 to-gold-400' : ''
+            } ${fx ? FX_CLASS[fx.kind] : ''}`}
           >
-            {realm.majorName}
+            {isMartial ? martialStage.name : realm.majorName}
           </h2>
 
-          {realm.stageLabel && (
-            <p className="mt-1 font-han text-lg text-gold-400 sm:text-xl">{realm.stageLabel}</p>
-          )}
+          <p className="mt-1 font-han text-lg text-gold-400 sm:text-xl">
+            {isMartial ? martialStage.group : realm.stageLabel}
+          </p>
 
           <div className="mt-2 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
             <span className="inline-flex items-center gap-1 rounded-full border border-gold-500/30 bg-gold-500/10 px-2.5 py-0.5 text-xs text-gold-300">
-              <span className="text-gold-400">⚔️</span>
-              <span>{realm.group}</span>
-              {realm.groupRank > 0 && <span className="text-paper-400">· Đệ {realm.groupRank} Cảnh</span>}
+              <span className="text-gold-400">{isMartial ? '👊' : '⚔️'}</span>
+              <span>{isMartial ? 'Võ Đạo Thập Nhất Cảnh' : realm.group}</span>
+              {!isMartial && realm.groupRank > 0 && <span className="text-paper-400">· Đệ {realm.groupRank} Cảnh</span>}
             </span>
           </div>
 
-          {realm.kiemLaiLore && (
-            <p className="mt-2 max-w-md text-xs italic text-paper-400 leading-relaxed font-serif">
-              "{realm.kiemLaiLore}"
-            </p>
-          )}
+          <p className="mt-2 max-w-md text-xs italic text-paper-400 leading-relaxed font-serif">
+            &ldquo;{isMartial ? martialStage.description : realm.kiemLaiLore}&rdquo;
+          </p>
 
           <p className="mt-3 text-sm text-paper-300">
-            {nextRealm ? (
+            {isMartial ? (
+              nextMartialStage ? (
+                <>
+                  Cảnh giới kế: <span className="text-paper-100 font-medium">{nextMartialStage.name}</span>
+                  <span className="text-paper-400"> · yêu cầu </span>
+                  <span className="text-gold-400 font-bold">{nextMartialStage.minPunches} quyền</span>
+                </>
+              ) : (
+                'Đạt đỉnh cao Võ Thần Cảnh, độc bộ thiên hạ!'
+              )
+            ) : nextRealm ? (
               <>
                 Cảnh giới kế: <span className="text-paper-100 font-medium">{nextRealm.name}</span>
                 <span className="text-paper-400"> · tỉ lệ </span>
@@ -102,7 +123,7 @@ export function RealmPanel({
             )}
           </p>
 
-          {realm.tribulation && (
+          {!isMartial && realm.tribulation && (
             <p className="mt-2 text-xs text-vermilion-400 font-medium animate-pulse">
               ⚡ Đột phá lần này sẽ dẫn động Thiên Kiếp!
             </p>

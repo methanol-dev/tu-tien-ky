@@ -55,7 +55,7 @@ describe('Cultivation Path & Combat Range Simulation (Phase 2)', () => {
       ...createInitialState(0),
       cultivationPath: 'martial' as const,
       martialStageIndex: 0,
-      punches: 55,
+      punches: nextStage.minPunches + 5,
     }
 
     expect(canBreakthrough(s)).toBe(true)

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { ChestKind, Rarity } from '@/content/affixes'
-import type { ClassId } from '@/content/classes'
+import type { ClassId, CultivationPath } from '@/content/classes'
 import type { GearSlot } from '@/content/gear'
 import type { Difficulty } from '@/content/regions'
 import {
@@ -21,6 +21,7 @@ import {
   buyItem as engineBuyItem,
   buyLegacyUpgrade as engineBuyLegacyUpgrade,
   changeClass as engineChangeClass,
+  setCultivationPath as engineSetCultivationPath,
   type BoltResult,
   reincarnate as engineReincarnate,
   resolveBolt as engineResolveBolt,
@@ -122,6 +123,7 @@ export interface GameStore {
   salvage: (uids: string[]) => boolean
   salvageByRarity: (rarities: Rarity[]) => boolean
   changeClass: (classId: ClassId) => boolean
+  setCultivationPath: (path: CultivationPath, classId: ClassId) => boolean
   resolveBolt: (action: TribulationAction) => boolean
   dismissTribulationResult: () => void
   reincarnate: () => boolean
@@ -327,6 +329,8 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       },
 
       changeClass: (classId) => apply(engineChangeClass(get().state, classId)),
+
+      setCultivationPath: (path, classId) => apply(engineSetCultivationPath(get().state, path, classId)),
 
       resolveBolt: (action) => {
         const r = engineResolveBolt(get().state, action, rng)
