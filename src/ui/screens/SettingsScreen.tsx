@@ -11,6 +11,7 @@ export function SettingsScreen() {
   const resetGame = useGameStore((s) => s.resetGame)
   const pauseOnEvent = useGameStore((s) => s.state.settings.pauseOnEvent)
   const setPauseOnEvent = useGameStore((s) => s.setPauseOnEvent)
+  const setAfkSaverOpen = useGameStore((s) => s.setAfkSaverOpen)
 
   const [exported, setExported] = useState('')
   const [copied, setCopied] = useState(false)
@@ -69,6 +70,21 @@ export function SettingsScreen() {
             onChange={(e) => setPauseOnEvent(e.target.checked)}
           />
         </label>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="font-han text-xl text-gold-400">Hiệu năng & Tiết kiệm pin</h2>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-md border border-paper-400/15 bg-ink-800/60 px-4 py-3">
+          <div>
+            <div className="text-paper-100 font-medium">Bế quan tiết kiệm pin (Battery Saver)</div>
+            <div className="text-xs text-paper-400">
+              Tự động kích hoạt sau 3 phút không chạm màn hình. Tắt hoạt ảnh thừa, hạ tải GPU, vẫn tích lũy tài nguyên đầy đủ.
+            </div>
+          </div>
+          <Button variant="secondary" onClick={() => setAfkSaverOpen(true)}>
+            Bế quan ngay 🌙
+          </Button>
+        </div>
       </section>
 
       <section className="space-y-3">

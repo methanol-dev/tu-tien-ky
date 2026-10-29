@@ -4,7 +4,16 @@ import { ITEM_BY_ID, MANUALS } from '@/content/items'
 import { REALMS } from '@/content/realms'
 import { type Difficulty, DIFFICULTY_NAMES, REGIONS } from '@/content/regions'
 import { WORLDS, WORLD_BY_ID, type WorldId } from '@/content/worlds'
-import { getCombatStats, getGearDef, getItemCount, isDifficultyAvailable, isFrontline, isRegionUnlocked } from '@/engine'
+import {
+  getCombatStats,
+  getFeatureUnlockRequirement,
+  getGearDef,
+  getItemCount,
+  isDifficultyAvailable,
+  isFeatureUnlocked,
+  isFrontline,
+  isRegionUnlocked,
+} from '@/engine'
 import { formatNumber, formatPercent } from '@/lib/format'
 import { useGameStore } from '@/store/gameStore'
 import { Button } from '@/ui/atoms/Button'
@@ -28,6 +37,7 @@ export function JourneyScreen() {
   const setNatalSwordModalOpen = useGameStore((s) => s.setNatalSwordModalOpen)
   const setFormationModalOpen = useGameStore((s) => s.setFormationModalOpen)
   const setBattleSpeed = useGameStore((s) => s.setBattleSpeed)
+  const notify = useGameStore((s) => s.notify)
 
   const j = state.journey
   const stats = getCombatStats(state)
@@ -66,17 +76,51 @@ export function JourneyScreen() {
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={() => setFormationModalOpen(true)}
-              className="text-xs text-cyan-400 hover:text-cyan-300 hover:underline flex items-center gap-1"
+              onClick={() => {
+                if (!isFeatureUnlocked(state, 'formation')) {
+                  notify(`🔒 Bố Trận chưa mở: ${getFeatureUnlockRequirement('formation')}`, 'info')
+                  return
+                }
+                setFormationModalOpen(true)
+              }}
+              className={`text-xs flex items-center gap-1 transition-colors ${
+                isFeatureUnlocked(state, 'formation')
+                  ? 'text-cyan-400 hover:text-cyan-300 hover:underline'
+                  : 'text-paper-400/60 hover:text-paper-300'
+              }`}
+              title={
+                isFeatureUnlocked(state, 'formation')
+                  ? 'Bố trận Bát Quái'
+                  : `Chưa mở: ${getFeatureUnlockRequirement('formation')}`
+              }
             >
-              <span>☯️ Bố trận ›</span>
+              <span>☯️ Bố trận</span>
+              {!isFeatureUnlocked(state, 'formation') && <span className="text-[10px]">🔒</span>}
+              <span>›</span>
             </button>
             <button
               type="button"
-              onClick={() => setNatalSwordModalOpen(true)}
-              className="text-xs text-jade-400 hover:text-jade-300 hover:underline flex items-center gap-1"
+              onClick={() => {
+                if (!isFeatureUnlocked(state, 'swords')) {
+                  notify(`🔒 Kiếm Thai chưa mở: ${getFeatureUnlockRequirement('swords')}`, 'info')
+                  return
+                }
+                setNatalSwordModalOpen(true)
+              }}
+              className={`text-xs flex items-center gap-1 transition-colors ${
+                isFeatureUnlocked(state, 'swords')
+                  ? 'text-jade-400 hover:text-jade-300 hover:underline'
+                  : 'text-paper-400/60 hover:text-paper-300'
+              }`}
+              title={
+                isFeatureUnlocked(state, 'swords')
+                  ? 'Bản Mệnh Phi Kiếm'
+                  : `Chưa mở: ${getFeatureUnlockRequirement('swords')}`
+              }
             >
-              <span>🗡️ Kiếm Thai ({state.natalSwords?.length ?? 0}/4) ›</span>
+              <span>🗡️ Kiếm Thai ({state.natalSwords?.length ?? 0}/4)</span>
+              {!isFeatureUnlocked(state, 'swords') && <span className="text-[10px]">🔒</span>}
+              <span>›</span>
             </button>
             <button
               type="button"

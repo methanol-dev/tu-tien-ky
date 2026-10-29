@@ -54,6 +54,27 @@ describe('App smoke', () => {
       button('Cài đặt').click()
     })
     expect(container.textContent).toContain('Xuất save')
+
+    // Khi chưa vượt ải, các tab bị khóa sẽ báo thông báo khi bấm
+    await act(async () => {
+      button('Công pháp').click()
+    })
+    expect(container.textContent).toContain('Tính năng Công pháp chưa mở khóa')
+
+    // Giả lập đã vượt ải để mở khóa tất cả các tính năng
+    act(() => {
+      useGameStore.setState((s) => ({
+        state: {
+          ...s.state,
+          stats: {
+            ...s.state.stats,
+            stagesCleared: 25,
+            bossesSlain: 5,
+          },
+        },
+      }))
+    })
+
     await act(async () => {
       button('Công pháp').click()
     })
@@ -147,6 +168,19 @@ describe('App smoke', () => {
       root.render(<App />)
     })
 
+    // Mở khóa tính năng bằng cách đạt tiến trình ải
+    act(() => {
+      useGameStore.setState((s) => ({
+        state: {
+          ...s.state,
+          stats: {
+            ...s.state.stats,
+            stagesCleared: 10,
+          },
+        },
+      }))
+    })
+
     // Click Luyện khí tab
     await act(async () => {
       button('Luyện khí').click()
@@ -177,6 +211,19 @@ describe('App smoke', () => {
   it('opens Formation modal and changes formation position', async () => {
     await act(async () => {
       root.render(<App />)
+    })
+
+    // Mở khóa tính năng bằng cách đạt tiến trình ải
+    act(() => {
+      useGameStore.setState((s) => ({
+        state: {
+          ...s.state,
+          stats: {
+            ...s.state.stats,
+            stagesCleared: 10,
+          },
+        },
+      }))
     })
 
     // Click Bố trận button on header

@@ -120,6 +120,9 @@ export interface GameStore {
   formationModalOpen: boolean
   setFormationModalOpen: (open: boolean) => void
   setPlayerFormationSlot: (slot: FormationSlot) => void
+  /** Whether the Battery Saver AFK overlay is active manually. */
+  afkSaverOpen: boolean
+  setAfkSaverOpen: (open: boolean) => void
   forgeNatalSword: (swordDefId: string) => boolean
   temperNatalSword: (swordUid: string) => boolean
   upgradeSwordTalent: (swordUid: string, talentId: string) => boolean
@@ -228,6 +231,8 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       setNatalSwordModalOpen: (open) => set({ natalSwordModalOpen: open }),
       formationModalOpen: false,
       setFormationModalOpen: (open) => set({ formationModalOpen: open }),
+      afkSaverOpen: false,
+      setAfkSaverOpen: (open) => set({ afkSaverOpen: open }),
       setPlayerFormationSlot: (slot) => {
         set((s) => ({ state: engineSetPlayerFormationSlot(s.state, slot) }))
         get().save()

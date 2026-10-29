@@ -426,3 +426,17 @@ body::before {
     opacity: 0;
   }
 }
+
+/* Chế độ Bế quan tiết kiệm pin: tắt toàn bộ animation & transition nền để hạ tải CPU/GPU */
+body.afk-mode * {
+  animation: none !important;
+  transition: none !important;
+}
+
+body.afk-mode .animate-spin {
+  animation: spin 10s linear infinite !important;
+}
+
+body.afk-mode .animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
+}

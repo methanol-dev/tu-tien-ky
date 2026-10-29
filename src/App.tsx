@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { CLASS_BY_ID } from '@/content/classes'
-import { getPendingEvent, getPendingStoryScene, isAlchemyReady, isReincarnationForced, requestPersistentStorage } from '@/engine'
+import {
+  getFeatureUnlockRequirement,
+  getPendingEvent,
+  getPendingStoryScene,
+  isAlchemyReady,
+  isFeatureUnlocked,
+  isReincarnationForced,
+  requestPersistentStorage,
+} from '@/engine'
 import { formatNumber } from '@/lib/format'
 import { startGameLoop } from '@/store/gameLoop'
 import { useGameStore } from '@/store/gameStore'
@@ -9,6 +17,7 @@ import { InkSplash } from '@/ui/atoms/InkSplash'
 import { NavBar } from '@/ui/molecules/NavBar'
 import { Toast } from '@/ui/molecules/Toast'
 import { AdminModal } from '@/ui/organisms/AdminModal'
+import { BatterySaverOverlay } from '@/ui/organisms/BatterySaverOverlay'
 import { CharacterModal } from '@/ui/organisms/CharacterModal'
 import { FormationModal } from '@/ui/organisms/FormationModal'
 import { NatalSwordModal } from '@/ui/organisms/NatalSwordModal'
@@ -57,6 +66,7 @@ export default function App() {
   const offlineReport = useGameStore((s) => s.offlineReport)
   const dismissOffline = useGameStore((s) => s.dismissOffline)
   const notice = useGameStore((s) => s.notice)
+  const notify = useGameStore((s) => s.notify)
   const fx = useGameStore((s) => s.fx)
   const dismissNotice = useGameStore((s) => s.dismissNotice)
   const state = useGameStore((s) => s.state)
@@ -192,19 +202,41 @@ export default function App() {
           </button>
           <button
             type="button"
-            onClick={() => setFormationModalOpen(true)}
-            className="flex min-h-8 items-center gap-1.5 rounded-md border border-cyan-500/30 bg-ink-800/80 px-2.5 py-1 text-xs text-paper-200 transition-colors hover:border-cyan-500 hover:text-cyan-400"
-            title="Bố trận Bát Quái & Tương khắc Ngũ Môn"
+            onClick={() => {
+              if (!isFeatureUnlocked(state, 'formation')) {
+                notify(`🔒 Bố Trận chưa mở: ${getFeatureUnlockRequirement('formation')}`, 'info')
+                return
+              }
+              setFormationModalOpen(true)
+            }}
+            className={`flex min-h-8 items-center gap-1.5 rounded-md border border-cyan-500/30 bg-ink-800/80 px-2.5 py-1 text-xs text-paper-200 transition-colors hover:border-cyan-500 hover:text-cyan-400 ${
+              !isFeatureUnlocked(state, 'formation') ? 'opacity-50' : ''
+            }`}
+            title={
+              isFeatureUnlocked(state, 'formation')
+                ? 'Bố trận Bát Quái & Tương khắc Ngũ Môn'
+                : `Chưa mở: ${getFeatureUnlockRequirement('formation')}`
+            }
           >
             <span className="text-xs">☯️</span>
             <span className="font-serif font-medium">Bố trận</span>
+            {!isFeatureUnlocked(state, 'formation') && <span className="text-[10px]">🔒</span>}
           </button>
           <p className="font-han text-sm text-paper-300 tabular-nums" title="Linh thạch">
             <span aria-hidden className="mr-1 text-gold-400">◆</span>
             {formatNumber(stones)}
           </p>
           <div className="hidden md:block">
-            <NavBar current={screen} onChange={setScreen} alchemyReady={alchemyReady} forgeAlert={forgeAlert} journeyAlert={journeyAlert} legacyAlert={legacyAlert} />
+            <NavBar
+              current={screen}
+              onChange={setScreen}
+              state={state}
+              onNotifyLocked={(msg) => notify(msg, 'info')}
+              alchemyReady={alchemyReady}
+              forgeAlert={forgeAlert}
+              journeyAlert={journeyAlert}
+              legacyAlert={legacyAlert}
+            />
           </div>
         </div>
       </header>
@@ -214,7 +246,16 @@ export default function App() {
       </main>
 
       <div className="md:hidden">
-        <NavBar current={screen} onChange={setScreen} alchemyReady={alchemyReady} forgeAlert={forgeAlert} journeyAlert={journeyAlert} legacyAlert={legacyAlert} />
+        <NavBar
+          current={screen}
+          onChange={setScreen}
+          state={state}
+          onNotifyLocked={(msg) => notify(msg, 'info')}
+          alchemyReady={alchemyReady}
+          forgeAlert={forgeAlert}
+          journeyAlert={journeyAlert}
+          legacyAlert={legacyAlert}
+        />
       </div>
 
       <OfflineModal report={offlineReport} onClose={dismissOffline} />
@@ -263,6 +304,7 @@ export default function App() {
       )}
       <Toast notice={notice} onDismiss={dismissNotice} />
       <InkSplash fx={fx} />
+      <BatterySaverOverlay />
     </div>
   )
 }
