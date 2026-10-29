@@ -1,16 +1,52 @@
 import { RARITY_RANK } from '@/content/affixes'
 import { GEAR_DEF_BY_ID, type GearSlot } from '@/content/gear'
+import { LEGACY_REALM_ID_MAP, REALM_INDEX_BY_ID } from '@/content/realms'
 import { SAVE_VERSION } from '../constants'
 import { createInitialJourney } from '../state'
 
 type RawSave = Record<string, unknown>
 type Migration = (raw: RawSave) => RawSave
 
+const OLD_REALM_IDS = [
+  'pham-nhan',
+  'luyen-khi-1', 'luyen-khi-2', 'luyen-khi-3', 'luyen-khi-4', 'luyen-khi-5', 'luyen-khi-6', 'luyen-khi-7', 'luyen-khi-8', 'luyen-khi-9',
+  'truc-co-1', 'truc-co-2', 'truc-co-3', 'truc-co-4',
+  'kim-dan-1', 'kim-dan-2', 'kim-dan-3', 'kim-dan-4',
+  'nguyen-anh-1', 'nguyen-anh-2', 'nguyen-anh-3', 'nguyen-anh-4',
+  'hoa-than-1', 'hoa-than-2', 'hoa-than-3', 'hoa-than-4',
+  'luyen-hu-1', 'luyen-hu-2', 'luyen-hu-3', 'luyen-hu-4',
+  'hop-the-1', 'hop-the-2', 'hop-the-3', 'hop-the-4',
+  'dai-thua-1', 'dai-thua-2', 'dai-thua-3', 'dai-thua-4',
+  'do-kiep', 'phi-thang',
+]
+
+function mapLegacyRealmIndex(oldIdx: unknown): number {
+  if (typeof oldIdx !== 'number' || Number.isNaN(oldIdx)) return 0
+  const oldId = OLD_REALM_IDS[oldIdx] ?? 'pham-nhan'
+  const newId = LEGACY_REALM_ID_MAP[oldId] ?? 'pham-tuc'
+  return REALM_INDEX_BY_ID[newId] ?? 0
+}
+
 /**
  * Keyed by the version they migrate FROM. Adding a field to GameState?
  * Bump SAVE_VERSION, add `MIGRATIONS[old] = ...`, update schema.ts. No exceptions.
  */
 export const MIGRATIONS: Record<number, Migration> = {
+  // 8 -> 9: Thay thế hệ thống tu tiên cổ điển bằng 15 Cảnh Giới Luyện Khí Sĩ Kiếm Lai.
+  8: (raw) => {
+    const realmIndex = mapLegacyRealmIndex(raw.realmIndex)
+    const legacy = (raw.legacy as RawSave | undefined) ?? {}
+    const bestRealmIndex = mapLegacyRealmIndex(legacy.bestRealmIndex)
+    return {
+      ...raw,
+      version: 9,
+      realmIndex,
+      legacy: {
+        ...legacy,
+        bestRealmIndex,
+      },
+    }
+  },
   // 7 -> 8: Hỗ trợ 10 Class Archetypes Tu Đạo & 5 Tòa Thiên Hạ.
   7: (raw) => {
     return {

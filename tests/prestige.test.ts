@@ -15,19 +15,19 @@ import {
   SAVE_VERSION,
 } from '@/engine'
 
-const TC1 = REALM_INDEX_BY_ID['truc-co-1']
+const DP1 = REALM_INDEX_BY_ID['dong-phu-1']
 const KD1 = REALM_INDEX_BY_ID['kim-dan-1']
 
 describe('prestige', () => {
-  it('yields no Đạo Vận before Trúc Cơ, more at higher realms and with breakthroughs', () => {
+  it('yields no Đạo Vận before Động Phủ, more at higher realms and with breakthroughs', () => {
     const s = createInitialState(0)
     expect(computeDaoVan(s)).toBe(0)
     expect(canReincarnate(s)).toBe(false)
-    const tc = { ...s, realmIndex: TC1 }
+    const dp = { ...s, realmIndex: DP1 }
     const kd = { ...s, realmIndex: KD1, stats: { ...s.stats, breakthroughs: 15 } }
-    expect(computeDaoVan(tc)).toBeGreaterThanOrEqual(1)
-    expect(computeDaoVan(kd)).toBeGreaterThan(computeDaoVan(tc))
-    expect(canReincarnate(tc)).toBe(true)
+    expect(computeDaoVan(dp)).toBeGreaterThanOrEqual(1)
+    expect(computeDaoVan(kd)).toBeGreaterThan(computeDaoVan(dp))
+    expect(canReincarnate(dp)).toBe(true)
   })
 
   it('lifespan exhaustion allows reincarnation even at low realm', () => {

@@ -34,7 +34,7 @@ export const DAILY_EVENTS: readonly EventDef[] = [
     text: 'Tu sĩ bốn phương tụ về phường thị mở hội. Có sạp bán đan dược giá chợ đen.',
     weight: 6,
     cooldownMs: 25 * MIN,
-    condition: { minRealmIndex: R['luyen-khi-3'] },
+    condition: { minRealmIndex: R['dong-bi-3'] },
     choices: [
       { id: 'mua-dan', label: 'Mua một viên Ngưng Thần Đan', hint: 'Giá 150 linh thạch', requires: { stones: 150 }, outcomes: [{ weight: 1, text: 'Đan dược chính hiệu, không phải hàng giả.', effects: [{ type: 'item', id: 'ngung-than-dan', count: 1 }] }] },
       { id: 'xem', label: 'Dạo chơi xem hàng', outcomes: [{ weight: 6, text: 'Ngươi nhặt được một viên linh thạch ai đó đánh rơi.', effects: [{ type: 'stones', seconds: 120 }] }, { weight: 4, text: 'Chen lấn một hồi, về đến nhà phát hiện mất túi tiền nhỏ.', effects: [{ type: 'stonesFraction', fraction: -0.05 }] }] },
@@ -57,7 +57,7 @@ export const DAILY_EVENTS: readonly EventDef[] = [
     text: 'Một lão ngư ngồi câu bên hồ tĩnh lặng. Lão không dùng mồi, lưỡi câu cũng thẳng. "Câu cá hay câu đạo?" lão hỏi.',
     weight: 4,
     once: true,
-    condition: { minRealmIndex: R['luyen-khi-5'] },
+    condition: { minRealmIndex: R['thao-can-2'] },
     choices: [
       { id: 'ngoi-cung', label: 'Ngồi xuống câu cùng lão', outcomes: [{ weight: 1, text: 'Ba ngày ba đêm không ai nói một lời. Khi đứng dậy, ngươi thấy thời gian trôi chậm lại trong người mình.', effects: [{ type: 'lifespan', years: 10 }, { type: 'breakthroughBonus', bonus: 0.08 }] }] },
       { id: 'cuoi', label: 'Cười lão gàn, bỏ đi', outcomes: [{ weight: 1, text: 'Sau lưng, lão ngư cũng cười.', effects: [] }] },

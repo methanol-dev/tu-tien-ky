@@ -120,8 +120,8 @@ export function GameScreen() {
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div className="rounded border border-paper-400/15 bg-ink-950/60 p-2">
               <span className="text-[10px] text-paper-400 block">Luyện Khí Sĩ (15 Cảnh)</span>
-              <span className="font-han font-medium text-paper-100 truncate block mt-0.5" title={realm.kiemLaiRealm}>
-                {realm.kiemLaiRealm ?? realm.name}
+              <span className="font-han font-medium text-paper-100 truncate block mt-0.5" title={realm.name}>
+                {realm.name}
               </span>
             </div>
             <div className="rounded border border-paper-400/15 bg-ink-950/60 p-2">

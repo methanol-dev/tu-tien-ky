@@ -12,7 +12,7 @@ import {
 
 const ready = () => ({
   ...createInitialState(0),
-  realmIndex: REALM_INDEX_BY_ID['luyen-khi-1'],
+  realmIndex: REALM_INDEX_BY_ID['dong-bi-1'],
   stones: 100,
   inventory: { 'linh-thao': 5 },
 })

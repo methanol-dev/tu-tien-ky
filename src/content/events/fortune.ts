@@ -10,7 +10,7 @@ export const FORTUNE_EVENTS: readonly EventDef[] = [
     title: 'Bí tịch rách nát',
     text: 'Trong khe đá sau động phủ, ngươi tìm thấy một quyển bí tịch cũ nát, chữ còn chữ mất.',
     weight: 10,
-    condition: { minRealmIndex: R['luyen-khi-1'] },
+    condition: { minRealmIndex: R['dong-bi-1'] },
     cooldownMs: 20 * MIN,
     choices: [
       {
@@ -67,7 +67,7 @@ export const FORTUNE_EVENTS: readonly EventDef[] = [
     text: 'Một lão tu sĩ hấp hối bên đường. Lão nắm tay ngươi: "Hậu bối, ta sắp tọa hóa, tu vi này không nỡ bỏ phí..."',
     weight: 4,
     once: true,
-    condition: { minRealmIndex: R['luyen-khi-3'] },
+    condition: { minRealmIndex: R['dong-bi-3'] },
     choices: [
       {
         id: 'nhan',
@@ -86,7 +86,7 @@ export const FORTUNE_EVENTS: readonly EventDef[] = [
     text: 'Một con rùa đá khổng lồ mở mắt nhìn ngươi. Nó đã ngủ ở đây từ thuở khai thiên.',
     weight: 3,
     once: true,
-    condition: { minRealmIndex: R['truc-co-1'] },
+    condition: { minRealmIndex: R['dong-phu-1'] },
     choices: [
       { id: 'bai', label: 'Cúi lạy xin chỉ giáo', outcomes: [{ weight: 1, text: 'Lão quy thở ra một hơi dài. Ngươi cảm thấy thọ nguyên kéo dài.', effects: [{ type: 'lifespan', years: 30 }] }] },
       {
@@ -105,7 +105,7 @@ export const FORTUNE_EVENTS: readonly EventDef[] = [
     text: 'Vách núi nứt ra để lộ một cửa động khắc trận văn mờ nhạt. Bên trong tối đen.',
     weight: 5,
     cooldownMs: 30 * MIN,
-    condition: { minRealmIndex: R['luyen-khi-5'] },
+    condition: { minRealmIndex: R['thao-can-2'] },
     choices: [
       {
         id: 'vao',
@@ -122,10 +122,10 @@ export const FORTUNE_EVENTS: readonly EventDef[] = [
   {
     id: 'quay-lai-dong-co',
     title: 'Quay lại động phủ cổ',
-    text: 'Ngươi nhớ tới ký hiệu đã khắc năm xưa. Giờ tu vi đã khác, có lẽ nên quay lại.',
+    text: 'Ngươi nhớ tới ký hiệu đã khắc năm xưa. Gi giờ tu vi đã khác, có lẽ nên quay lại.',
     weight: 6,
     once: true,
-    condition: { requiredFlags: ['biet-dong-co'], minRealmIndex: R['truc-co-1'] },
+    condition: { requiredFlags: ['biet-dong-co'], minRealmIndex: R['dong-phu-1'] },
     choices: [
       { id: 'pha-tran', label: 'Phá trận tiến vào', outcomes: [{ weight: 1, text: 'Với tu vi hiện tại, trận pháp vỡ như giấy. Bên trong là cả một kho tàng!', effects: [{ type: 'stones', seconds: 3600 }, { type: 'item', id: 'thien-tam-lien', count: 2 }, { type: 'technique', levels: 2 }] }] },
     ],

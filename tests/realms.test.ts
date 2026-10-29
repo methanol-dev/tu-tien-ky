@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest'
 import { REALMS, REALM_INDEX_BY_ID } from '@/content/realms'
 
 describe('realm table', () => {
-  it('starts at Phàm Nhân and ends at a terminal Phi Thăng', () => {
-    expect(REALMS[0].id).toBe('pham-nhan')
-    expect(REALMS.at(-1)?.id).toBe('phi-thang')
+  it('starts at Phàm Tục and ends at a terminal Thập Ngũ Cảnh', () => {
+    expect(REALMS[0].id).toBe('pham-tuc')
+    expect(REALMS.at(-1)?.id).toBe('thap-ngu')
     expect(REALMS.at(-1)?.terminal).toBe(true)
     expect(REALMS.slice(0, -1).every((r) => !r.terminal)).toBe(true)
   })
@@ -32,17 +32,21 @@ describe('realm table', () => {
     }
   })
 
-  it('flags tribulation only on the last stage before a tribulation realm', () => {
-    const lk9 = REALMS[REALM_INDEX_BY_ID['luyen-khi-9']]
-    const tc4 = REALMS[REALM_INDEX_BY_ID['truc-co-4']]
-    expect(lk9.tribulation).toBe(false)
-    expect(tc4.tribulation).toBe(true)
-    expect(REALMS[REALM_INDEX_BY_ID['truc-co-1']].tribulation).toBe(false)
+  it('flags tribulation only on stages before big leaps (Kim Đan, Nguyên Anh)', () => {
+    const lm3 = REALMS[REALM_INDEX_BY_ID['long-mon-3']]
+    const tt3 = REALMS[REALM_INDEX_BY_ID['truc-the-3']]
+    const kd4 = REALMS[REALM_INDEX_BY_ID['kim-dan-4']]
+    expect(tt3.tribulation).toBe(false)
+    expect(lm3.tribulation).toBe(true)
+    expect(kd4.tribulation).toBe(true)
+    expect(REALMS[REALM_INDEX_BY_ID['dong-bi-1']].tribulation).toBe(false)
   })
 
-  it('names stages in Vietnamese', () => {
-    expect(REALMS[REALM_INDEX_BY_ID['luyen-khi-3']].name).toBe('Luyện Khí Tầng 3')
-    expect(REALMS[REALM_INDEX_BY_ID['kim-dan-1']].name).toBe('Kim Đan Sơ kỳ')
-    expect(REALMS[0].name).toBe('Phàm Nhân')
+  it('names stages in Vietnamese with Kiếm Lai lore', () => {
+    expect(REALMS[0].name).toBe('Phàm Tục')
+    expect(REALMS[REALM_INDEX_BY_ID['dong-bi-1']].name).toBe('Đồng Bì Cảnh · Sơ kỳ')
+    expect(REALMS[REALM_INDEX_BY_ID['kim-dan-1']].name).toBe('Kim Đan Cảnh · Sơ kỳ')
+    expect(REALMS[REALM_INDEX_BY_ID['thap-ngu']].name).toBe('Thập Ngũ Cảnh')
+    expect(REALMS[REALM_INDEX_BY_ID['thap-ngu']].group).toBe('Thất Truyền Nhị Cảnh')
   })
 })

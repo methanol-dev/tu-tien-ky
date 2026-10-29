@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { REALM_INDEX_BY_ID } from '@/content/realms'
 import { createInitialState, deserialize, SAVE_VERSION } from '@/engine'
 import raw from './fixtures/save-v5.json?raw'
 
@@ -56,12 +57,13 @@ describe('v5 -> v6 (Phase 9: journey + gear)', () => {
     if (!r.ok) return
     const s = r.state
     expect(s.version).toBe(SAVE_VERSION)
-    expect(s.realmIndex).toBe(before.realmIndex)
+    // Legacy realmIndex 11 (trúc-cơ-2) is migrated to 17 (động-phủ-2) in save v9
+    expect(s.realmIndex).toBe(17)
     expect(s.qi).toBe(before.qi)
     expect(s.stones).toBe(before.stones)
     expect(s.flags).toEqual(before.flags)
     expect(s.techniques).toEqual(before.techniques)
-    expect(s.legacy).toEqual(before.legacy)
+    expect(s.legacy.daoVan).toBe(before.legacy.daoVan)
     expect(s.inventory).toEqual({ 'linh-thao': 12, 'tu-khi-dan': 2 })
     expect(s.gear.map((g) => g.defId).sort()).toEqual(['huyen-quy-giap', 'ngung-than-phu', 'thiet-kiem'])
     expect(s.equipped['vu-khi']).toBe(s.gear.find((g) => g.defId === 'thiet-kiem')!.uid)
@@ -148,11 +150,26 @@ describe('v5 -> v6 (Phase 9: journey + gear)', () => {
     const r = deserialize(JSON.stringify(rawV6))
     expect(r.ok, r.ok ? '' : r.error).toBe(true)
     if (!r.ok) return
-    expect(r.state.version).toBe(8)
+    expect(r.state.version).toBe(SAVE_VERSION)
     expect(r.state.classId).toBe('kiem-tu')
     expect(r.state.equipped['vu-khi']).toBe('g1')
     expect(r.state.equipped.ao).toBe('g2')
     expect(r.state.equipped['nhan-1']).toBeNull()
     expect(r.state.equipped['bong-tai-1']).toBeNull()
+  })
+
+  it('migrates v8 to v9 mapping old realms to Kiếm Lai realms', () => {
+    const v8 = {
+      ...createInitialState(0),
+      version: 8,
+      realmIndex: 1, // legacy luyen-khi-1
+      legacy: { daoVan: 0, lives: 1, upgrades: {}, bestRealmIndex: 10 }, // legacy truc-co-1
+    }
+    const r = deserialize(JSON.stringify(v8))
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.state.version).toBe(9)
+    expect(r.state.realmIndex).toBe(REALM_INDEX_BY_ID['dong-bi-1'])
+    expect(r.state.legacy.bestRealmIndex).toBe(REALM_INDEX_BY_ID['dong-phu-1'])
   })
 })

@@ -98,7 +98,7 @@ describe('game store journey', () => {
   it('ticks the journey alongside cultivation, opens chests into chestResult, equips and salvages', () => {
     const store = createGameStore({ storage: createMemoryStorage(), rng: createSeededRng(3) })
     store.getState().hydrate(0)
-    useRealm(store, 'luyen-khi-4')
+    useRealm(store, 'thao-can-1')
     for (let i = 0; i < 600; i++) store.getState().tick(1000)
     const s = store.getState().state
     expect(s.stats.enemiesSlain).toBeGreaterThan(0)

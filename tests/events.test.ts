@@ -55,13 +55,13 @@ describe('event scheduling', () => {
 
   it('respects realm gating, flags, cooldowns and once', () => {
     const ids = (s: ReturnType<typeof at>) => getEligibleEvents(s).map((e) => e.id)
-    expect(ids(at('pham-nhan'))).not.toContain('ma-tu-chan-duong')
-    expect(ids(at('luyen-khi-2'))).toContain('ma-tu-chan-duong')
-    expect(ids(at('truc-co-1'))).not.toContain('quay-lai-dong-co')
-    expect(ids({ ...at('truc-co-1'), flags: { 'biet-dong-co': true } })).toContain('quay-lai-dong-co')
-    expect(ids({ ...at('luyen-khi-6'), flags: { 'nhan-nghia': true } })).not.toContain('cuop-dong-phu')
-    expect(ids({ ...at('luyen-khi-3'), flags: { 'seen:tien-boi-truyen-cong': true } })).not.toContain('tien-boi-truyen-cong')
-    expect(ids({ ...at('luyen-khi-2'), eventCooldowns: { 'ma-tu-chan-duong': FIRST_EVENT_AT_MS + 1 } })).not.toContain('ma-tu-chan-duong')
+    expect(ids(at('pham-tuc'))).not.toContain('ma-tu-chan-duong')
+    expect(ids(at('dong-bi-2'))).toContain('ma-tu-chan-duong')
+    expect(ids(at('dong-phu-1'))).not.toContain('quay-lai-dong-co')
+    expect(ids({ ...at('dong-phu-1'), flags: { 'biet-dong-co': true } })).toContain('quay-lai-dong-co')
+    expect(ids({ ...at('lieu-can-1'), flags: { 'nhan-nghia': true } })).not.toContain('cuop-dong-phu')
+    expect(ids({ ...at('dong-bi-3'), flags: { 'seen:tien-boi-truyen-cong': true } })).not.toContain('tien-boi-truyen-cong')
+    expect(ids({ ...at('dong-bi-2'), eventCooldowns: { 'ma-tu-chan-duong': FIRST_EVENT_AT_MS + 1 } })).not.toContain('ma-tu-chan-duong')
   })
 
   it('pickWeighted honours weights', () => {
@@ -74,15 +74,15 @@ describe('event scheduling', () => {
 })
 
 describe('event resolution', () => {
-  const pending = (eventId: string, realm = 'luyen-khi-2') => ({
+  const pending = (eventId: string, realm = 'dong-bi-2') => ({
     ...at(realm),
     pendingEvent: { eventId, triggeredAtMs: FIRST_EVENT_AT_MS },
   })
 
   it('refuses when nothing is pending or the choice is invalid/unavailable', () => {
-    expect(resolveEvent(at('luyen-khi-2'), 'danh', () => 0).ok).toBe(false)
+    expect(resolveEvent(at('dong-bi-2'), 'danh', () => 0).ok).toBe(false)
     expect(resolveEvent(pending('ma-tu-chan-duong'), 'nope', () => 0).ok).toBe(false)
-    const poor = { ...pending('tau-hoa-nhap-ma', 'truc-co-1'), inventory: {} }
+    const poor = { ...pending('tau-hoa-nhap-ma', 'dong-phu-1'), inventory: {} }
     const choice = EVENT_BY_ID['tau-hoa-nhap-ma'].choices.find((c) => c.id === 'dung-dan')!
     expect(isChoiceAvailable(poor, choice)).toBe(false)
     expect(resolveEvent(poor, 'dung-dan', () => 0).ok).toBe(false)
@@ -118,13 +118,13 @@ describe('event resolution', () => {
     if (!r.ok) throw new Error()
     expect(r.state.state.flags['seen:tan-tu-xin-giup']).toBe(true)
     expect(r.state.state.flags['giup-tan-tu']).toBe(true)
-    const later = { ...r.state.state, realmIndex: REALM_INDEX_BY_ID['luyen-khi-6'] }
+    const later = { ...r.state.state, realmIndex: REALM_INDEX_BY_ID['lieu-can-1'] }
     expect(getEligibleEvents(later).map((e) => e.id)).toContain('tan-tu-bao-an')
     expect(getEligibleEvents(later).map((e) => e.id)).not.toContain('tan-tu-bao-thu')
   })
 
   it('technique effect levels up an unlocked technique', () => {
-    const s = pending('bi-tich-rach', 'luyen-khi-3')
+    const s = pending('bi-tich-rach', 'dong-bi-3')
     const r = resolveEvent(s, 'doc', () => 0)
     if (!r.ok) throw new Error()
     expect(Object.values(r.state.state.techniques).some((l) => l >= 1)).toBe(true)

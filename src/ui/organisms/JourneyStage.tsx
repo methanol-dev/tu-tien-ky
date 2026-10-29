@@ -298,7 +298,7 @@ export function JourneyStage({ state, compact = false }: Props) {
         const tmpl = region.boss.id === e.id ? region.boss : region.enemies.find((x) => x.id === e.id)
         const enemyWithImg = {
           ...e,
-          imageUrl: resolveAsset(tmpl?.imageUrl ?? e.imageUrl ?? `/assets/monsters/${e.id}.png`),
+          imageUrl: tmpl?.imageUrl ?? e.imageUrl ?? `/assets/monsters/${e.id}.png`,
         }
         return (
           <div

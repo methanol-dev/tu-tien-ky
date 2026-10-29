@@ -91,7 +91,7 @@ export interface EvolutionStage {
 }
 
 export function getEvolutionStage(realmIndex: number): EvolutionStage {
-  if (realmIndex < 2) {
+  if (realmIndex < 4) {
     return {
       id: 'thieu-nien',
       name: 'Thiếu Niên Giày Cỏ',
@@ -104,7 +104,7 @@ export function getEvolutionStage(realmIndex: number): EvolutionStage {
       image: 'assets/characters/stage-1.jpg',
     }
   }
-  if (realmIndex < 7) {
+  if (realmIndex < 16) {
     return {
       id: 'du-hiep',
       name: 'Dưỡng Kiếm Du Hiệp',
@@ -117,7 +117,7 @@ export function getEvolutionStage(realmIndex: number): EvolutionStage {
       image: 'assets/characters/stage-2.jpg',
     }
   }
-  if (realmIndex < 12) {
+  if (realmIndex < 28) {
     return {
       id: 'an-quan',
       name: 'Bào Xanh Ẩn Quan',

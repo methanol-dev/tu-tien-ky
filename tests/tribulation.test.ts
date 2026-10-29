@@ -12,15 +12,15 @@ import {
   TRIBULATION_FAIL_QI_LOSS,
 } from '@/engine'
 
-const TC4 = REALM_INDEX_BY_ID['truc-co-4']
+const LM3 = REALM_INDEX_BY_ID['long-mon-3']
 
-const ready = () => ({ ...createInitialState(0), realmIndex: TC4, qi: REALMS[TC4].qiRequired, inventory: { 'tu-khi-dan': 2 } })
+const ready = () => ({ ...createInitialState(0), realmIndex: LM3, qi: REALMS[LM3].qiRequired, inventory: { 'tu-khi-dan': 2 } })
 
 describe('tribulation', () => {
   it('bolt count grows per major realm from Kim Đan', () => {
     expect(getTribulationBolts(REALMS[REALM_INDEX_BY_ID['kim-dan-1']])).toBe(3)
     expect(getTribulationBolts(REALMS[REALM_INDEX_BY_ID['nguyen-anh-1']])).toBe(4)
-    expect(getTribulationBolts(REALMS[REALM_INDEX_BY_ID['phi-thang']])).toBe(9)
+    expect(getTribulationBolts(REALMS[REALM_INDEX_BY_ID['thap-ngu']])).toBe(9)
     expect(getBoltFraction(0)).toBeCloseTo(0.18)
     expect(getBoltFraction(2)).toBeCloseTo(0.34)
   })
@@ -29,7 +29,7 @@ describe('tribulation', () => {
     const r = attemptBreakthrough(ready(), () => 0)
     expect(r.tribulation).toBe(true)
     expect(r.success).toBe(false)
-    expect(r.state.realmIndex).toBe(TC4)
+    expect(r.state.realmIndex).toBe(LM3)
     expect(r.state.tribulation?.bolts).toBe(3)
     expect(r.state.tribulation?.hp).toBe(getCombatStats(ready()).hp)
     expect(r.state.tribulation?.current).toBe(0)
@@ -54,7 +54,7 @@ describe('tribulation', () => {
     if (!last.ok) throw new Error()
     expect(last.state.finished).toBe(true)
     expect(last.state.success).toBe(true)
-    expect(last.state.state.realmIndex).toBe(TC4 + 1)
+    expect(last.state.state.realmIndex).toBe(LM3 + 1)
     expect(last.state.state.tribulation).toBeNull()
     expect(last.state.state.stats.tribulationsPassed).toBe(1)
     expect(last.state.state.qi).toBe(0)
@@ -83,14 +83,14 @@ describe('tribulation', () => {
     if (!r.ok) throw new Error()
     expect(r.state.finished).toBe(true)
     expect(r.state.success).toBe(false)
-    expect(r.state.state.realmIndex).toBe(TC4)
-    expect(r.state.state.qi).toBeCloseTo(REALMS[TC4].qiRequired * (1 - TRIBULATION_FAIL_QI_LOSS))
+    expect(r.state.state.realmIndex).toBe(LM3)
+    expect(r.state.state.qi).toBeCloseTo(REALMS[LM3].qiRequired * (1 - TRIBULATION_FAIL_QI_LOSS))
     expect(r.state.state.buffs.some((b) => b.id === 'trong-thuong')).toBe(true)
     expect(r.state.state.stats.tribulationsFailed).toBe(1)
   })
 
   it('a 9-bolt tribulation cannot be tanked without help', () => {
-    const idx = REALM_INDEX_BY_ID['do-kiep']
+    const idx = REALM_INDEX_BY_ID['thap-tu-3']
     let s = attemptBreakthrough({ ...createInitialState(0), realmIndex: idx, qi: REALMS[idx].qiRequired }, () => 0).state
     let finished = false
     let success: boolean | null = null

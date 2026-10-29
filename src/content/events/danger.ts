@@ -11,7 +11,7 @@ export const DANGER_EVENTS: readonly EventDef[] = [
     text: 'Một gã ma tu mặt sẹo chặn ngươi lại: "Để lại linh thạch, ta tha mạng."',
     weight: 10,
     cooldownMs: 10 * MIN,
-    condition: { minRealmIndex: R['luyen-khi-2'] },
+    condition: { minRealmIndex: R['dong-bi-2'] },
     choices: [
       {
         id: 'danh',
@@ -31,7 +31,7 @@ export const DANGER_EVENTS: readonly EventDef[] = [
     text: 'Giữa lúc nhập định, hình ảnh quá khứ ùa về. Một giọng nói thì thầm: "Tu tiên làm gì? Về nhà đi..."',
     weight: 9,
     cooldownMs: 8 * MIN,
-    condition: { minRealmIndex: R['luyen-khi-4'] },
+    condition: { minRealmIndex: R['thao-can-1'] },
     choices: [
       {
         id: 'dinh-tam',
@@ -68,7 +68,7 @@ export const DANGER_EVENTS: readonly EventDef[] = [
     text: 'Về đến động phủ, ngươi thấy cửa trận bị phá. Có kẻ đã lục lọi bên trong!',
     weight: 6,
     cooldownMs: 25 * MIN,
-    condition: { minRealmIndex: R['luyen-khi-6'], forbiddenFlags: ['nhan-nghia'] },
+    condition: { minRealmIndex: R['lieu-can-1'], forbiddenFlags: ['nhan-nghia'] },
     choices: [
       { id: 'duoi', label: 'Đuổi theo dấu vết', outcomes: [{ weight: 5, text: 'Ngươi bắt kịp tên trộm, lấy lại tất cả và thêm cả của hắn.', effects: [{ type: 'stones', seconds: 300 }] }, { weight: 5, text: 'Dấu vết mất hút. Ngươi đã mất một phần linh thạch.', effects: [{ type: 'stonesFraction', fraction: -0.2 }] }] },
       { id: 'kiem-tra', label: 'Kiểm kê thiệt hại', outcomes: [{ weight: 1, text: 'Mất một ít linh thạch. May mà bí tịch còn nguyên.', effects: [{ type: 'stonesFraction', fraction: -0.1 }] }] },
@@ -80,7 +80,7 @@ export const DANGER_EVENTS: readonly EventDef[] = [
     text: 'Vận công quá gấp, linh khí trong đan điền quay cuồng mất kiểm soát!',
     weight: 5,
     cooldownMs: 15 * MIN,
-    condition: { minRealmIndex: R['truc-co-1'] },
+    condition: { minRealmIndex: R['khi-cot-1'] },
     choices: [
       { id: 'cuong-ep', label: 'Cưỡng ép trấn áp', outcomes: [{ weight: 5, text: 'Ngươi nghiến răng ép linh khí về đan điền. Thành công, tu vi còn tinh thuần hơn.', effects: [{ type: 'qi', fraction: 0.15 }] }, { weight: 5, text: 'Kinh mạch đứt mấy chỗ, ngươi thổ huyết ngất đi.', effects: [{ type: 'qiLoss', fraction: 0.35 }, { type: 'buff', id: 'kinh-mach-ton', name: 'Kinh mạch tổn thương', mult: 0.5, durationMs: 8 * MIN }] }] },
       { id: 'dung-dan', label: 'Nuốt Tụ Khí Đan ổn định', hint: 'Cần 1 Tụ Khí Đan', requires: { items: { 'tu-khi-dan': 1 } }, outcomes: [{ weight: 1, text: 'Dược lực lan ra, linh khí dần bình ổn.', effects: [{ type: 'item', id: 'tu-khi-dan', count: -1 }] }] },
@@ -93,7 +93,7 @@ export const DANGER_EVENTS: readonly EventDef[] = [
     text: 'Gã ma tu mặt sẹo năm nào quay lại, lần này dẫn theo hai tên đồng bọn. "Ngươi nhớ ta chứ?"',
     weight: 7,
     once: true,
-    condition: { minRealmIndex: R['truc-co-2'] },
+    condition: { minRealmIndex: R['truc-the-1'] },
     choices: [
       { id: 'danh', label: 'Một mình chọi ba', outcomes: [{ weight: 5, text: 'Tu vi ngươi giờ đã khác xưa. Ba tên ma tu nằm la liệt.', effects: [{ type: 'stones', seconds: 1500 }, { type: 'item', id: 'tu-linh-chi', count: 2 }] }, { weight: 5, text: 'Ba đánh một không chột cũng què. Ngươi thoát được nhưng thương tích đầy mình.', effects: [{ type: 'qiLoss', fraction: 0.3 }, { type: 'buff', id: 'trong-thuong', name: 'Trọng thương', mult: 0.4, durationMs: 10 * MIN }] }] },
       { id: 'dam-phan', label: 'Mua chuộc chúng', hint: 'Mất 40% linh thạch', outcomes: [{ weight: 1, text: 'Tiền bạc giải quyết được nhiều thứ. Chúng bỏ đi.', effects: [{ type: 'stonesFraction', fraction: -0.4 }] }] },

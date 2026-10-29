@@ -117,11 +117,9 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
                     </span>
                   )}
                 </div>
-              {realm.kiemLaiRealm && (
-                <p className="mt-1 text-xs text-gold-300 font-serif">
-                  📜 Luyện Khí Sĩ: <span className="text-paper-100 font-medium">{realm.kiemLaiRealm}</span>
-                </p>
-              )}
+              <p className="mt-1 text-xs text-gold-300 font-serif">
+                📜 Luyện Khí Sĩ: <span className="text-paper-100 font-medium">{realm.name}</span> ({realm.group})
+              </p>
               <p className="mt-0.5 text-xs text-vermilion-300 font-serif">
                 👊 Võ Đạo: <span className="text-paper-100 font-medium">{martial.name}</span> ({punches} quyền)
               </p>
@@ -388,28 +386,28 @@ export function CharacterModal({ open, onClose, state }: CharacterModalProps) {
                 📜 15 Cảnh Giới Luyện Khí Sĩ (Kiếm Lai)
               </h4>
               <span className="text-xs text-paper-300">
-                Hiện tại: <strong className="text-paper-100">{realm.kiemLaiRealm ?? realm.name}</strong>
+                Hiện tại: <strong className="text-paper-100">{realm.name}</strong>
               </span>
             </div>
             <div className="grid gap-2 text-xs sm:grid-cols-3">
               <div className="rounded border border-paper-400/10 bg-ink-950/50 p-2 space-y-1">
-                <span className="font-han text-gold-300 block font-medium">Hạ Ngũ Cảnh (Nhập Đạo)</span>
+                <span className="font-han text-gold-300 block font-medium">Hạ Ngũ Cảnh (Luyện Thân)</span>
                 <p className="text-[11px] text-paper-400">
-                  1. Đồng Bì · 2. Thảo Căn · 3. Liễu Cốt · 4. Khí Phủ · 5. Dưỡng Khí
+                  1. Đồng Bì · 2. Thảo Căn · 3. Liễu Cân · 4. Khí Cốt · 5. Trúc Thể
                 </p>
                 <p className="text-[10px] text-paper-400 italic">Rèn giũa thân xác phàm nhân, câu thông linh khí trời đất.</p>
               </div>
               <div className="rounded border border-paper-400/10 bg-ink-950/50 p-2 space-y-1">
-                <span className="font-han text-gold-300 block font-medium">Trung Ngũ Cảnh (Đăng Đường)</span>
+                <span className="font-han text-gold-300 block font-medium">Trung Ngũ Cảnh (Địa Tiên)</span>
                 <p className="text-[11px] text-paper-400">
                   6. Động Phủ · 7. Quan Hải · 8. Long Môn · 9. Kim Đan · 10. Nguyên Anh
                 </p>
                 <p className="text-[10px] text-paper-400 italic">Mở phủ ngắm biển, vượt long môn kết đan anh biến hóa.</p>
               </div>
               <div className="rounded border border-paper-400/10 bg-ink-950/50 p-2 space-y-1">
-                <span className="font-han text-gold-300 block font-medium">Thượng Ngũ Cảnh (Đại La)</span>
+                <span className="font-han text-gold-300 block font-medium">Thượng Ngũ & Thất Truyền</span>
                 <p className="text-[11px] text-paper-400">
-                  11. Ngọc Phác · 12. Tiên Nhân · 13. Phi Thăng · 14. Hợp Đạo · 15. Bản Nguyên
+                  11. Ngọc Phác · 12. Tiên Nhân · 13. Phi Thăng · 14. Thập Tứ · 15. Thập Ngũ
                 </p>
                 <p className="text-[10px] text-paper-400 italic">Phi thăng tuyệt đỉnh, chưởng khống quy tắc trời đất vạn cổ.</p>
               </div>

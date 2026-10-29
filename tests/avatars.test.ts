@@ -25,23 +25,23 @@ describe('avatars & character visual evolution', () => {
   })
 
   it('calculates evolution stage correctly across realms', () => {
-    // Stage 1: Phàm nhân / Luyện khí sơ kỳ
+    // Stage 1: Phàm nhân / Hạ Ngũ sơ khởi
     const s1 = getEvolutionStage(0)
     expect(s1.id).toBe('thieu-nien')
     expect(s1.weapon).toContain('Hòe Mộc Kiếm')
 
-    // Stage 2: Luyện khí hậu kỳ / Trúc cơ
-    const s2 = getEvolutionStage(4)
+    // Stage 2: Hạ Ngũ Cảnh (Hành tẩu giang hồ)
+    const s2 = getEvolutionStage(6)
     expect(s2.id).toBe('du-hiep')
     expect(s2.weapon).toContain('Lung Trung Tước')
 
-    // Stage 3: Kết đan / Kim đan / Nguyên Anh
-    const s3 = getEvolutionStage(8)
+    // Stage 3: Trung Ngũ Cảnh (Ẩn quan Kiếm Khí Trường Thành)
+    const s3 = getEvolutionStage(20)
     expect(s3.id).toBe('an-quan')
     expect(s3.name).toBe('Bào Xanh Ẩn Quan')
 
-    // Stage 4: Hóa Thần trở lên
-    const s4 = getEvolutionStage(13)
+    // Stage 4: Thượng Ngũ Cảnh & Thất Truyền (Đại Kiếm Tiên)
+    const s4 = getEvolutionStage(30)
     expect(s4.id).toBe('kiem-tien')
     expect(s4.swordCount).toBe(4)
   })

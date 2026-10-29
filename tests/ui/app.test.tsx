@@ -39,7 +39,7 @@ describe('App smoke', () => {
     await act(async () => {
       root.render(<App />)
     })
-    expect(container.textContent).toContain('Phàm Nhân')
+    expect(container.textContent).toContain('Phàm Tục')
     expect(container.textContent).toContain('Nhật ký tu luyện')
 
     const before = container.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')

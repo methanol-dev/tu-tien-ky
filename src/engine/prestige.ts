@@ -16,7 +16,7 @@ export function getLegacyCost(def: LegacyUpgradeDef, level: number): number {
 /** Đạo Vận this life would yield if reincarnated now. */
 export function computeDaoVan(state: GameState): number {
   const best = state.realmIndex
-  if (best < REALM_INDEX_BY_ID['truc-co-1']) return 0
+  if (best < REALM_INDEX_BY_ID['dong-phu-1']) return 0
   const fromRealm = Math.floor(Math.sqrt(REALMS[best].qiRate))
   const fromBreakthroughs = Math.floor(state.stats.breakthroughs / 3)
   return Math.max(1, fromRealm + fromBreakthroughs)

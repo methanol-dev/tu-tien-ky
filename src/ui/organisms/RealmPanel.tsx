@@ -74,13 +74,18 @@ export function RealmPanel({
             <p className="mt-1 font-han text-lg text-gold-400 sm:text-xl">{realm.stageLabel}</p>
           )}
 
-          {realm.kiemLaiRealm && (
-            <div className="mt-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/30 bg-gold-500/10 px-3 py-1 text-xs text-gold-300">
-                <span className="text-gold-400">📜</span>
-                <span>{realm.kiemLaiRealm}</span>
-              </span>
-            </div>
+          <div className="mt-2 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+            <span className="inline-flex items-center gap-1 rounded-full border border-gold-500/30 bg-gold-500/10 px-2.5 py-0.5 text-xs text-gold-300">
+              <span className="text-gold-400">⚔️</span>
+              <span>{realm.group}</span>
+              {realm.groupRank > 0 && <span className="text-paper-400">· Đệ {realm.groupRank} Cảnh</span>}
+            </span>
+          </div>
+
+          {realm.kiemLaiLore && (
+            <p className="mt-2 max-w-md text-xs italic text-paper-400 leading-relaxed font-serif">
+              "{realm.kiemLaiLore}"
+            </p>
           )}
 
           <p className="mt-3 text-sm text-paper-300">

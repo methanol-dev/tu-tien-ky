@@ -20,5 +20,11 @@ describe('resolveAsset helper', () => {
     expect(res2).toMatch(/assets\/monsters\/thuy-quy-tuong\.png$/)
     expect(res1).not.toContain('//assets')
   })
+
+  it('is idempotent when called multiple times on an already resolved path', () => {
+    const res1 = resolveAsset('/assets/monsters/thuy-quy-tuong.png')
+    const res2 = resolveAsset(res1)
+    expect(res2).toBe(res1)
+  })
 })
 

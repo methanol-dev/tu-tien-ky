@@ -13,7 +13,7 @@ export const CHAPTERS: readonly StoryChapter[] = [
         id: 'scene-0-1',
         chapterId: 'hoi-00',
         title: 'Cá Chép Bốn Râu & Lò Rồng',
-        minRealmIndex: R['pham-nhan'],
+        minRealmIndex: R['pham-tuc'],
         blocks: [
           {
             text: 'Ngõ Nê Bình quanh năm ngập trong bùn đất và sương mờ. Trong căn nhà đất rách nát, một thiếu niên mang giày cỏ, lưng cõng gùi trúc nhỏ đang cẩn thận nhóm bếp.',
@@ -45,7 +45,7 @@ export const CHAPTERS: readonly StoryChapter[] = [
         id: 'scene-0-2',
         chapterId: 'hoi-00',
         title: 'Lão Hòe Thụ Dưới Mưa',
-        minRealmIndex: R['pham-nhan'],
+        minRealmIndex: R['pham-tuc'],
         blocks: [
           {
             text: 'Mưa dầm rả rích dội lên mái ngói cổ trấn. Dưới gốc cây hòe ngàn năm, một vị tiên sinh mặc trường bào Nho nhã đang mỉm cười nhìn Trần Bình An.',
@@ -77,7 +77,7 @@ export const CHAPTERS: readonly StoryChapter[] = [
         id: 'scene-1-1',
         chapterId: 'hoi-01',
         title: 'Thiếu Nữ Áo Xanh Cầm Kiếm',
-        minRealmIndex: R['luyen-khi-1'],
+        minRealmIndex: R['dong-bi-1'],
         blocks: [
           {
             text: 'Ngoại nhân từ các châu lớn lũ lượt kéo đến trấn nhỏ. Trong ngõ tối, một thiếu nữ áo xanh bị thương nặng đang cầm đoản kiếm dựa lưng vào bờ tường.',
@@ -118,7 +118,7 @@ export const CHAPTERS: readonly StoryChapter[] = [
         id: 'scene-1-2',
         chapterId: 'hoi-01',
         title: 'Khí Tiết Tề Tiên Sinh',
-        minRealmIndex: R['luyen-khi-5'],
+        minRealmIndex: R['thao-can-1'],
         blocks: [
           {
             text: 'Trời đất biến sắc, bầu trời Ly Châu Động Thiên nứt toác từng mảng lớn. Thiên đạo áp chế giáng xuống muốn xóa sổ toàn bộ trấn nhỏ.',
@@ -153,7 +153,7 @@ export const CHAPTERS: readonly StoryChapter[] = [
         id: 'scene-2-1',
         chapterId: 'hoi-02',
         title: 'Mũ Đỏ & Gùi Trúc Nhỏ',
-        minRealmIndex: R['truc-co-1'],
+        minRealmIndex: R['lieu-can-1'],
         blocks: [
           {
             text: 'Trên con đường mòn đất đỏ rời khỏi quận Long Tuyền, Lý Bảo Bình đội chiếc mũ đỏ tươi cười rạng rỡ, tay cầm nhánh cây chỉ trỏ phong cảnh.',
@@ -172,7 +172,7 @@ export const CHAPTERS: readonly StoryChapter[] = [
         id: 'scene-2-2',
         chapterId: 'hoi-02',
         title: 'Đại Kiếm Tiên A Lương Xuất Hiện',
-        minRealmIndex: R['truc-co-3'],
+        minRealmIndex: R['khi-cot-1'],
         blocks: [
           {
             text: 'Bên bờ suối, một đại hán đầu đội nón lá rách, miệng ngậm cọng cỏ xanh, một tay cầm bầu rượu, hông đeo thanh đao cùn đang ngửa mặt huýt sáo.',
@@ -222,7 +222,7 @@ export const CHAPTERS: readonly StoryChapter[] = [
         id: 'scene-3-1',
         chapterId: 'hoi-03',
         title: 'Phong Thần Ngụy Bách',
-        minRealmIndex: R['kim-dan-1'],
+        minRealmIndex: R['dong-phu-1'],
         blocks: [
           {
             text: 'Trần Bình An đứng trước vách đá Lạc Phách Sơn. Vị thần linh áo trắng Ngụy Bách hiện thân giữa làn sương sớm, cúi đầu thi lễ.',
@@ -250,7 +250,7 @@ export const CHAPTERS: readonly StoryChapter[] = [
         id: 'scene-4-1',
         chapterId: 'hoi-04',
         title: 'Hội Ngộ Trên Tường Thành',
-        minRealmIndex: R['nguyen-anh-1'],
+        minRealmIndex: R['long-mon-1'],
         blocks: [
           {
             text: 'Gió cát phương bắc cuồn cuộn thổi qua bức tường thành khổng lồ. Phía xa xa, Man Hoang yêu tộc gầm rống rung chuyển đất trời.',
@@ -272,7 +272,7 @@ export const CHAPTERS: readonly StoryChapter[] = [
         id: 'scene-4-2',
         chapterId: 'hoi-04',
         title: 'Khắc Chữ Lên Tường Thành',
-        minRealmIndex: R['hoa-than-1'],
+        minRealmIndex: R['kim-dan-1'],
         blocks: [
           {
             speaker: 'Trần Thanh Đô',
@@ -300,7 +300,7 @@ export const CHAPTERS: readonly StoryChapter[] = [
         id: 'scene-5-1',
         chapterId: 'hoi-05',
         title: 'Kiếm Lai!',
-        minRealmIndex: R['phi-thang'],
+        minRealmIndex: R['phi-thang-1'],
         blocks: [
           {
             text: 'Giữa hư không vô tận, ngàn vạn phi kiếm đồng loạt phát ra tiếng ngân vang vọng cửu thiên thập địa.',

@@ -20,10 +20,10 @@ describe('balance simulation (24h active bot, seed 1)', () => {
     expect(elapsed).toBeLessThan(15000)
   })
 
-  it('reaches Luyện Khí within the first minute and Trúc Cơ within 10-60 minutes', () => {
-    expect(at('luyen-khi-1')).toBeLessThanOrEqual(1 * MIN + 30)
-    expect(at('truc-co-1')).toBeGreaterThanOrEqual(10 * MIN)
-    expect(at('truc-co-1')).toBeLessThanOrEqual(60 * MIN)
+  it('reaches Đồng Bì within the first minute and Động Phủ within 10-60 minutes', () => {
+    expect(at('dong-bi-1')).toBeLessThanOrEqual(1 * MIN + 30)
+    expect(at('dong-phu-1')).toBeGreaterThanOrEqual(10 * MIN)
+    expect(at('dong-phu-1')).toBeLessThanOrEqual(60 * MIN)
   })
 
   it('reaches Kim Đan between 2 and 8 hours, Nguyên Anh between 6 and 20 hours', () => {
@@ -33,14 +33,14 @@ describe('balance simulation (24h active bot, seed 1)', () => {
     expect(at('nguyen-anh-1')).toBeLessThanOrEqual(20 * HOUR)
   })
 
-  it('does not reach Hóa Thần in a day, and passes at least one tribulation', () => {
-    expect(at('hoa-than-1')).toBeUndefined()
+  it('does not reach Tiên Nhân in a day, and passes at least one tribulation', () => {
+    expect(at('tien-nhan-1')).toBeUndefined()
     expect(r.final.stats.tribulationsPassed).toBeGreaterThanOrEqual(1)
     expect(r.final.stats.bossesSlain).toBeGreaterThan(0)
   })
 
-  it('a passive player (no taps, no events) still reaches Trúc Cơ within 2 hours', () => {
+  it('a passive player (no taps, no events) still reaches Động Phủ within 2 hours', () => {
     const p = simulate({ seconds: 2 * HOUR, seed: 2, tapsPerSec: 0, events: false })
-    expect(p.reachedAt[REALM_INDEX_BY_ID['truc-co-1']]).toBeDefined()
+    expect(p.reachedAt[REALM_INDEX_BY_ID['dong-phu-1']]).toBeDefined()
   })
 })

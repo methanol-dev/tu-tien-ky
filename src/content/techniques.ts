@@ -30,7 +30,7 @@ export const TECHNIQUES: readonly TechniqueDef[] = [
     maxLevel: 10,
     baseCost: 50,
     costGrowth: 1.9,
-    minRealmIndex: REALM_INDEX_BY_ID['luyen-khi-1'],
+    minRealmIndex: REALM_INDEX_BY_ID['dong-bi-1'],
   },
   {
     id: 'ngu-khi-thuat',
@@ -41,7 +41,7 @@ export const TECHNIQUES: readonly TechniqueDef[] = [
     maxLevel: 10,
     baseCost: 150,
     costGrowth: 1.8,
-    minRealmIndex: REALM_INDEX_BY_ID['luyen-khi-2'],
+    minRealmIndex: REALM_INDEX_BY_ID['dong-bi-2'],
   },
   {
     id: 'tu-linh-tran',
@@ -52,7 +52,7 @@ export const TECHNIQUES: readonly TechniqueDef[] = [
     maxLevel: 8,
     baseCost: 200,
     costGrowth: 2.0,
-    minRealmIndex: REALM_INDEX_BY_ID['luyen-khi-3'],
+    minRealmIndex: REALM_INDEX_BY_ID['thao-can-1'],
   },
   {
     id: 'thanh-tam-chu',
@@ -63,7 +63,7 @@ export const TECHNIQUES: readonly TechniqueDef[] = [
     maxLevel: 10,
     baseCost: 300,
     costGrowth: 1.9,
-    minRealmIndex: REALM_INDEX_BY_ID['luyen-khi-5'],
+    minRealmIndex: REALM_INDEX_BY_ID['lieu-can-1'],
   },
   {
     id: 'tu-bao-quyet',
@@ -74,7 +74,7 @@ export const TECHNIQUES: readonly TechniqueDef[] = [
     maxLevel: 10,
     baseCost: 1_500,
     costGrowth: 1.9,
-    minRealmIndex: REALM_INDEX_BY_ID['truc-co-1'],
+    minRealmIndex: REALM_INDEX_BY_ID['khi-cot-1'],
   },
   {
     id: 'kim-cuong-bat-hoai',
@@ -85,7 +85,7 @@ export const TECHNIQUES: readonly TechniqueDef[] = [
     maxLevel: 10,
     baseCost: 2_000,
     costGrowth: 2.0,
-    minRealmIndex: REALM_INDEX_BY_ID['truc-co-2'],
+    minRealmIndex: REALM_INDEX_BY_ID['truc-the-1'],
   },
   {
     id: 'thai-thuong-vong-tinh-luc',
@@ -96,7 +96,7 @@ export const TECHNIQUES: readonly TechniqueDef[] = [
     maxLevel: 10,
     baseCost: 50_000,
     costGrowth: 2.4,
-    minRealmIndex: REALM_INDEX_BY_ID['kim-dan-1'],
+    minRealmIndex: REALM_INDEX_BY_ID['dong-phu-1'],
   },
 ]
 

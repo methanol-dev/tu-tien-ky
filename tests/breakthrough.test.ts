@@ -31,12 +31,12 @@ describe('breakthrough', () => {
     expect(r.state.realmIndex).toBe(1)
     expect(r.state.qi).toBe(0)
     expect(r.state.stats.breakthroughs).toBe(1)
-    expect(r.to?.id).toBe('luyen-khi-1')
+    expect(r.to?.id).toBe('dong-bi-1')
     expect(r.state.log.some((l) => l.kind === 'success')).toBe(true)
   })
 
   it('loses 10-30% qi and logs on failure', () => {
-    const idx = REALM_INDEX_BY_ID['luyen-khi-5']
+    const idx = REALM_INDEX_BY_ID['dong-bi-2']
     const qi = REALMS[idx].qiRequired * 1.5
     const s = { ...createInitialState(0), realmIndex: idx, qi }
     const r = attemptBreakthrough(s, alwaysHigh)
@@ -57,7 +57,7 @@ describe('breakthrough', () => {
   })
 
   it('logs the lifespan bump when entering a new major realm', () => {
-    const idx = REALM_INDEX_BY_ID['luyen-khi-9']
+    const idx = REALM_INDEX_BY_ID['dong-bi-3']
     const s = { ...createInitialState(0), realmIndex: idx, qi: REALMS[idx].qiRequired }
     const r = attemptBreakthrough(s, alwaysLow)
     expect(r.to?.firstOfMajor).toBe(true)

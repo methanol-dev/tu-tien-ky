@@ -1,3 +1,5 @@
+import { REALM_INDEX_BY_ID } from './realms'
+
 export type WorldId =
   | 'hao-nhien'
   | 'kiem-khi'
@@ -38,7 +40,7 @@ export const WORLDS: readonly WorldDef[] = [
     ruler: 'Lão Kiếm Đầu Trần Thanh Đô & Ẩn Quan',
     dominantFaction: 'Thuần Túy Kiếm Tu',
     glyph: '劍',
-    minRealmIndex: 6, // Trúc Cơ
+    minRealmIndex: REALM_INDEX_BY_ID['truc-the-1'] ?? 13,
     accentColor: '#d1443b',
   },
   {
@@ -49,7 +51,7 @@ export const WORLDS: readonly WorldDef[] = [
     ruler: 'Đại Tổ Man Hoang & Thập Tứ Vương Tọa',
     dominantFaction: 'Yêu Tộc Quân Trướng',
     glyph: '荒',
-    minRealmIndex: 10, // Kim Đan
+    minRealmIndex: REALM_INDEX_BY_ID['dong-phu-1'] ?? 16,
     accentColor: '#e0bf4a',
   },
   {
@@ -60,7 +62,7 @@ export const WORLDS: readonly WorldDef[] = [
     ruler: 'Đệ Nhất Nhân Ninh Diệu',
     dominantFaction: 'Phi Thăng Thành Kiếm Tu',
     glyph: '彩',
-    minRealmIndex: 14, // Nguyên Anh
+    minRealmIndex: REALM_INDEX_BY_ID['quan-hai-1'] ?? 19,
     accentColor: '#a855f7',
   },
   {
@@ -71,7 +73,7 @@ export const WORLDS: readonly WorldDef[] = [
     ruler: 'Đạo Tổ & Tam Đại Chưởng Giáo',
     dominantFaction: 'Bạch Ngọc Kinh Đạo Gia',
     glyph: '冥',
-    minRealmIndex: 18, // Ngọc Phác / Tiên Nhân
+    minRealmIndex: REALM_INDEX_BY_ID['long-mon-1'] ?? 22,
     accentColor: '#38bdf8',
   },
   {
@@ -82,7 +84,7 @@ export const WORLDS: readonly WorldDef[] = [
     ruler: 'Phật Tổ Đại Giác Ngộ',
     dominantFaction: 'Bát Đại Thiền Tông',
     glyph: '蓮',
-    minRealmIndex: 20, // Thập Tứ Cảnh
+    minRealmIndex: REALM_INDEX_BY_ID['kim-dan-1'] ?? 25,
     accentColor: '#fbbf24',
   },
 ]
