@@ -17,6 +17,7 @@ import { ChestModal } from '@/ui/organisms/ChestModal'
 import { TribulationModal } from '@/ui/organisms/TribulationModal'
 import { OfflineModal } from '@/ui/organisms/OfflineModal'
 import { AlchemyScreen } from '@/ui/screens/AlchemyScreen'
+import { ForgeScreen } from '@/ui/screens/ForgeScreen'
 import { GameScreen } from '@/ui/screens/GameScreen'
 import { InventoryScreen } from '@/ui/screens/InventoryScreen'
 import { JourneyScreen } from '@/ui/screens/JourneyScreen'
@@ -28,6 +29,7 @@ const SCREENS = {
   cultivate: GameScreen,
   techniques: TechniquesScreen,
   inventory: InventoryScreen,
+  forge: ForgeScreen,
   alchemy: AlchemyScreen,
   journey: JourneyScreen,
   legacy: LegacyScreen,
@@ -40,6 +42,7 @@ export default function App() {
   const setScreen = useGameStore((s) => s.setScreen)
   const stones = useGameStore((s) => s.state.stones)
   const alchemyReady = useGameStore((s) => isAlchemyReady(s.state))
+  const forgeAlert = useGameStore((s) => s.state.forge.pendingGear !== null || s.state.forge.fireCount >= 20)
   const journeyAlert = useGameStore((s) => s.state.journey.chests.red > 0 || s.state.journey.chests.normal >= 10)
   const legacyAlert = useGameStore((s) => isReincarnationForced(s.state))
   const tribulationResult = useGameStore((s) => s.tribulationResult)
@@ -189,7 +192,7 @@ export default function App() {
             {formatNumber(stones)}
           </p>
           <div className="hidden md:block">
-            <NavBar current={screen} onChange={setScreen} alchemyReady={alchemyReady} journeyAlert={journeyAlert} legacyAlert={legacyAlert} />
+            <NavBar current={screen} onChange={setScreen} alchemyReady={alchemyReady} forgeAlert={forgeAlert} journeyAlert={journeyAlert} legacyAlert={legacyAlert} />
           </div>
         </div>
       </header>
@@ -199,7 +202,7 @@ export default function App() {
       </main>
 
       <div className="md:hidden">
-        <NavBar current={screen} onChange={setScreen} alchemyReady={alchemyReady} journeyAlert={journeyAlert} legacyAlert={legacyAlert} />
+        <NavBar current={screen} onChange={setScreen} alchemyReady={alchemyReady} forgeAlert={forgeAlert} journeyAlert={journeyAlert} legacyAlert={legacyAlert} />
       </div>
 
       <OfflineModal report={offlineReport} onClose={dismissOffline} />

@@ -119,6 +119,26 @@ describe('game store journey', () => {
     store.getState().setAutoAdvance(false)
     expect(store.getState().state.journey.autoAdvance).toBe(false)
   })
+
+  it('handles forge gacha actions correctly', () => {
+    const store = createGameStore({ storage: createMemoryStorage(), rng: () => 0.1 })
+    store.getState().hydrate(0)
+
+    expect(store.getState().state.forge.fireCount).toBe(50)
+    expect(store.getState().forgeGear()).toBe(true)
+    expect(store.getState().state.forge.fireCount).toBe(49)
+    expect(store.getState().state.forge.pendingGear).not.toBeNull()
+
+    // Equip pending
+    store.getState().equipPendingGear()
+    expect(store.getState().state.forge.pendingGear).toBeNull()
+    expect(store.getState().state.gear.length).toBe(1)
+
+    // Buy fire
+    store.setState((st) => ({ state: { ...st.state, stones: 50000 } }))
+    expect(store.getState().buyFire(5)).toBe(true)
+    expect(store.getState().state.forge.fireCount).toBe(54)
+  })
 })
 
 function useRealm(store: ReturnType<typeof createGameStore>, id: string) {

@@ -141,4 +141,36 @@ describe('App smoke', () => {
     })
     expect(container.textContent).not.toContain('Đạo Thân · Chỉ Số Nhân Vật')
   })
+
+  it('navigates to Forge screen and performs forge & equip loop', async () => {
+    await act(async () => {
+      root.render(<App />)
+    })
+
+    // Click Luyện khí tab
+    await act(async () => {
+      button('Luyện khí').click()
+    })
+
+    expect(container.textContent).toContain('Đan Lô Luyện Khí')
+    expect(container.textContent).toContain('Cửu U Chân Hỏa Lô')
+    expect(container.textContent).toContain('ĐẬP LÔ LUYỆN KHÍ')
+
+    // Click Đập Lô Luyện Khí
+    await act(async () => {
+      button('ĐẬP LÔ LUYỆN KHÍ').click()
+    })
+
+    expect(container.textContent).toContain('Bảo Vật Vừa Xuất Lò')
+    expect(container.textContent).toContain('Mặc Vào')
+    expect(container.textContent).toContain('Phân Giải')
+
+    // Click Mặc Vào
+    await act(async () => {
+      button('Mặc Vào').click()
+    })
+
+    expect(container.textContent).not.toContain('Bảo Vật Vừa Xuất Lò')
+    expect(container.textContent).toContain('ĐẬP LÔ LUYỆN KHÍ')
+  })
 })

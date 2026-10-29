@@ -175,13 +175,14 @@ export function attemptBreakthrough(state: GameState, rng: Rng): BreakthroughRes
       realmIndex: state.realmIndex + 1,
       qi: 0,
       stones: state.stones + stonesGained,
+      forge: state.forge ? { ...state.forge, fireCount: state.forge.fireCount + 20 } : state.forge,
       stats: {
         ...state.stats,
         breakthroughs: state.stats.breakthroughs + 1,
         stonesTotal: state.stats.stonesTotal + stonesGained,
       },
     }
-    next = pushLog(next, `Đột phá thành công! Tiến vào ${to.name}. Nhặt được ${stonesGained} linh thạch.`, 'success')
+    next = pushLog(next, `Đột phá thành công! Tiến vào ${to.name}. Nhặt được ${stonesGained} linh thạch và 20 Chân Hỏa.`, 'success')
     if (to.firstOfMajor) {
       next = pushLog(next, `Thọ nguyên tăng lên ${to.lifespanYears} năm.`, 'info')
     }

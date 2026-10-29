@@ -1,5 +1,6 @@
 import { REGIONS } from '@/content/regions'
 import { DAYS_PER_YEAR, FIRST_EVENT_AT_MS, JOURNEY_WALK_MS, SAVE_VERSION, STARTING_AGE_YEARS } from './constants'
+import { createInitialForge } from './forge'
 import type { GameState, JourneyState } from './types'
 
 export function createInitialJourney(regionId: string = REGIONS[0].id): JourneyState {
@@ -85,5 +86,6 @@ export function createInitialState(now: number = Date.now()): GameState {
       gearFound: 0,
     },
     settings: { timeScale: 1, pauseOnEvent: false, battleSpeed: 1 },
+    forge: createInitialForge(),
   }
 }

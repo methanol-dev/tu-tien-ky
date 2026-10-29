@@ -54,3 +54,4 @@ describe('battle speed controller (QoL 1x, 2x, 4x)', () => {
     expect(events2).toBeGreaterThanOrEqual(events1)
   })
 })
+

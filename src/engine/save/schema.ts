@@ -111,7 +111,7 @@ const natalSwordSchema = z.object({
 
 /** Schema for the CURRENT save version. Older versions go through migrations first. */
 export const gameStateSchema = z.object({
-  version: z.literal(11),
+  version: z.literal(12),
   createdAt: z.number().int().nonnegative(),
   lastSavedAt: z.number().int().nonnegative(),
   playedMs: z.number().nonnegative(),
@@ -203,6 +203,16 @@ export const gameStateSchema = z.object({
     pauseOnEvent: z.boolean(),
     avatarId: z.string().optional(),
     battleSpeed: z.union([z.literal(1), z.literal(2), z.literal(4)]).optional(),
+  }),
+  forge: z.object({
+    level: z.number().int().min(1).max(20),
+    exp: z.number().nonnegative(),
+    fireCount: z.number().int().nonnegative(),
+    pendingGear: gearInstanceSchema.nullable(),
+    autoFilters: z.object({
+      stopOnHigherScore: z.boolean(),
+      minRarity: z.enum(['pham', 'linh', 'bao', 'tien', 'than']),
+    }),
   }),
 })
 

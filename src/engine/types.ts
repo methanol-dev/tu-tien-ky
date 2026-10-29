@@ -15,6 +15,19 @@ export interface LogEntry {
 
 export type BattleSpeed = 1 | 2 | 4
 
+export interface ForgeAutoFilters {
+  stopOnHigherScore: boolean
+  minRarity: Rarity
+}
+
+export interface ForgeState {
+  level: number
+  exp: number
+  fireCount: number
+  pendingGear: GearInstance | null
+  autoFilters: ForgeAutoFilters
+}
+
 export interface GameSettings {
   /** In-game days elapsed per real second. */
   timeScale: number
@@ -242,6 +255,7 @@ export interface GameState {
   log: LogEntry[]
   stats: GameStats
   settings: GameSettings
+  forge: ForgeState
 }
 
 /** Random source in [0, 1). Injected so tests and simulations are deterministic. */

@@ -35,6 +35,9 @@ export function OfflineModal({ report, onClose }: OfflineModalProps) {
             <p className="text-sm text-paper-300">
               Trên đường hành tẩu vượt <span className="text-paper-100 tabular-nums">{report.stagesCleared}</span> ải, nhặt{' '}
               <span className="text-gold-400 tabular-nums">{report.chestsGained}</span> rương
+              {report.fireGained > 0 && (
+                <span>, thu hoạch <span className="text-amber-400 font-bold tabular-nums">🔥 {report.fireGained}</span> Chân Hỏa</span>
+              )}
               {report.deaths > 0 && <span className="text-vermilion-400">, gục ngã {report.deaths} lần</span>}.
             </p>
           )}

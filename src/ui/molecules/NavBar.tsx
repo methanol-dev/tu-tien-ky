@@ -5,6 +5,7 @@ const TABS: { id: Screen; label: string }[] = [
   { id: 'cultivate', label: 'Động phủ' },
   { id: 'techniques', label: 'Công pháp' },
   { id: 'inventory', label: 'Túi đồ' },
+  { id: 'forge', label: 'Luyện khí' },
   { id: 'alchemy', label: 'Luyện đan' },
   { id: 'journey', label: 'Hành tẩu' },
   { id: 'legacy', label: 'Luân hồi' },
@@ -15,11 +16,12 @@ interface NavBarProps {
   current: Screen
   onChange: (s: Screen) => void
   alchemyReady?: boolean
+  forgeAlert?: boolean
   journeyAlert?: boolean
   legacyAlert?: boolean
 }
 
-export function NavBar({ current, onChange, alchemyReady, journeyAlert, legacyAlert }: NavBarProps) {
+export function NavBar({ current, onChange, alchemyReady, forgeAlert, journeyAlert, legacyAlert }: NavBarProps) {
   return (
     <nav
       aria-label="Điều hướng"
@@ -48,7 +50,10 @@ export function NavBar({ current, onChange, alchemyReady, journeyAlert, legacyAl
                   />
                 )}
                 <span className="text-[10px] leading-tight md:text-sm font-serif font-medium">{t.label}</span>
-                {((t.id === 'alchemy' && alchemyReady) || (t.id === 'journey' && journeyAlert) || (t.id === 'legacy' && legacyAlert)) && (
+                {((t.id === 'alchemy' && alchemyReady) ||
+                  (t.id === 'forge' && forgeAlert) ||
+                  (t.id === 'journey' && journeyAlert) ||
+                  (t.id === 'legacy' && legacyAlert)) && (
                   <span
                     aria-label="Sẵn sàng"
                     className="absolute top-1.5 right-2 h-1.5 w-1.5 animate-pulse rounded-full bg-gold-400 md:top-1 md:right-1"

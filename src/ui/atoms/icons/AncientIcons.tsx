@@ -141,6 +141,34 @@ export const IconCauldron: FC<IconProps> = ({ className = 'h-5 w-5', size, ...pr
   </svg>
 )
 
+/** Luyện Khí Đan Lô: Lò bát quái tôi luyện pháp bảo thần binh, chân hỏa bốc cháy */
+export const IconForge: FC<IconProps> = ({ className = 'h-5 w-5', size, ...props }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.7"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    width={size}
+    height={size}
+    className={className}
+    {...props}
+  >
+    {/* Chân hỏa bốc lên từ đỉnh lò */}
+    <path d="M12 2c.8 1.4 1.5 2.2 1 3.5-.4 1.2-1.5 1.5-1 2.5.5-1 1-1.5 2-1.5.3 1.5-.7 2.5-2 3.5" strokeWidth="1.4" />
+    {/* Nắp lò luyện khí hoa văn bát quái */}
+    <path d="M7 10h10l-1.5-2.5h-7L7 10z" />
+    {/* Thân lò hình khối đa giác kiên cố */}
+    <path d="M5 10l1.5 7h11L19 10" />
+    {/* Chân kiềng lò đúc đồng */}
+    <path d="M6 17l-1.5 3.5" />
+    <path d="M18 17l1.5 3.5" />
+    {/* Cửa thông gió lò bốc lửa */}
+    <rect x="10" y="12" width="4" height="3" rx="0.8" fill="currentColor" fillOpacity="0.25" />
+  </svg>
+)
+
 /** Hành Tẩu: Song kiếm giao thoa sắc bén mang kiếm ý xé gió */
 export const IconCrossSwords: FC<IconProps> = ({ className = 'h-5 w-5', size, ...props }) => (
   <svg
@@ -167,6 +195,44 @@ export const IconCrossSwords: FC<IconProps> = ({ className = 'h-5 w-5', size, ..
     <circle cx="20.5" cy="20.5" r="1" fill="currentColor" />
     {/* Điểm chạm kiếm khí chém đứt không gian */}
     <path d="M12 9v-2M12 17v-2M9 12H7M17 12h-2" strokeWidth="1.2" opacity="0.6" />
+  </svg>
+)
+
+/** Chân Hỏa: Ngọn lửa Tam Muội Chân Hỏa tôi luyện thần binh */
+export const IconFlame: FC<IconProps> = ({ className = 'h-5 w-5', size, ...props }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.7"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    width={size}
+    height={size}
+    className={className}
+    {...props}
+  >
+    <path d="M8.5 14.5A3.5 3.5 0 0 0 12 18a3.5 3.5 0 0 0 3.5-3.5c0-2-1.5-3-2-4.5-.5 1.5-1.5 2-1.5 3" />
+    <path d="M12 2c1.5 3 4.5 5 4.5 9a6.5 6.5 0 0 1-13 0c0-4 3-7 5.5-9 0 2 1 3 3 0z" />
+  </svg>
+)
+
+/** Chu Thiên Xoay Vần: Vòng xoay tự động khai lò */
+export const IconRefresh: FC<IconProps> = ({ className = 'h-5 w-5', size, ...props }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.7"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    width={size}
+    height={size}
+    className={className}
+    {...props}
+  >
+    <path d="M21 12a9 9 0 1 1-2.6-6.4L21 8" />
+    <path d="M21 3v5h-5" />
   </svg>
 )
 
@@ -395,6 +461,7 @@ export const SCREEN_ICONS: Record<Screen, FC<IconProps>> = {
   cultivate: IconPavilion,
   techniques: IconScroll,
   inventory: IconQiankunBag,
+  forge: IconForge,
   alchemy: IconCauldron,
   journey: IconCrossSwords,
   legacy: IconSamsaraWheel,

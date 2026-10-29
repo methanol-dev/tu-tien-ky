@@ -301,16 +301,23 @@ function fightStep(state: GameState, now: number, ctx: StepContext, rng: Rng): G
         }
 
         const chests = { ...j.chests }
+        let currentFire = s.forge?.fireCount ?? 0
         if (e.boss) {
           chests.red = Math.min(CHEST_CAP, chests.red + 1)
           chests.normal = Math.min(CHEST_CAP, chests.normal + 1)
           j = pushEvent(j, { atMs: now, kind: 'chest', amount: 1 })
+          currentFire += 5
         } else if (rng() < CHEST_DROP_CHANCE * ctx.lootChanceMult) {
           chests.normal = Math.min(CHEST_CAP, chests.normal + 1)
           j = pushEvent(j, { atMs: now, kind: 'chest', amount: 0 })
+          currentFire += 1
         }
         j = { ...j, chests }
-        s = { ...s, stats: { ...s.stats, enemiesSlain: s.stats.enemiesSlain + 1, bossesSlain: s.stats.bossesSlain + (e.boss ? 1 : 0) } }
+        s = {
+          ...s,
+          forge: s.forge ? { ...s.forge, fireCount: currentFire } : s.forge,
+          stats: { ...s.stats, enemiesSlain: s.stats.enemiesSlain + 1, bossesSlain: s.stats.bossesSlain + (e.boss ? 1 : 0) },
+        }
       }
     }
     // Catch up if we fell far behind (big offline step), never more than one attack per step.

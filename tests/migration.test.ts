@@ -226,9 +226,25 @@ describe('v5 -> v6 (Phase 9: journey + gear)', () => {
     const r = deserialize(JSON.stringify(v10))
     expect(r.ok).toBe(true)
     if (!r.ok) return
-    expect(r.state.version).toBe(11)
+    expect(r.state.version).toBe(SAVE_VERSION)
     expect(r.state.natalSwords).toHaveLength(1)
     expect(r.state.natalSwords[0].name).toBe('Sơ Thập')
     expect(r.state.natalSwords[0].talents[0].id).toBe('bon-loi-tat-hanh')
+  })
+
+  it('migrates v11 to v12 initializing forge state', () => {
+    const v11 = {
+      ...createInitialState(0),
+      version: 11,
+    }
+    const r = deserialize(JSON.stringify(v11))
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.state.version).toBe(12)
+    expect(r.state.forge.level).toBe(1)
+    expect(r.state.forge.exp).toBe(0)
+    expect(r.state.forge.fireCount).toBe(50)
+    expect(r.state.forge.pendingGear).toBeNull()
+    expect(r.state.forge.autoFilters.minRarity).toBe('bao')
   })
 })

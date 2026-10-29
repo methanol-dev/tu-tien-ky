@@ -36,6 +36,12 @@ import {
   deserialize,
   equip as engineEquip,
   exportSave as engineExportSave,
+  type ForgeAutoFilters,
+  forgeGear as engineForgeGear,
+  salvagePendingGear as engineSalvagePendingGear,
+  equipPendingGear as engineEquipPendingGear,
+  buyFire as engineBuyFire,
+  updateForgeFilters as engineUpdateForgeFilters,
   forgeNatalSword as engineForgeNatalSword,
   temperNatalSword as engineTemperNatalSword,
   upgradeSwordTalent as engineUpgradeSwordTalent,
@@ -73,6 +79,7 @@ export type Screen =
   | 'techniques'
   | 'inventory'
   | 'alchemy'
+  | 'forge'
   | 'journey'
   | 'legacy'
   | 'settings'
@@ -137,6 +144,11 @@ export interface GameStore {
   unequip: (slot: GearSlot) => boolean
   salvage: (uids: string[]) => boolean
   salvageByRarity: (rarities: Rarity[]) => boolean
+  forgeGear: () => boolean
+  salvagePendingGear: () => void
+  equipPendingGear: () => void
+  buyFire: (count: number) => boolean
+  updateForgeFilters: (filters: Partial<ForgeAutoFilters>) => void
   changeClass: (classId: ClassId) => boolean
   setCultivationPath: (path: CultivationPath, classId: ClassId) => boolean
   resolveBolt: (action: TribulationAction) => boolean
@@ -364,6 +376,56 @@ export function createGameStore(deps: GameStoreDeps = {}) {
         set({ state: r.state.state })
         get().notify(`Phân giải ${r.state.count} món, thu ${Math.round(r.state.stones)} linh thạch.`, 'success')
         return true
+      },
+
+      forgeGear: () => {
+        let success = false
+        set((s) => {
+          const res = engineForgeGear(s.state, rng)
+          if (!res.ok) {
+            return {
+              notice: { id: Date.now(), text: res.error, kind: 'error' },
+            }
+          }
+          success = true
+          return { state: res.state.state }
+        })
+        if (success) get().save()
+        return success
+      },
+
+      salvagePendingGear: () => {
+        set((s) => ({ state: engineSalvagePendingGear(s.state) }))
+        get().save()
+      },
+
+      equipPendingGear: () => {
+        set((s) => ({ state: engineEquipPendingGear(s.state) }))
+        get().save()
+      },
+
+      buyFire: (count: number) => {
+        let success = false
+        set((s) => {
+          const res = engineBuyFire(s.state, count)
+          if (!res.ok) {
+            return {
+              notice: { id: Date.now(), text: res.error, kind: 'error' },
+            }
+          }
+          success = true
+          return { state: res.state }
+        })
+        if (success) {
+          get().save()
+          get().notify(`Đã nạp ${count} Chân Hỏa vào Đan Lô!`, 'success')
+        }
+        return success
+      },
+
+      updateForgeFilters: (filters: Partial<ForgeAutoFilters>) => {
+        set((s) => ({ state: engineUpdateForgeFilters(s.state, filters) }))
+        get().save()
       },
 
       changeClass: (classId) => apply(engineChangeClass(get().state, classId)),

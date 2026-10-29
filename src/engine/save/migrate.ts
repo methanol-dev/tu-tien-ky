@@ -32,6 +32,23 @@ function mapLegacyRealmIndex(oldIdx: unknown): number {
  * Bump SAVE_VERSION, add `MIGRATIONS[old] = ...`, update schema.ts. No exceptions.
  */
 export const MIGRATIONS: Record<number, Migration> = {
+  // 11 -> 12: Bổ sung hệ thống Đan Lô Luyện Khí 1-Click (ForgeState)
+  11: (raw) => {
+    return {
+      ...raw,
+      version: 12,
+      forge: {
+        level: 1,
+        exp: 0,
+        fireCount: 50,
+        pendingGear: null,
+        autoFilters: {
+          stopOnHigherScore: true,
+          minRarity: 'bao',
+        },
+      },
+    }
+  },
   // 10 -> 11: Bổ sung hệ thống Phi Kiếm Bản Mệnh & Bản Mệnh Thần Thông Kiếm Tu
   10: (raw) => {
     const classId = (raw.classId as string) || 'kiem-tu'
