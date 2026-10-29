@@ -19,6 +19,7 @@ import {
   STAGES_PER_REGION,
 } from '@/content/regions'
 import { type CombatStats, getCombatStats, rollDamage } from './combat'
+import { getClassCounterEffect, getEnemyClass } from './formation'
 import {
   AUTO_OPEN_NORMAL_LEVEL,
   AUTO_OPEN_RED_LEVEL,
@@ -120,6 +121,7 @@ function spawnEnemies(region: RegionDef, stage: number, d: Difficulty, now: numb
       name: t.name,
       silhouette: t.silhouette,
       imageUrl: t.imageUrl,
+      classId: t.classId,
       hp: st.hp,
       maxHp: st.hp,
       atk: st.atk,
@@ -209,8 +211,13 @@ function fightStep(state: GameState, now: number, ctx: StepContext, rng: Rng): G
     const idx = enemies.findIndex((e) => e.hp > 0)
     if (idx >= 0) {
       const e = enemies[idx]
+      // Khắc chế hệ phái giữa người chơi và quái vật
+      const enemyClass = getEnemyClass(e)
+      const counter = getClassCounterEffect(state.classId, enemyClass)
+      const effectiveAtk = Math.max(1, Math.round(stats.atk * counter.dmgDealMult))
+
       // Đòn đánh hưởng lợi từ xuyên giáp của phi kiếm bản mệnh
-      const { dmg: baseDmg, crit } = rollDamage(stats.atk, e.def, rng, stats.crit, stats.critMult, stats.armorPen)
+      const { dmg: baseDmg, crit } = rollDamage(effectiveAtk, e.def, rng, stats.crit, stats.critMult, stats.armorPen)
       let dmg = baseDmg
 
       // Thần thông trọng lực (Thiên Quân Áp Đỉnh): cộng sát thương theo máu đối thủ
@@ -332,7 +339,12 @@ function fightStep(state: GameState, now: number, ctx: StepContext, rng: Rng): G
       e.nextAttackAtMs = Math.max(e.nextAttackAtMs + ENEMY_ATTACK_MS, now + ENEMY_ATTACK_MS / 2)
       continue
     }
-    let { dmg } = rollDamage(e.atk, stats.def, rng)
+    // Khắc chế hệ phái giữa người chơi và quái vật
+    const enemyClass = getEnemyClass(e)
+    const counter = getClassCounterEffect(state.classId, enemyClass)
+    const effectiveEnemyAtk = Math.max(1, Math.round(e.atk * counter.dmgTakeMult))
+
+    let { dmg } = rollDamage(effectiveEnemyAtk, stats.def, rng)
     // Giảm sát thương nhận vào từ thần thông kết giới (Tọa Tỉnh Cấm Giới)
     if (stats.damageReduction > 0) {
       dmg = Math.max(1, Math.round(dmg * (1 - stats.damageReduction)))

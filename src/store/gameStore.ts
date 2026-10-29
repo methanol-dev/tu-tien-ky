@@ -42,6 +42,8 @@ import {
   equipPendingGear as engineEquipPendingGear,
   buyFire as engineBuyFire,
   updateForgeFilters as engineUpdateForgeFilters,
+  type FormationSlot,
+  setPlayerFormationSlot as engineSetPlayerFormationSlot,
   forgeNatalSword as engineForgeNatalSword,
   temperNatalSword as engineTemperNatalSword,
   upgradeSwordTalent as engineUpgradeSwordTalent,
@@ -114,6 +116,10 @@ export interface GameStore {
   /** Whether the Natal Sword Pavilion modal is open. */
   natalSwordModalOpen: boolean
   setNatalSwordModalOpen: (open: boolean) => void
+  /** Whether the Pre-Combat Formation modal is open. */
+  formationModalOpen: boolean
+  setFormationModalOpen: (open: boolean) => void
+  setPlayerFormationSlot: (slot: FormationSlot) => void
   forgeNatalSword: (swordDefId: string) => boolean
   temperNatalSword: (swordUid: string) => boolean
   upgradeSwordTalent: (swordUid: string, talentId: string) => boolean
@@ -220,6 +226,12 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       setCharacterModalOpen: (open) => set({ characterModalOpen: open }),
       natalSwordModalOpen: false,
       setNatalSwordModalOpen: (open) => set({ natalSwordModalOpen: open }),
+      formationModalOpen: false,
+      setFormationModalOpen: (open) => set({ formationModalOpen: open }),
+      setPlayerFormationSlot: (slot) => {
+        set((s) => ({ state: engineSetPlayerFormationSlot(s.state, slot) }))
+        get().save()
+      },
 
       hydrate: (now = Date.now()) => {
         const raw = storage.load()

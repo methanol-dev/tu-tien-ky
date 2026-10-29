@@ -32,7 +32,7 @@ describe('combat stats', () => {
     const owned = { ...s, gear: [sword] }
     expect(getCombatStats(owned).atk).toBe(base.atk)
     const armed = { ...owned, equipped: { ...owned.equipped, 'vu-khi': 'g1' } }
-    expect(getCombatStats(armed).atk).toBe(27)
+    expect(getCombatStats(armed).atk).toBe(31)
     expect(getCombatStats(armed).attackMs).toBe(800)
   })
 

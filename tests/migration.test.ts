@@ -232,7 +232,7 @@ describe('v5 -> v6 (Phase 9: journey + gear)', () => {
     expect(r.state.natalSwords[0].talents[0].id).toBe('bon-loi-tat-hanh')
   })
 
-  it('migrates v11 to v12 initializing forge state', () => {
+  it('migrates v11 to current version initializing forge state', () => {
     const v11 = {
       ...createInitialState(0),
       version: 11,
@@ -240,11 +240,34 @@ describe('v5 -> v6 (Phase 9: journey + gear)', () => {
     const r = deserialize(JSON.stringify(v11))
     expect(r.ok).toBe(true)
     if (!r.ok) return
-    expect(r.state.version).toBe(12)
+    expect(r.state.version).toBe(SAVE_VERSION)
     expect(r.state.forge.level).toBe(1)
     expect(r.state.forge.exp).toBe(0)
     expect(r.state.forge.fireCount).toBe(50)
     expect(r.state.forge.pendingGear).toBeNull()
     expect(r.state.forge.autoFilters.minRarity).toBe('bao')
+  })
+
+  it('migrates v12 to v13 initializing formation slot based on class', () => {
+    const v12Sword = {
+      ...createInitialState(0),
+      version: 12,
+      classId: 'kiem-tu',
+    }
+    const rSword = deserialize(JSON.stringify(v12Sword))
+    expect(rSword.ok).toBe(true)
+    if (!rSword.ok) return
+    expect(rSword.state.version).toBe(13)
+    expect(rSword.state.formation.playerSlot).toBe('back-mid')
+
+    const v12Brawler = {
+      ...createInitialState(0),
+      version: 12,
+      classId: 'vo-phu',
+    }
+    const rBrawler = deserialize(JSON.stringify(v12Brawler))
+    expect(rBrawler.ok).toBe(true)
+    if (!rBrawler.ok) return
+    expect(rBrawler.state.formation.playerSlot).toBe('front-mid')
   })
 })

@@ -10,6 +10,7 @@ import { NavBar } from '@/ui/molecules/NavBar'
 import { Toast } from '@/ui/molecules/Toast'
 import { AdminModal } from '@/ui/organisms/AdminModal'
 import { CharacterModal } from '@/ui/organisms/CharacterModal'
+import { FormationModal } from '@/ui/organisms/FormationModal'
 import { NatalSwordModal } from '@/ui/organisms/NatalSwordModal'
 import { EventModal } from '@/ui/organisms/EventModal'
 import { StoryModal } from '@/ui/organisms/StoryModal'
@@ -61,6 +62,8 @@ export default function App() {
   const state = useGameStore((s) => s.state)
   const characterModalOpen = useGameStore((s) => s.characterModalOpen)
   const setCharacterModalOpen = useGameStore((s) => s.setCharacterModalOpen)
+  const formationModalOpen = useGameStore((s) => s.formationModalOpen)
+  const setFormationModalOpen = useGameStore((s) => s.setFormationModalOpen)
   const setNatalSwordModalOpen = useGameStore((s) => s.setNatalSwordModalOpen)
   const pendingEvent = useGameStore((s) => getPendingEvent(s.state))
   const pendingStory = getPendingStoryScene(state)
@@ -187,6 +190,15 @@ export default function App() {
             <IconDaoistBody className="h-3.5 w-3.5 text-gold-400" />
             <span className="font-serif font-medium">Chỉ số</span>
           </button>
+          <button
+            type="button"
+            onClick={() => setFormationModalOpen(true)}
+            className="flex min-h-8 items-center gap-1.5 rounded-md border border-cyan-500/30 bg-ink-800/80 px-2.5 py-1 text-xs text-paper-200 transition-colors hover:border-cyan-500 hover:text-cyan-400"
+            title="Bố trận Bát Quái & Tương khắc Ngũ Môn"
+          >
+            <span className="text-xs">☯️</span>
+            <span className="font-serif font-medium">Bố trận</span>
+          </button>
           <p className="font-han text-sm text-paper-300 tabular-nums" title="Linh thạch">
             <span aria-hidden className="mr-1 text-gold-400">◆</span>
             {formatNumber(stones)}
@@ -210,6 +222,10 @@ export default function App() {
         open={characterModalOpen}
         onClose={() => setCharacterModalOpen(false)}
         state={state}
+      />
+      <FormationModal
+        open={formationModalOpen}
+        onClose={() => setFormationModalOpen(false)}
       />
       <NatalSwordModal />
       <AdminModal

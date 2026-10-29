@@ -173,4 +173,34 @@ describe('App smoke', () => {
     expect(container.textContent).not.toContain('Bảo Vật Vừa Xuất Lò')
     expect(container.textContent).toContain('ĐẬP LÔ LUYỆN KHÍ')
   })
+
+  it('opens Formation modal and changes formation position', async () => {
+    await act(async () => {
+      root.render(<App />)
+    })
+
+    // Click Bố trận button on header
+    await act(async () => {
+      button('Bố trận').click()
+    })
+
+    expect(container.textContent).toContain('Trận Đồ Bát Quái · Tiền Tuyến Bố Trận')
+    expect(container.textContent).toContain('HÀNG HẬU')
+    expect(container.textContent).toContain('HÀNG TIỀN')
+    expect(container.textContent).toContain('Quy Luật Tương Khắc Ngũ Môn Kiếm Lai')
+
+    // Click a frontline slot button
+    await act(async () => {
+      button('Tiền Tả').click()
+    })
+
+    expect(useGameStore.getState().state.formation.playerSlot).toBe('front-left')
+
+    // Close modal
+    await act(async () => {
+      button('Đóng Trận Đồ').click()
+    })
+
+    expect(container.textContent).not.toContain('Trận Đồ Bát Quái · Tiền Tuyến Bố Trận')
+  })
 })

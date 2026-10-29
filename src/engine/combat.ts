@@ -9,6 +9,7 @@ import {
   MAX_LIFESTEAL,
   PLAYER_ATTACK_MS,
 } from './constants'
+import { getPositionModifiers } from './formation'
 import { getAffixTotals } from './gear'
 import { getNatalSwordsCombatStats } from './natalSwords'
 import type { GameState, Rng } from './types'
@@ -58,19 +59,22 @@ export function getCombatStats(state: GameState): CombatStats {
   // Bản Mệnh Phi Kiếm thần thông cộng hưởng
   const ns = getNatalSwordsCombatStats(state)
 
+  // Hệ số trận thế vị trí (Hàng Tiền / Hàng Hậu)
+  const posMod = state.formation ? getPositionModifiers(state.formation.playerSlot) : { hpMult: 1, defMult: 1, atkMult: 1, atkSpeedMult: 1, critBonus: 0 }
+
   // Đặc trưng môn phái bổ trợ theo GDD
   const classCritBonus = 0
   const classCritMultBonus = state.classId === 'kiem-tu' ? 0.2 : 0
   const classLifestealBonus = state.classId === 'binh-gia' ? 0.15 : 0
 
   return {
-    hp: Math.round(b.hp * (1 + t.hp + mb.hpPercent) * (cm.hp ?? 1)),
-    atk: Math.round(b.atk * (1 + t.atk + mb.atkPercent) * (cm.atk ?? 1) * meleeSuppressionMult * ns.atkMult),
-    def: Math.round(b.def * (1 + t.def + mb.defPercent) * (cm.def ?? 1)),
-    crit: Math.min(MAX_CRIT_CHANCE, BASE_CRIT_CHANCE + t.crit + (cm.crit ?? 0) + classCritBonus + ns.critBonus),
+    hp: Math.round(b.hp * (1 + t.hp + mb.hpPercent) * (cm.hp ?? 1) * posMod.hpMult),
+    atk: Math.round(b.atk * (1 + t.atk + mb.atkPercent) * (cm.atk ?? 1) * meleeSuppressionMult * ns.atkMult * posMod.atkMult),
+    def: Math.round(b.def * (1 + t.def + mb.defPercent) * (cm.def ?? 1) * posMod.defMult),
+    crit: Math.min(MAX_CRIT_CHANCE, BASE_CRIT_CHANCE + t.crit + (cm.crit ?? 0) + classCritBonus + ns.critBonus + posMod.critBonus),
     critMult: BASE_CRIT_MULT + t.critDmg + classCritMultBonus + ns.critMultBonus,
     attackMs: Math.round(
-      PLAYER_ATTACK_MS / Math.min(MAX_ATTACK_SPEED_MULT, (1 + t.atkSpeed) * (cm.atkSpeed ?? 1) * ns.atkSpeedMult),
+      PLAYER_ATTACK_MS / Math.min(MAX_ATTACK_SPEED_MULT, (1 + t.atkSpeed) * (cm.atkSpeed ?? 1) * ns.atkSpeedMult * posMod.atkSpeedMult),
     ),
     lifesteal: Math.min(MAX_LIFESTEAL, t.lifesteal + classLifestealBonus + ns.lifestealBonus),
     combatRange: isMelee ? 'melee' : 'ranged',

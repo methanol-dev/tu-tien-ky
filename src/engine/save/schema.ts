@@ -111,7 +111,7 @@ const natalSwordSchema = z.object({
 
 /** Schema for the CURRENT save version. Older versions go through migrations first. */
 export const gameStateSchema = z.object({
-  version: z.literal(12),
+  version: z.literal(13),
   createdAt: z.number().int().nonnegative(),
   lastSavedAt: z.number().int().nonnegative(),
   playedMs: z.number().nonnegative(),
@@ -213,6 +213,16 @@ export const gameStateSchema = z.object({
       stopOnHigherScore: z.boolean(),
       minRarity: z.enum(['pham', 'linh', 'bao', 'tien', 'than']),
     }),
+  }),
+  formation: z.object({
+    playerSlot: z.enum([
+      'front-left',
+      'front-mid',
+      'front-right',
+      'back-left',
+      'back-mid',
+      'back-right',
+    ]),
   }),
 })
 

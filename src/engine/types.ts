@@ -28,6 +28,18 @@ export interface ForgeState {
   autoFilters: ForgeAutoFilters
 }
 
+export type FormationSlot =
+  | 'front-left'
+  | 'front-mid'
+  | 'front-right'
+  | 'back-left'
+  | 'back-mid'
+  | 'back-right'
+
+export interface FormationState {
+  playerSlot: FormationSlot
+}
+
 export interface GameSettings {
   /** In-game days elapsed per real second. */
   timeScale: number
@@ -125,6 +137,7 @@ export interface JourneyEnemy {
   name: string
   silhouette: SilhouetteId
   imageUrl?: string
+  classId?: ClassId
   hp: number
   maxHp: number
   atk: number
@@ -256,6 +269,7 @@ export interface GameState {
   stats: GameStats
   settings: GameSettings
   forge: ForgeState
+  formation: FormationState
 }
 
 /** Random source in [0, 1). Injected so tests and simulations are deterministic. */

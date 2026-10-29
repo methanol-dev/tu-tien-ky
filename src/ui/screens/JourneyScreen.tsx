@@ -4,7 +4,7 @@ import { ITEM_BY_ID, MANUALS } from '@/content/items'
 import { REALMS } from '@/content/realms'
 import { type Difficulty, DIFFICULTY_NAMES, REGIONS } from '@/content/regions'
 import { WORLDS, WORLD_BY_ID, type WorldId } from '@/content/worlds'
-import { getCombatStats, getGearDef, getItemCount, isDifficultyAvailable, isRegionUnlocked } from '@/engine'
+import { getCombatStats, getGearDef, getItemCount, isDifficultyAvailable, isFrontline, isRegionUnlocked } from '@/engine'
 import { formatNumber, formatPercent } from '@/lib/format'
 import { useGameStore } from '@/store/gameStore'
 import { Button } from '@/ui/atoms/Button'
@@ -26,6 +26,7 @@ export function JourneyScreen() {
   const salvage = useGameStore((s) => s.salvage)
   const setCharacterModalOpen = useGameStore((s) => s.setCharacterModalOpen)
   const setNatalSwordModalOpen = useGameStore((s) => s.setNatalSwordModalOpen)
+  const setFormationModalOpen = useGameStore((s) => s.setFormationModalOpen)
   const setBattleSpeed = useGameStore((s) => s.setBattleSpeed)
 
   const j = state.journey
@@ -65,6 +66,13 @@ export function JourneyScreen() {
           <div className="flex items-center gap-3">
             <button
               type="button"
+              onClick={() => setFormationModalOpen(true)}
+              className="text-xs text-cyan-400 hover:text-cyan-300 hover:underline flex items-center gap-1"
+            >
+              <span>☯️ Bố trận ›</span>
+            </button>
+            <button
+              type="button"
               onClick={() => setNatalSwordModalOpen(true)}
               className="text-xs text-jade-400 hover:text-jade-300 hover:underline flex items-center gap-1"
             >
@@ -93,6 +101,11 @@ export function JourneyScreen() {
               label: 'Tốc đánh',
               value: `${(1000 / stats.attackMs).toFixed(2)}/s`,
               hint: stats.lifesteal > 0 ? `Hấp huyết ${formatPercent(stats.lifesteal)}` : undefined,
+            },
+            {
+              label: 'Trận thế',
+              value: isFrontline(state.formation?.playerSlot ?? 'back-mid') ? 'Hàng Tiền' : 'Hàng Hậu',
+              hint: isFrontline(state.formation?.playerSlot ?? 'back-mid') ? '+20% Thủ, +15% HP' : '+15% Công, +10% Bạo',
             },
           ]}
         />
