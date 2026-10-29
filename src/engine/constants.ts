@@ -14,8 +14,9 @@ export const MEDITATE_BONUS_SECONDS = 1
 
 export const DEFAULT_OFFLINE_CAP_MS = 8 * 60 * 60 * 1000
 
-/** Spirit stones per second = sqrt(realm qiRate) * this factor. Sub-linear so fixed prices stay meaningful. */
-export const STONE_RATE_FACTOR = 0.3
+/** Spirit stones per second = (realm qiRate ^ STONE_RATE_EXPONENT) * STONE_RATE_FACTOR. */
+export const STONE_RATE_EXPONENT = 0.65
+export const STONE_RATE_FACTOR = 0.4
 /** Spirit stones awarded on a successful breakthrough, in seconds of current income. */
 export const BREAKTHROUGH_STONE_SECONDS = 600
 

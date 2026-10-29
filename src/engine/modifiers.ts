@@ -3,6 +3,7 @@ import { LEGACY_BY_ID } from '@/content/legacy'
 import { TECHNIQUE_BY_ID } from '@/content/techniques'
 import { DEFAULT_OFFLINE_CAP_MS, MEDITATE_BONUS_SECONDS } from './constants'
 import { getAffixTotals } from './gear'
+import { getTechniqueEffectiveValue } from './techniques'
 import type { GameState } from './types'
 
 export interface Modifiers {
@@ -46,7 +47,7 @@ export function getModifiers(state: GameState): Modifiers {
   for (const [id, level] of Object.entries(state.techniques)) {
     const def = TECHNIQUE_BY_ID[id]
     if (!def || level <= 0) continue
-    const v = def.perLevel * level
+    const v = getTechniqueEffectiveValue(def, level)
     switch (def.effect) {
       case 'qiRateMult':
         qiAdd += v
@@ -58,7 +59,7 @@ export function getModifiers(state: GameState): Modifiers {
         mods.breakthroughBonus += v
         break
       case 'failPenaltyMult':
-        mods.failPenaltyMult *= Math.max(0, 1 - v)
+        mods.failPenaltyMult *= Math.max(0.05, 1 - v)
         break
       case 'meditateSeconds':
         mods.meditateSeconds += v

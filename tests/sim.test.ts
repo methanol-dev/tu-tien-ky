@@ -26,11 +26,11 @@ describe('balance simulation (24h active bot, seed 1)', () => {
     expect(at('dong-phu-1')).toBeLessThanOrEqual(60 * MIN)
   })
 
-  it('reaches Kim Đan between 2 and 8 hours, Nguyên Anh between 6 and 20 hours', () => {
-    expect(at('kim-dan-1')).toBeGreaterThanOrEqual(2 * HOUR)
-    expect(at('kim-dan-1')).toBeLessThanOrEqual(8 * HOUR)
-    expect(at('nguyen-anh-1')).toBeGreaterThanOrEqual(6 * HOUR)
-    expect(at('nguyen-anh-1')).toBeLessThanOrEqual(20 * HOUR)
+  it('reaches Kim Đan between 1 and 6 hours, Nguyên Anh between 2 and 12 hours', () => {
+    expect(at('kim-dan-1')).toBeGreaterThanOrEqual(1 * HOUR)
+    expect(at('kim-dan-1')).toBeLessThanOrEqual(6 * HOUR)
+    expect(at('nguyen-anh-1')).toBeGreaterThanOrEqual(2 * HOUR)
+    expect(at('nguyen-anh-1')).toBeLessThanOrEqual(12 * HOUR)
   })
 
   it('does not reach Tiên Nhân in a day, and passes at least one tribulation', () => {

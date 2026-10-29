@@ -6,6 +6,7 @@ import {
   buyItem,
   createInitialState,
   getStoneRate,
+  STONE_RATE_EXPONENT,
   STONE_RATE_FACTOR,
   tick,
 } from '@/engine'
@@ -13,8 +14,9 @@ import {
 describe('economy', () => {
   it('earns spirit stones over time', () => {
     const s = tick(createInitialState(0), 10_000)
-    expect(getStoneRate(s)).toBeCloseTo(Math.sqrt(REALMS[0].qiRate) * STONE_RATE_FACTOR)
-    expect(s.stones).toBeCloseTo(Math.sqrt(REALMS[0].qiRate) * STONE_RATE_FACTOR * 10)
+    const expectedRate = Math.pow(REALMS[0].qiRate, STONE_RATE_EXPONENT) * STONE_RATE_FACTOR
+    expect(getStoneRate(s)).toBeCloseTo(expectedRate)
+    expect(s.stones).toBeCloseTo(expectedRate * 10)
     expect(s.stats.stonesTotal).toBeCloseTo(s.stones)
   })
 
@@ -22,7 +24,10 @@ describe('economy', () => {
     const s = { ...createInitialState(0), qi: REALMS[0].qiRequired, pendingBreakthroughBonus: 0.15 }
     const r = attemptBreakthrough(s, () => 0)
     expect(r.success).toBe(true)
-    expect(r.stonesGained).toBe(Math.round(Math.sqrt(REALMS[0].qiRate) * STONE_RATE_FACTOR * BREAKTHROUGH_STONE_SECONDS))
+    const expectedBreakthroughStones = Math.round(
+      Math.pow(REALMS[0].qiRate, STONE_RATE_EXPONENT) * STONE_RATE_FACTOR * BREAKTHROUGH_STONE_SECONDS,
+    )
+    expect(r.stonesGained).toBe(expectedBreakthroughStones)
     expect(r.state.stones).toBe(r.stonesGained)
     expect(r.state.pendingBreakthroughBonus).toBe(0)
   })

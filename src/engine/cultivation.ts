@@ -6,6 +6,7 @@ import {
   FAIL_PENALTY_MAX,
   FAIL_PENALTY_MIN,
   MAX_BREAKTHROUGH_CHANCE,
+  STONE_RATE_EXPONENT,
   STONE_RATE_FACTOR,
 } from './constants'
 import { pushLog } from './log'
@@ -166,7 +167,9 @@ export function attemptBreakthrough(state: GameState, rng: Rng): BreakthroughRes
   const base: GameState = { ...state, pendingBreakthroughBonus: 0 }
 
   if (roll < chance) {
-    const stonesGained = Math.round(Math.sqrt(from.qiRate) * STONE_RATE_FACTOR * mods.stoneRateMult * BREAKTHROUGH_STONE_SECONDS)
+    const stonesGained = Math.round(
+      Math.pow(Math.max(0, from.qiRate), STONE_RATE_EXPONENT) * STONE_RATE_FACTOR * mods.stoneRateMult * BREAKTHROUGH_STONE_SECONDS,
+    )
     let next: GameState = {
       ...base,
       realmIndex: state.realmIndex + 1,

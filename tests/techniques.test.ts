@@ -53,11 +53,18 @@ describe('techniques', () => {
     expect(upgradeTechnique(s, 'dan-khi-quyet').ok).toBe(false)
   })
 
-  it('breakthrough bonus is additive and capped', () => {
+  it('breakthrough bonus is additive and capped with milestone multipliers', () => {
     const idx = REALM_INDEX_BY_ID['thao-can-2']
-    const s = { ...createInitialState(0), realmIndex: idx, techniques: { 'thanh-tam-chu': 5 } }
-    expect(getBreakthroughChance(s)).toBeCloseTo(REALMS[idx].breakthroughChance + 0.1)
-    const capped = { ...s, pendingBreakthroughBonus: 0.9 }
+    // Level 4 (no milestone yet): 0.02 * 4 = 0.08
+    const s4 = { ...createInitialState(0), realmIndex: idx, techniques: { 'thanh-tam-chu': 4 } }
+    expect(getBreakthroughChance(s4)).toBeCloseTo(REALMS[idx].breakthroughChance + 0.08)
+
+    // Level 5 (hits Tiểu Thành x2 milestone): 0.02 * 5 * 2 = 0.20
+    const s5 = { ...createInitialState(0), realmIndex: idx, techniques: { 'thanh-tam-chu': 5 } }
+    // 0.86 + 0.20 = 1.06 -> capped at 0.98
+    expect(getBreakthroughChance(s5)).toBe(0.98)
+
+    const capped = { ...s4, pendingBreakthroughBonus: 0.9 }
     expect(getBreakthroughChance(capped)).toBe(0.98)
   })
 
