@@ -84,7 +84,7 @@ const journeySchema = z.object({
 
 /** Schema for the CURRENT save version. Older versions go through migrations first. */
 export const gameStateSchema = z.object({
-  version: z.literal(9),
+  version: z.literal(10),
   createdAt: z.number().int().nonnegative(),
   lastSavedAt: z.number().int().nonnegative(),
   playedMs: z.number().nonnegative(),
@@ -100,6 +100,9 @@ export const gameStateSchema = z.object({
     'mac-gia',
     'am-duong-gia',
   ]),
+  cultivationPath: z.enum(['martial', 'qi', 'dual']).default('qi'),
+  martialStageIndex: z.number().int().nonnegative().default(0),
+  punches: z.number().nonnegative().default(0),
   realmIndex: z.number().int().nonnegative(),
   qi: z.number().nonnegative().finite(),
   ageDays: z.number().nonnegative().finite(),

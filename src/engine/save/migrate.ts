@@ -32,6 +32,24 @@ function mapLegacyRealmIndex(oldIdx: unknown): number {
  * Bump SAVE_VERSION, add `MIGRATIONS[old] = ...`, update schema.ts. No exceptions.
  */
 export const MIGRATIONS: Record<number, Migration> = {
+  // 9 -> 10: Phân định 2 Đại Đạo Lộ: Thuần Túy Võ Phu vs Luyện Khí Sĩ (cultivationPath, martialStageIndex, punches).
+  9: (raw) => {
+    const oldClass = (raw.classId as string) || 'kiem-tu'
+    const isMartial = oldClass === 'vo-phu'
+    const stats = (raw.stats as RawSave | undefined) ?? {}
+    const oldPunches =
+      (typeof stats.enemiesSlain === 'number' ? stats.enemiesSlain : 0) +
+      (typeof stats.bossesSlain === 'number' ? stats.bossesSlain * 10 : 0) +
+      (typeof stats.stagesCleared === 'number' ? stats.stagesCleared * 5 : 0)
+
+    return {
+      ...raw,
+      version: 10,
+      cultivationPath: isMartial ? 'martial' : ((raw.cultivationPath as string) || 'qi'),
+      martialStageIndex: typeof raw.martialStageIndex === 'number' ? raw.martialStageIndex : 0,
+      punches: typeof raw.punches === 'number' ? raw.punches : (isMartial ? oldPunches : 0),
+    }
+  },
   // 8 -> 9: Thay thế hệ thống tu tiên cổ điển bằng 15 Cảnh Giới Luyện Khí Sĩ Kiếm Lai.
   8: (raw) => {
     const realmIndex = mapLegacyRealmIndex(raw.realmIndex)

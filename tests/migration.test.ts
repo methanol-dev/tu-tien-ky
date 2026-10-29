@@ -158,7 +158,7 @@ describe('v5 -> v6 (Phase 9: journey + gear)', () => {
     expect(r.state.equipped['bong-tai-1']).toBeNull()
   })
 
-  it('migrates v8 to v9 mapping old realms to Kiếm Lai realms', () => {
+  it('migrates v8 to v9 and through to v10 mapping old realms to Kiếm Lai realms', () => {
     const v8 = {
       ...createInitialState(0),
       version: 8,
@@ -168,8 +168,46 @@ describe('v5 -> v6 (Phase 9: journey + gear)', () => {
     const r = deserialize(JSON.stringify(v8))
     expect(r.ok).toBe(true)
     if (!r.ok) return
-    expect(r.state.version).toBe(9)
+    expect(r.state.version).toBe(SAVE_VERSION)
     expect(r.state.realmIndex).toBe(REALM_INDEX_BY_ID['dong-bi-1'])
     expect(r.state.legacy.bestRealmIndex).toBe(REALM_INDEX_BY_ID['dong-phu-1'])
+  })
+
+  it('migrates v9 to v10 assigning cultivationPath and preserving/calculating martial punches', () => {
+    const { punches: _p, cultivationPath: _c, martialStageIndex: _m, ...baseV9 } = createInitialState(0)
+    void _p
+    void _c
+    void _m
+
+    const v9Qi = {
+      ...baseV9,
+      version: 9,
+      classId: 'kiem-tu',
+    }
+    const rQi = deserialize(JSON.stringify(v9Qi))
+    expect(rQi.ok).toBe(true)
+    if (!rQi.ok) return
+    expect(rQi.state.version).toBe(10)
+    expect(rQi.state.cultivationPath).toBe('qi')
+    expect(rQi.state.punches).toBe(0)
+
+    const v9Martial = {
+      ...baseV9,
+      version: 9,
+      classId: 'vo-phu',
+      stats: {
+        ...baseV9.stats,
+        enemiesSlain: 100,
+        bossesSlain: 5,
+        stagesCleared: 20,
+      },
+    }
+    const rMartial = deserialize(JSON.stringify(v9Martial))
+    expect(rMartial.ok).toBe(true)
+    if (!rMartial.ok) return
+    expect(rMartial.state.version).toBe(10)
+    expect(rMartial.state.cultivationPath).toBe('martial')
+    // 100 + 5*10 + 20*5 = 250 punches
+    expect(rMartial.state.punches).toBe(250)
   })
 })

@@ -1,5 +1,5 @@
 import type { AffixKey, Rarity } from '@/content/affixes'
-import type { ClassId } from '@/content/classes'
+import type { ClassId, CultivationPath } from '@/content/classes'
 import type { GearSlot } from '@/content/gear'
 import type { Difficulty, SilhouetteId } from '@/content/regions'
 
@@ -164,6 +164,12 @@ export interface GameState {
   playedMs: number
   /** Origin tu đạo / class archetype. Defaults to 'kiem-tu'. */
   classId: ClassId
+  /** Đạo đồ tu luyện: 'martial' (Thuần Túy Võ Phu), 'qi' (Luyện Khí Sĩ), 'dual' (Kiếm Võ Song Tu). */
+  cultivationPath: CultivationPath
+  /** Cảnh giới võ đạo hiện tại (0..10 tương ứng 11 cảnh giới trong martialRealms.ts). */
+  martialStageIndex: number
+  /** Số quyền đã luyện (tài nguyên tiến cấp và bồi đắp quyền ý của Võ Phu). */
+  punches: number
   /** Index into REALMS. */
   realmIndex: number
   qi: number
