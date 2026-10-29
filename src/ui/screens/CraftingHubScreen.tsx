@@ -62,3 +62,4 @@ export function CraftingHubScreen({ initialTab = 'alchemy' }: CraftingHubScreenP
     </div>
   )
 }
+

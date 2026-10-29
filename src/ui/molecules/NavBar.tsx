@@ -53,7 +53,6 @@ export function NavBar({
   journeyAlert,
   legacyAlert,
 }: NavBarProps) {
-  // Kiểm tra xem screen hiện tại có thuộc nhóm Bách Nghệ trên mobile không
   const isHubActive = current === 'hub' || current === 'alchemy' || current === 'techniques' || current === 'legacy'
 
   const renderTabItem = (t: { id: Screen; label: string }, isMobile: boolean) => {
@@ -80,36 +79,75 @@ export function NavBar({
       onChange(t.id)
     }
 
+    if (isMobile) {
+      return (
+        <li key={t.id} className="relative flex-1">
+          <button
+            type="button"
+            onClick={handleClick}
+            aria-current={active ? 'page' : undefined}
+            className={`flex w-full min-h-14 flex-col items-center justify-center gap-1 px-1 transition-colors ${
+              active
+                ? 'text-gold-400 font-bold'
+                : isLocked
+                  ? 'text-paper-500 opacity-60 hover:opacity-100 hover:text-paper-300'
+                  : 'text-paper-400 hover:text-paper-100'
+            }`}
+          >
+            {TabIcon && (
+              <TabIcon
+                className={`h-5 w-5 shrink-0 transition-transform active:scale-90 ${
+                  active ? 'stroke-[2] drop-shadow-[0_0_6px_rgba(245,158,11,0.5)]' : 'stroke-[1.6]'
+                }`}
+                aria-hidden
+              />
+            )}
+            <span className="text-[11px] leading-tight font-serif font-medium flex items-center gap-0.5 whitespace-nowrap">
+              {t.label}
+              {isLocked && <span className="text-[9px] text-paper-500">🔒</span>}
+            </span>
+            {hasAlert && (
+              <span
+                aria-label="Sẵn sàng"
+                className="absolute top-2 right-3 h-2 w-2 animate-pulse rounded-full bg-vermilion-500 ring-1 ring-ink-900"
+              />
+            )}
+          </button>
+        </li>
+      )
+    }
+
+    // Render Tab trên Desktop: Thẻ ngang thoáng đãng, sang trọng, không bao giờ bẻ dòng
     return (
-      <li key={t.id} className="relative flex-1 md:flex-initial">
+      <li key={t.id} className="relative shrink-0">
         <button
           type="button"
           onClick={handleClick}
           aria-current={active ? 'page' : undefined}
-          className={`flex w-full min-h-14 md:min-h-11 flex-col items-center justify-center gap-1 px-1 transition-colors md:w-auto md:flex-row md:gap-2 md:rounded-md md:px-3 ${
+          className={`flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-serif font-medium whitespace-nowrap rounded-lg transition-all ${
             active
-              ? 'text-gold-400 font-bold md:bg-ink-700'
+              ? 'bg-ink-800 text-gold-400 font-bold border border-gold-500/40 shadow-sm'
               : isLocked
-                ? 'text-paper-500 opacity-60 hover:opacity-100 hover:text-paper-300'
-                : 'text-paper-400 hover:text-paper-100'
+                ? 'text-paper-500 opacity-60 hover:opacity-90 hover:text-paper-300 border border-transparent'
+                : 'text-paper-400 hover:text-paper-100 hover:bg-ink-900/60 border border-transparent'
           }`}
         >
           {TabIcon && (
             <TabIcon
-              className={`h-5 w-5 shrink-0 transition-transform active:scale-90 md:h-4 md:w-4 ${
+              className={`h-4 w-4 shrink-0 transition-transform ${
                 active ? 'stroke-[2] drop-shadow-[0_0_6px_rgba(245,158,11,0.5)]' : 'stroke-[1.6]'
               }`}
               aria-hidden
             />
           )}
-          <span className="text-[11px] leading-tight md:text-sm font-serif font-medium flex items-center gap-0.5">
+          <span className="flex items-center gap-1 whitespace-nowrap">
             {t.label}
-            {isLocked && <span className="text-[9px] text-paper-500">🔒</span>}
+            {isLocked && <span className="text-[10px] text-paper-500">🔒</span>}
           </span>
           {hasAlert && (
             <span
               aria-label="Sẵn sàng"
-              className="absolute top-2 right-3 h-2 w-2 animate-pulse rounded-full bg-vermilion-500 ring-1 ring-ink-900 md:top-1 md:right-1 md:h-1.5 md:w-1.5 md:bg-gold-400"
+              className="h-1.5 w-1.5 animate-pulse rounded-full bg-gold-400"
             />
           )}
         </button>
@@ -127,8 +165,8 @@ export function NavBar({
         {MOBILE_TABS.map((t) => renderTabItem(t, true))}
       </ul>
 
-      {/* Tabs đầy đủ trên Desktop */}
-      <ul className="mx-auto hidden w-full max-w-5xl items-center justify-end gap-1 md:flex">
+      {/* Tabs thanh lịch trải rộng trên Desktop */}
+      <ul className="mx-auto hidden w-full max-w-5xl items-center justify-center gap-1.5 rounded-xl border border-gold-500/20 bg-ink-950/80 p-1.5 shadow-lg backdrop-blur md:flex">
         {DESKTOP_TABS.map((t) => renderTabItem(t, false))}
       </ul>
     </nav>

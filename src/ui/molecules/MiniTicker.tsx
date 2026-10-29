@@ -59,3 +59,4 @@ export function MiniTicker({ entries, onOpenFullHistory }: MiniTickerProps) {
     </div>
   )
 }
+
