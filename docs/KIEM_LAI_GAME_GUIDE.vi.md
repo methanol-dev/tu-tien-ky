@@ -113,15 +113,40 @@ export interface GameState {
 
 ---
 
-## 🧪 IV. QUY TRÌNH KIỂM THỬ & GIÁM SÁT HIỆU NĂNG
+## 🎒 IV. HỆ THỐNG RƠI ĐỒ HÀNH TẨU & TIỀN TỆ KIẾM LAI
+
+Phiên bản đại tu chiến lợi phẩm hành tẩu giúp người chơi không còn cảm giác nhàm chán khi farm ải:
+
+1. **Tiền Thần Tiên Kiếm Lai**:
+   - **Tuyết Hoa Tiền (雪花钱)**: Rơi từ quái và boss. Mỗi đồng đổi được **1.000 Linh Thạch**.
+   - **Tiểu Thử Tiền (小暑钱)**: Rơi từ Boss vùng cao/độ khó cao. Mỗi đồng đổi được **100.000 Linh Thạch**.
+   - **Cốc Vũ Tiền (谷雨钱)**: Cực phẩm rơi từ Boss Viễn Cổ. Mỗi đồng đổi được **10.000.000 Linh Thạch**.
+   - Có thể đổi trực tiếp ra Linh Thạch trong Túi Càn Khôn.
+
+2. **Dược Liệu & Yêu Đan Đa Dạng**:
+   - Yêu Đan Hạ / Trung / Thượng Phẩm rơi theo cấp độ quái và cõi giới.
+   - Thảo dược quý theo vùng: *Hỏa Diệm Thảo (Hoang Dã), Huyền Băng Hoa (Lạc Phách Sơn), Kiếm Ý Thảo & Kiếm Khí Tinh Thạch (Kiếm Khí Trường Thành), Thủy Tinh Châu (Thư Giản Hồ)...*
+
+3. **Sách Thần Thông & Tàn Quyển Bí Tịch Rơi Độc Quyền**:
+   - Boss và quái tinh anh các cõi có cơ hội rớt các bộ bí kíp thất truyền: *Sơ Thập Kiếm Phổ*, *Thập Cửu Quyền Phổ*, *Ngũ Lôi Đạo Chân Quyết*, *Bách Thảo Bí Yếu*.
+   - Người chơi bấm **"Lĩnh Ngộ"** trong Túi Càn Khôn để mở khóa hoặc tăng cấp công pháp mà không tốn Linh Thạch.
+
+4. **Hiệu Ứng Thị Giác Sống Động**:
+   - Chữ vàng bay lên trên sàn đấu khi quái chết (`🪙 +Linh Thạch`, `🌿 +Thảo Dược`, `📜 [Bí Tịch]!`).
+   - Bảng **Chiến Lợi Phẩm Hành Tẩu** tích hợp ngay dưới màn hình Hành Tẩu.
+
+---
+
+## 🧪 V. QUY TRÌNH KIỂM THỬ & GIÁM SÁT HIỆU NĂNG
 
 Mọi thay đổi trong codebase phải vượt qua bộ kiểm thử tự động Vitest:
 - `tests/migration.test.ts`: Kiểm tra toàn vẹn chuỗi nâng cấp save từ v1 đến v10.
 - `tests/cultivationPath.test.ts`: Kiểm tra logic phân nhánh Võ Phu vs Luyện Khí Sĩ và công thức áp chế 10 trượng.
+- `tests/journeyLoot.test.ts`: Kiểm tra toàn bộ cơ chế rơi tiền thần tiên, yêu đan, tàn quyển bí kíp và sử dụng sách trong túi đồ.
 - `tests/sim.test.ts`: Giả lập bot 24h chạy liên tục, đảm bảo tiến trình cân bằng và không bị lạm phát chỉ số (Power Creep).
 
 ```bash
-pnpm test       # Chạy 32 test suites (161 tests pass 100%)
+pnpm test       # Chạy 33 test suites (166 tests pass 100%)
 pnpm lint       # Kiểm tra 0 lỗi ESLint
 pnpm build      # Kiểm tra type-check TypeScript và build PWA
 ```

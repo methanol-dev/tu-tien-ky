@@ -17,7 +17,7 @@ describe('gathering', () => {
   it('only offers herbs unlocked by realm', () => {
     expect(getGatherableHerbs(createInitialState(0)).map((h) => h.id)).toEqual(['linh-thao'])
     const kc = { ...createInitialState(0), realmIndex: REALM_INDEX_BY_ID['khi-cot-1'] }
-    expect(getGatherableHerbs(kc)).toHaveLength(4)
+    expect(getGatherableHerbs(kc)).toHaveLength(7)
   })
 
   it('weights lower tiers heavier', () => {

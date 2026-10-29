@@ -145,6 +145,82 @@ export function ItemIcon({ id, kind, tier, size = 'md' }: ItemIconProps) {
             <circle cx="16.5" cy="16.5" r="1.5" fill="#ffffff" opacity="0.8" />
           </g>
         )}
+
+        {/* Tiền Thần Tiên (Currencies) */}
+        {kind === 'currency' && (
+          <g strokeWidth="1.6">
+            {/* Đồng tiền tròn ngoài */}
+            <circle cx="20" cy="20" r="13" strokeWidth="2" fill={`${color}22`} />
+            <circle cx="20" cy="20" r="10.5" strokeDasharray="2 2" opacity="0.6" />
+            {/* Lỗ vuông giữa */}
+            <rect x="16" y="16" width="8" height="8" rx="1" fill={`${color}44`} />
+
+            {/* Chi tiết từng loại tiền thần tiên */}
+            {id === 'tuyet-hoa-tien' && (
+              /* Hoa văn bông tuyết 6 cánh nhỏ xung quanh */
+              <g strokeWidth="1" opacity="0.8">
+                <path d="M20 7 V12 M20 28 V33 M7 20 H12 M28 20 H33" />
+              </g>
+            )}
+
+            {id === 'tieu-thu-tien' && (
+              /* Hoa văn mặt trời / dương khí ấm áp */
+              <g strokeWidth="1.2" opacity="0.9">
+                <circle cx="20" cy="20" r="4" fill={color} />
+                <path d="M11 11 L14 14 M26 26 L29 29 M29 11 L26 14 M11 29 L14 26" />
+              </g>
+            )}
+
+            {id === 'coc-vu-tien' && (
+              /* Hoa văn hạt mưa Cốc Vũ sinh sôi vạn vật */
+              <g strokeWidth="1.2" fill={color}>
+                <circle cx="12" cy="12" r="1.2" />
+                <circle cx="28" cy="12" r="1.2" />
+                <circle cx="12" cy="28" r="1.2" />
+                <circle cx="28" cy="28" r="1.2" />
+              </g>
+            )}
+          </g>
+        )}
+
+        {/* Yêu Đan & Vật Phẩm Luyện Khí (Materials) */}
+        {kind === 'material' && (
+          <g>
+            {id.startsWith('yeu-dan') ? (
+              /* Viên yêu đan dã thú với luồng yêu khí cuộn trào */
+              <g strokeWidth="1.8">
+                <circle cx="20" cy="20" r="11" fill={`${color}25`} />
+                <path d="M13 22 Q16 14 24 16 Q27 22 20 27 Q14 25 13 22 Z" fill={`${color}55`} />
+                <circle cx="22" cy="18" r="2" fill={color} />
+                <path d="M9 13 Q15 7 24 9" strokeWidth="1.2" strokeDasharray="3 2" opacity="0.7" />
+              </g>
+            ) : (
+              /* Tinh thạch khoáng vật đa diện */
+              <g strokeWidth="1.6" fill={`${color}33`}>
+                <polygon points="20,7 32,15 28,31 12,31 8,15" />
+                <line x1="20" y1="7" x2="20" y2="31" />
+                <line x1="8" y1="15" x2="32" y2="15" />
+              </g>
+            )}
+          </g>
+        )}
+
+        {/* Sách Thần Thông & Tàn Quyển Bí Tịch (Manuals) */}
+        {kind === 'manual' && (
+          <g strokeWidth="1.6">
+            {/* Cuộn sách thẻ tre / thư tịch cổ phong */}
+            <path
+              d="M10 10 C14 8 18 10 20 12 C22 10 26 8 30 10 V30 C26 28 22 30 20 28 C18 30 14 28 10 30 Z"
+              fill={`${color}33`}
+            />
+            <path d="M20 12 V28" strokeWidth="2" />
+            <path d="M13 14 H17 M13 18 H17 M13 22 H17" strokeWidth="1.2" opacity="0.8" />
+            <path d="M23 14 H27 M23 18 H27 M23 22 H27" strokeWidth="1.2" opacity="0.8" />
+            {/* Dải lụa ngọc phong ấn bí tịch */}
+            <line x1="10" y1="20" x2="30" y2="20" stroke="#ef4444" strokeWidth="1.5" />
+            <circle cx="20" cy="20" r="2.5" fill="#ef4444" />
+          </g>
+        )}
       </svg>
 
       {/* Hiệu ứng rung ring nếu là Tier 4 hoặc Tier 5 */}

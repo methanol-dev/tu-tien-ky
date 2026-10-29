@@ -218,7 +218,67 @@ function fightStep(state: GameState, now: number, ctx: StepContext, rng: Rng): G
       }
       if (e.hp <= 0) {
         j = pushEvent(j, { atMs: now, kind: e.boss ? 'boss-kill' : 'kill', target: idx })
-        s = addStones(s, ctx.stoneRate * (e.boss ? BOSS_STONE_SECONDS : KILL_STONE_SECONDS))
+        const stoneGain = Math.max(1, Math.round(ctx.stoneRate * (e.boss ? BOSS_STONE_SECONDS : KILL_STONE_SECONDS)))
+        s = addStones(s, stoneGain)
+        j = pushEvent(j, { atMs: now, kind: 'loot-stone', amount: stoneGain, target: idx })
+
+        // ================= ROLL CHIẾN LỢI PHẨM RƠI TỪ QUÁI / BOSS =================
+        const itemsGained: Record<string, number> = {}
+
+        if (e.boss) {
+          // Boss chắc chắn rơi 1..3 Tuyết Hoa Tiền
+          const tuyetHoa = 1 + Math.floor(rng() * 3)
+          itemsGained['tuyet-hoa-tien'] = tuyetHoa
+          j = pushEvent(j, { atMs: now, kind: 'loot-item', itemId: 'tuyet-hoa-tien', amount: tuyetHoa, target: idx })
+
+          // Boss ải cao hoặc độ khó cao rơi Tiểu Thử Tiền
+          if ((region.tier >= 4 || j.difficulty >= 2) && rng() < 0.25 * ctx.lootChanceMult) {
+            itemsGained['tieu-thu-tien'] = 1
+            j = pushEvent(j, { atMs: now, kind: 'loot-item', itemId: 'tieu-thu-tien', amount: 1, target: idx })
+          }
+          // Boss cực khó rơi Cốc Vũ Tiền
+          if (region.tier >= 6 && j.difficulty >= 3 && rng() < 0.1 * ctx.lootChanceMult) {
+            itemsGained['coc-vu-tien'] = 1
+            j = pushEvent(j, { atMs: now, kind: 'loot-item', itemId: 'coc-vu-tien', amount: 1, target: idx })
+          }
+
+          // Boss có tỷ lệ rớt Sách Bí Tịch Thần Thông Độc Quyền
+          if (region.namedManual && rng() < region.namedManual.chance * ctx.lootChanceMult * (1 + 0.25 * j.difficulty)) {
+            const manualId = region.namedManual.itemId
+            itemsGained[manualId] = 1
+            j = pushEvent(j, { atMs: now, kind: 'loot-manual', itemId: manualId, target: idx })
+            const manualName = ITEM_BY_ID[manualId]?.name ?? manualId
+            s = pushLog(s, `Trấn sát ${e.name}, kinh hiện thiên cổ bí tịch: ${manualName}!`, 'success')
+          }
+        } else {
+          // Quái thường: xác suất rơi Tuyết Hoa Tiền
+          if (rng() < 0.04 * ctx.lootChanceMult) {
+            itemsGained['tuyet-hoa-tien'] = 1
+            j = pushEvent(j, { atMs: now, kind: 'loot-item', itemId: 'tuyet-hoa-tien', amount: 1, target: idx })
+          }
+
+          // Quái thường: xác suất rơi dược liệu / yêu đan theo vùng
+          if (region.loot.length > 0 && rng() < 0.25 * ctx.lootChanceMult) {
+            const picked = region.loot[Math.floor(rng() * region.loot.length)]
+            if (picked) {
+              itemsGained[picked.itemId] = 1
+              j = pushEvent(j, { atMs: now, kind: 'loot-item', itemId: picked.itemId, amount: 1, target: idx })
+            }
+          }
+
+          // Quái thường ở độ khó Tuyệt có cơ may nhỏ nhặt được tàn quyển
+          if (j.difficulty === 3 && region.namedManual && rng() < 0.01 * ctx.lootChanceMult) {
+            const manualId = region.namedManual.itemId
+            itemsGained[manualId] = 1
+            j = pushEvent(j, { atMs: now, kind: 'loot-manual', itemId: manualId, target: idx })
+            s = pushLog(s, `Dã quái rơi ra tàn quyển cổ xưa: ${ITEM_BY_ID[manualId]?.name ?? manualId}!`, 'info')
+          }
+        }
+
+        if (Object.keys(itemsGained).length > 0) {
+          s = addItems(s, itemsGained)
+        }
+
         const chests = { ...j.chests }
         if (e.boss) {
           chests.red = Math.min(CHEST_CAP, chests.red + 1)

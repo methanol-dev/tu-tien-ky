@@ -119,13 +119,27 @@ export interface JourneyEnemy {
 /** `rest`: region locked by realm, hero meditates. `retreat`: fled after dying, healing up. */
 export type JourneyPhase = 'rest' | 'walk' | 'fight' | 'retreat'
 
-export type JourneyEventKind = 'hit' | 'crit' | 'hurt' | 'kill' | 'boss-kill' | 'death' | 'stage' | 'chest' | 'region'
+export type JourneyEventKind =
+  | 'hit'
+  | 'crit'
+  | 'hurt'
+  | 'kill'
+  | 'boss-kill'
+  | 'death'
+  | 'stage'
+  | 'chest'
+  | 'region'
+  | 'loot-stone'
+  | 'loot-item'
+  | 'loot-manual'
 
 /** Short-lived facts for the UI (damage numbers, flashes). Ring buffer, see JOURNEY_EVENT_LIMIT. */
 export interface JourneyEvent {
   atMs: number
   kind: JourneyEventKind
   amount?: number
+  label?: string
+  itemId?: string
   /** 'player' or index into `enemies`. */
   target?: 'player' | number
 }

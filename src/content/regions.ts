@@ -66,6 +66,8 @@ export interface RegionDef {
   loot: LootEntry[]
   /** Named gear the boss may drop from a red chest. */
   namedGear?: { gearId: string; chance: number }
+  /** Sách bí tịch thần thông boss có tỷ lệ rớt khi bị tiêu diệt. */
+  namedManual?: { itemId: string; chance: number }
 }
 
 export const STAGES_PER_REGION = 10
@@ -120,8 +122,13 @@ export const REGIONS: readonly RegionDef[] = [
       mob('bach-mang', 'Bạch mãng', 'snake', 0.3, 0.45, 0.2, '/assets/monsters/bach-mang.png'),
     ],
     boss: boss('tran-long-mang', 'Trấn Long Mãng Xà', 'bear', 1.0, 0.65, 0.5, '/assets/monsters/tran-long-mang.png'),
-    loot: [{ itemId: 'linh-thao', chance: 1, min: 2, max: 4 }, { itemId: 'huyet-tinh-chi', chance: 0.3, min: 1, max: 1 }],
+    loot: [
+      { itemId: 'linh-thao', chance: 1, min: 2, max: 4 },
+      { itemId: 'huyet-tinh-chi', chance: 0.35, min: 1, max: 2 },
+      { itemId: 'yeu-dan-ha-pham', chance: 0.3, min: 1, max: 1 },
+    ],
     namedGear: { gearId: 'thiet-kiem', chance: 0.25 },
+    namedManual: { itemId: 'tan-quyen-kiem-pho', chance: 0.15 },
   },
   {
     id: 'hac-phong-dong',
@@ -138,8 +145,15 @@ export const REGIONS: readonly RegionDef[] = [
       mob('da-dieu-yeu', 'Dạ điểu yêu', 'bat', 0.3, 0.5, 0.2, '/assets/monsters/da-dieu-yeu.png'),
     ],
     boss: boss('hac-son-lao-quai', 'Hắc Sơn Lão Quái', 'cultist', 1.05, 0.7, 0.5, '/assets/monsters/hac-son-lao-quai.png'),
-    loot: [{ itemId: 'huyet-tinh-chi', chance: 1, min: 1, max: 3 }, { itemId: 'tu-linh-chi', chance: 0.25, min: 1, max: 1 }, { itemId: 'tu-khi-dan', chance: 0.3, min: 1, max: 1 }],
+    loot: [
+      { itemId: 'huyet-tinh-chi', chance: 1, min: 1, max: 3 },
+      { itemId: 'hoa-diem-thao', chance: 0.4, min: 1, max: 2 },
+      { itemId: 'tu-linh-chi', chance: 0.3, min: 1, max: 1 },
+      { itemId: 'yeu-dan-ha-pham', chance: 0.45, min: 1, max: 2 },
+      { itemId: 'tu-khi-dan', chance: 0.3, min: 1, max: 1 },
+    ],
     namedGear: { gearId: 'huyen-quy-giap', chance: 0.2 },
+    namedManual: { itemId: 'quyen-kinh-tham-sau', chance: 0.12 },
   },
   {
     id: 'van-cot-quat',
@@ -155,8 +169,14 @@ export const REGIONS: readonly RegionDef[] = [
       mob('thuy-quy-tuong', 'Thủy quỷ tướng', 'skeleton', 0.5, 0.5, 0.4, '/assets/monsters/thuy-quy-tuong.png'),
     ],
     boss: boss('luu-chi-mau', 'Lưu Chí Mậu', 'skeleton-lord', 1.1, 0.65, 0.55, '/assets/monsters/luu-chi-mau.png'),
-    loot: [{ itemId: 'tu-linh-chi', chance: 1, min: 1, max: 2 }, { itemId: 'pha-canh-dan', chance: 0.2, min: 1, max: 1 }],
+    loot: [
+      { itemId: 'tu-linh-chi', chance: 1, min: 1, max: 2 },
+      { itemId: 'thuy-tinh-chau', chance: 0.5, min: 1, max: 2 },
+      { itemId: 'yeu-dan-trung-pham', chance: 0.35, min: 1, max: 1 },
+      { itemId: 'pha-canh-dan', chance: 0.2, min: 1, max: 1 },
+    ],
     namedGear: { gearId: 'ngung-than-phu', chance: 0.2 },
+    namedManual: { itemId: 'tan-quyen-kiem-pho', chance: 0.1 },
   },
   {
     id: 'tuyet-son-dinh',
@@ -172,8 +192,15 @@ export const REGIONS: readonly RegionDef[] = [
       mob('tuyet-yeu-ho-son', 'Tuyết yêu hộ sơn', 'yeti', 0.45, 0.5, 0.4, '/assets/monsters/bac-nhac-co-than.png'),
     ],
     boss: boss('bac-nhac-co-than', 'Bắc Nhạc Cổ Thần', 'serpent', 1.05, 0.65, 0.6, '/assets/monsters/bac-nhac-co-than.png'),
-    loot: [{ itemId: 'thien-tam-lien', chance: 0.8, min: 1, max: 2 }, { itemId: 'tu-linh-chi', chance: 1, min: 1, max: 2 }, { itemId: 'ngung-than-dan', chance: 0.3, min: 1, max: 1 }],
+    loot: [
+      { itemId: 'thien-tam-lien', chance: 0.8, min: 1, max: 2 },
+      { itemId: 'tu-linh-chi', chance: 1, min: 1, max: 2 },
+      { itemId: 'huyen-bang-hoa', chance: 0.4, min: 1, max: 2 },
+      { itemId: 'yeu-dan-trung-pham', chance: 0.45, min: 1, max: 2 },
+      { itemId: 'ngung-than-dan', chance: 0.3, min: 1, max: 1 },
+    ],
     namedGear: { gearId: 'bang-tam-chau', chance: 0.18 },
+    namedManual: { itemId: 'bach-thao-bi-yeu', chance: 0.12 },
   },
   {
     id: 'hoa-diem-coc',
@@ -189,8 +216,15 @@ export const REGIONS: readonly RegionDef[] = [
       mob('tram-kiem-yeu-xa', 'Trảm kiếm yêu xà', 'snake', 0.35, 0.6, 0.25, '/assets/monsters/bach-mang.png'),
     ],
     boss: boss('dai-yeu-man-hoang', 'Đại Yêu Man Hoang', 'dragonling', 1.1, 0.65, 0.55, '/assets/monsters/yeu-hoang-than-thoai.png'),
-    loot: [{ itemId: 'thien-tam-lien', chance: 1, min: 1, max: 2 }, { itemId: 'tang-tho-dan', chance: 0.15, min: 1, max: 1 }],
+    loot: [
+      { itemId: 'thien-tam-lien', chance: 1, min: 1, max: 2 },
+      { itemId: 'kiem-y-thao', chance: 0.6, min: 1, max: 2 },
+      { itemId: 'kiem-khi-tinh-thach', chance: 0.5, min: 1, max: 2 },
+      { itemId: 'yeu-dan-thuong-pham', chance: 0.3, min: 1, max: 1 },
+      { itemId: 'tang-tho-dan', chance: 0.15, min: 1, max: 1 },
+    ],
     namedGear: { gearId: 'phi-kiem-tu-vi', chance: 0.15 },
+    namedManual: { itemId: 'loi-phap-bi-tich', chance: 0.15 },
   },
   {
     id: 'thien-ma-chien-truong',
@@ -206,8 +240,14 @@ export const REGIONS: readonly RegionDef[] = [
       mob('chien-truong-ma-tuong', 'Chiến trường ma tướng', 'demon', 0.45, 0.5, 0.35, '/assets/monsters/yeu-hoang-than-thoai.png'),
     ],
     boss: boss('yeu-hoang-than-thoai', 'Yêu Hoàng Thần Thoại', 'demon-general', 1.1, 0.65, 0.55, '/assets/monsters/yeu-hoang-than-thoai.png'),
-    loot: [{ itemId: 'cuu-chuyen-can', chance: 0.6, min: 1, max: 1 }, { itemId: 'thien-tam-lien', chance: 1, min: 1, max: 3 }, { itemId: 'kim-nguyen-dan', chance: 0.15, min: 1, max: 1 }],
+    loot: [
+      { itemId: 'cuu-chuyen-can', chance: 0.6, min: 1, max: 1 },
+      { itemId: 'thien-tam-lien', chance: 1, min: 1, max: 3 },
+      { itemId: 'yeu-dan-thuong-pham', chance: 0.5, min: 1, max: 2 },
+      { itemId: 'kim-nguyen-dan', chance: 0.15, min: 1, max: 1 },
+    ],
     namedGear: { gearId: 'thien-ma-giap', chance: 0.12 },
+    namedManual: { itemId: 'quyen-kinh-tham-sau', chance: 0.15 },
   },
   {
     id: 'phi-thang-thanh',
@@ -223,8 +263,14 @@ export const REGIONS: readonly RegionDef[] = [
       mob('tinh-hoa-kiem-tu', 'Tinh hoa Kiếm Tu', 'cultist', 0.5, 0.65, 0.4, '/assets/monsters/da-tu-cuop-bao.png'),
     ],
     boss: boss('ninh-dieu-kiem-y', 'Ninh Diệu Kiếm Ý Huyễn Thân', 'demon-general', 1.15, 0.7, 0.6, '/assets/monsters/ninh-dieu-kiem-y.png'),
-    loot: [{ itemId: 'cuu-chuyen-can', chance: 0.8, min: 1, max: 2 }, { itemId: 'kim-nguyen-dan', chance: 0.25, min: 1, max: 1 }],
+    loot: [
+      { itemId: 'cuu-chuyen-can', chance: 0.8, min: 1, max: 2 },
+      { itemId: 'kiem-khi-tinh-thach', chance: 0.7, min: 1, max: 2 },
+      { itemId: 'yeu-dan-thuong-pham', chance: 0.6, min: 1, max: 2 },
+      { itemId: 'kim-nguyen-dan', chance: 0.25, min: 1, max: 1 },
+    ],
     namedGear: { gearId: 'phi-kiem-tu-vi', chance: 0.2 },
+    namedManual: { itemId: 'tan-quyen-kiem-pho', chance: 0.2 },
   },
   {
     id: 'bach-ngoc-kinh',
@@ -240,7 +286,11 @@ export const REGIONS: readonly RegionDef[] = [
       mob('thanh-hu-kiem-khi', 'Thanh Hư Kiếm Khí', 'serpent', 0.55, 0.7, 0.45, '/assets/monsters/ninh-dieu-kiem-y.png'),
     ],
     boss: boss('luc-tram-phan-than', 'Lục Trầm Hóa Thân', 'demon-general', 1.2, 0.75, 0.65, '/assets/monsters/luu-chi-mau.png'),
-    loot: [{ itemId: 'cuu-chuyen-can', chance: 1, min: 2, max: 3 }],
+    loot: [
+      { itemId: 'cuu-chuyen-can', chance: 1, min: 2, max: 3 },
+      { itemId: 'yeu-dan-thuong-pham', chance: 0.7, min: 1, max: 2 },
+    ],
+    namedManual: { itemId: 'loi-phap-bi-tich', chance: 0.2 },
   },
   {
     id: 'tu-di-son',
@@ -256,7 +306,11 @@ export const REGIONS: readonly RegionDef[] = [
       mob('bo-de-ho-phap', 'Bồ Đề Hộ Pháp', 'demon', 0.65, 0.7, 0.5, '/assets/monsters/bac-nhac-co-than.png'),
     ],
     boss: boss('phat-da-phap-tuong', 'Phật Đà Kim Thân Pháp Tượng', 'demon-general', 1.25, 0.8, 0.7, '/assets/monsters/bac-nhac-co-than.png'),
-    loot: [{ itemId: 'cuu-chuyen-can', chance: 1, min: 2, max: 4 }],
+    loot: [
+      { itemId: 'cuu-chuyen-can', chance: 1, min: 2, max: 4 },
+      { itemId: 'yeu-dan-thuong-pham', chance: 0.8, min: 1, max: 3 },
+    ],
+    namedManual: { itemId: 'quyen-kinh-tham-sau', chance: 0.2 },
   },
 ]
 

@@ -1,6 +1,7 @@
 import { useState, type CSSProperties } from 'react'
 import { AVATARS, AVATAR_BY_ID } from '@/content/avatars'
 import { CLASS_BY_ID } from '@/content/classes'
+import { ITEM_BY_ID } from '@/content/items'
 import { REALMS } from '@/content/realms'
 import { DIFFICULTY_NAMES, STAGES_PER_REGION, type SilhouetteId } from '@/content/regions'
 import { type GameState, getPhaseProgress, getRegion, isRegionUnlocked } from '@/engine'
@@ -351,31 +352,88 @@ export function JourneyStage({ state, compact = false }: Props) {
         )
       })}
 
-      {/* ================= SỐ SÁT THƯƠNG BAY LÊN (DAMAGE FLOATS) ================= */}
+      {/* ================= SỐ SÁT THƯƠNG & CHIẾN LỢI PHẨM BAY LÊN (COMBAT & LOOT FLOATS) ================= */}
       {recent.map((e, idx) => {
-        if (e.kind !== 'hit' && e.kind !== 'crit' && e.kind !== 'hurt') return null
-        const x = e.target === 'player' ? '16%' : ENEMY_X[typeof e.target === 'number' ? e.target : 0]
-        const cls =
-          e.kind === 'crit'
-            ? 'text-gold-400 text-lg md:text-2xl font-black drop-shadow-[0_0_8px_#e0bf4a]'
-            : e.kind === 'hurt'
-              ? 'text-vermilion-400 text-base md:text-lg font-bold'
-              : 'text-paper-100 text-sm md:text-base'
+        const isCombat = e.kind === 'hit' || e.kind === 'crit' || e.kind === 'hurt'
+        const isLoot = e.kind === 'loot-stone' || e.kind === 'loot-item' || e.kind === 'loot-manual'
+        if (!isCombat && !isLoot) return null
 
-        return (
-          <span
-            key={`${e.atMs}-${idx}`}
-            className={`journey-float pointer-events-none absolute bottom-[62%] font-han tabular-nums ${cls} ${
-              compact ? 'text-[10px] md:text-xs' : ''
-            }`}
-            style={{ left: x, animationDelay: `-${Math.min(FLOAT_MS, now - e.atMs)}ms` }}
-            aria-hidden
-          >
-            {e.kind === 'hurt' ? '-' : ''}
-            {e.amount}
-            {e.kind === 'crit' ? ' 💥' : ''}
-          </span>
-        )
+        const x = e.target === 'player' ? '16%' : ENEMY_X[typeof e.target === 'number' ? e.target : 0] ?? '70%'
+
+        if (isCombat) {
+          const cls =
+            e.kind === 'crit'
+              ? 'text-gold-400 text-lg md:text-2xl font-black drop-shadow-[0_0_8px_#e0bf4a]'
+              : e.kind === 'hurt'
+                ? 'text-vermilion-400 text-base md:text-lg font-bold'
+                : 'text-paper-100 text-sm md:text-base'
+
+          return (
+            <span
+              key={`${e.atMs}-${idx}`}
+              className={`journey-float pointer-events-none absolute bottom-[62%] font-han tabular-nums ${cls} ${
+                compact ? 'text-[10px] md:text-xs' : ''
+              }`}
+              style={{ left: x, animationDelay: `-${Math.min(FLOAT_MS, now - e.atMs)}ms` }}
+              aria-hidden
+            >
+              {e.kind === 'hurt' ? '-' : ''}
+              {e.amount}
+              {e.kind === 'crit' ? ' 💥' : ''}
+            </span>
+          )
+        }
+
+        // Render Loot Events
+        if (e.kind === 'loot-stone') {
+          return (
+            <span
+              key={`loot-stone-${e.atMs}-${idx}`}
+              className={`journey-float pointer-events-none absolute bottom-[50%] font-han font-bold text-gold-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] ${
+                compact ? 'text-[9px]' : 'text-xs md:text-sm'
+              }`}
+              style={{ left: x, animationDelay: `-${Math.min(FLOAT_MS, now - e.atMs)}ms` }}
+              aria-hidden
+            >
+              🪙 +{formatNumber(e.amount ?? 0)}
+            </span>
+          )
+        }
+
+        if (e.kind === 'loot-item') {
+          const itemDef = ITEM_BY_ID[e.itemId ?? '']
+          const icon = itemDef?.kind === 'currency' ? '🪙' : itemDef?.kind === 'material' ? '🔮' : '🌿'
+          return (
+            <span
+              key={`loot-item-${e.atMs}-${idx}`}
+              className={`journey-float pointer-events-none absolute bottom-[40%] font-han font-bold text-jade-300 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] ${
+                compact ? 'text-[9px]' : 'text-xs md:text-sm'
+              }`}
+              style={{ left: x, animationDelay: `-${Math.min(FLOAT_MS, now - e.atMs)}ms` }}
+              aria-hidden
+            >
+              {icon} +{e.amount ?? 1} {itemDef?.name ?? ''}
+            </span>
+          )
+        }
+
+        if (e.kind === 'loot-manual') {
+          const itemDef = ITEM_BY_ID[e.itemId ?? '']
+          return (
+            <span
+              key={`loot-man-${e.atMs}-${idx}`}
+              className={`journey-float pointer-events-none absolute bottom-[35%] z-30 font-han font-black text-gold-300 drop-shadow-[0_0_12px_#f59e0b] animate-pulse ${
+                compact ? 'text-[10px]' : 'text-sm md:text-base'
+              }`}
+              style={{ left: x, animationDelay: `-${Math.min(FLOAT_MS, now - e.atMs)}ms` }}
+              aria-hidden
+            >
+              📜 [Bí Tịch] {itemDef?.name ?? ''}!
+            </span>
+          )
+        }
+
+        return null
       })}
 
       {/* Hiệu ứng chớp đỏ khi gục ngã */}

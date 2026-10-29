@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { getSlotsForType } from '@/content/gear'
-import { ITEM_BY_ID } from '@/content/items'
+import { ITEM_BY_ID, MANUALS } from '@/content/items'
 import { REALMS } from '@/content/realms'
 import { type Difficulty, DIFFICULTY_NAMES, REGIONS } from '@/content/regions'
 import { WORLDS, WORLD_BY_ID, type WorldId } from '@/content/worlds'
-import { getCombatStats, getGearDef, isDifficultyAvailable, isRegionUnlocked } from '@/engine'
+import { getCombatStats, getGearDef, getItemCount, isDifficultyAvailable, isRegionUnlocked } from '@/engine'
 import { formatNumber, formatPercent } from '@/lib/format'
 import { useGameStore } from '@/store/gameStore'
 import { Button } from '@/ui/atoms/Button'
@@ -107,6 +107,86 @@ export function JourneyScreen() {
           >
             Mở hết ({chests})
           </Button>
+        </div>
+      </section>
+
+      {/* ================= CHIẾN LỢI PHẨM THU HOẠCH TỪ ẢI ================= */}
+      <section className="rounded-lg border border-gold-500/20 bg-ink-900/70 p-3.5 space-y-2.5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="font-han text-sm sm:text-base text-gold-300">Chiến Lợi Phẩm Hành Tẩu</span>
+            <span className="text-[11px] text-paper-400 font-serif">· Tiền tệ, thảo dược & bí tịch rơi từ quái</span>
+          </div>
+          <span className="text-[11px] text-paper-400">Tự động gom vào Túi</span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {/* Tiền Thần Tiên Kiếm Lai */}
+          <div className="flex items-center gap-2 rounded-md border border-gold-500/20 bg-ink-950/60 p-2">
+            <span className="text-xl">🪙</span>
+            <div className="min-w-0 flex-1">
+              <span className="block text-xs font-han text-paper-200">Tiền Thần Tiên</span>
+              <span className="block text-[11px] text-gold-400 font-mono">
+                {getItemCount(state, 'tuyet-hoa-tien')} Tuyết Hoa · {getItemCount(state, 'tieu-thu-tien')} Tiểu Thử
+              </span>
+            </div>
+          </div>
+
+          {/* Sách Thần Thông Bí Tịch */}
+          {(() => {
+            const manualsCount = MANUALS.reduce((sum, m) => sum + getItemCount(state, m.id), 0)
+            return (
+              <div
+                className={`flex items-center gap-2 rounded-md border p-2 transition-all ${
+                  manualsCount > 0
+                    ? 'border-gold-400/50 bg-gold-500/10 shadow-[0_0_8px_rgba(245,158,11,0.2)]'
+                    : 'border-paper-400/15 bg-ink-950/60 opacity-70'
+                }`}
+              >
+                <span className="text-xl">📜</span>
+                <div className="min-w-0 flex-1">
+                  <span className="block text-xs font-han text-paper-200">Bí Tịch Cổ Sách</span>
+                  <span className={`block text-[11px] font-mono ${manualsCount > 0 ? 'text-gold-300 font-bold' : 'text-paper-400'}`}>
+                    {manualsCount > 0 ? `${manualsCount} cuốn (Chờ ngộ)` : 'Chưa rớt'}
+                  </span>
+                </div>
+              </div>
+            )
+          })()}
+
+          {/* Yêu Đan Quái Thú */}
+          {(() => {
+            const coresCount = ['yeu-dan-ha-pham', 'yeu-dan-trung-pham', 'yeu-dan-thuong-pham'].reduce(
+              (sum, id) => sum + getItemCount(state, id),
+              0,
+            )
+            return (
+              <div className="flex items-center gap-2 rounded-md border border-paper-400/15 bg-ink-950/60 p-2">
+                <span className="text-xl">🔮</span>
+                <div className="min-w-0 flex-1">
+                  <span className="block text-xs font-han text-paper-200">Yêu Đan Linh Hạch</span>
+                  <span className="block text-[11px] text-paper-300 font-mono">{coresCount} viên tích lũy</span>
+                </div>
+              </div>
+            )
+          })()}
+
+          {/* Dược Liệu Thu Thập */}
+          {(() => {
+            const herbsCount = Object.entries(state.inventory).reduce((sum, [id, n]) => {
+              const def = ITEM_BY_ID[id]
+              return def?.kind === 'herb' ? sum + n : sum
+            }, 0)
+            return (
+              <div className="flex items-center gap-2 rounded-md border border-paper-400/15 bg-ink-950/60 p-2">
+                <span className="text-xl">🌿</span>
+                <div className="min-w-0 flex-1">
+                  <span className="block text-xs font-han text-paper-200">Linh Dược Tích Lũy</span>
+                  <span className="block text-[11px] text-jade-400 font-mono">{herbsCount} cây</span>
+                </div>
+              </div>
+            )
+          })()}
         </div>
       </section>
 
