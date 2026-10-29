@@ -213,6 +213,9 @@ function fightStep(state: GameState, now: number, ctx: StepContext, rng: Rng): G
       e.hp = Math.max(0, e.hp - dmg)
       j = pushEvent(j, { atMs: now, kind: crit ? 'crit' : 'hit', amount: dmg, target: idx })
       if (stats.lifesteal > 0) player.hp = Math.min(player.maxHp, player.hp + Math.round(dmg * stats.lifesteal))
+      if (state.cultivationPath === 'martial') {
+        s = { ...s, punches: s.punches + 1 }
+      }
       if (e.hp <= 0) {
         j = pushEvent(j, { atMs: now, kind: e.boss ? 'boss-kill' : 'kill', target: idx })
         s = addStones(s, ctx.stoneRate * (e.boss ? BOSS_STONE_SECONDS : KILL_STONE_SECONDS))

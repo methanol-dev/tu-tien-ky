@@ -1,4 +1,5 @@
 import { REALMS, type RealmStage } from '@/content/realms'
+import { MARTIAL_STAGES, type MartialStage } from '@/content/martialRealms'
 import {
   BREAKTHROUGH_STONE_SECONDS,
   DAYS_PER_YEAR,
@@ -12,12 +13,38 @@ import { getModifiers } from './modifiers'
 import { startTribulation } from './tribulation'
 import type { GameState, Rng } from './types'
 
+/** Map 11 cảnh giới Võ Đạo sang realmIndex tương đương để mở khóa vùng đất tự nhiên */
+export const MARTIAL_REALM_INDEX_EQUIV: readonly number[] = [
+  0,  // Nê Phôi Cảnh -> Đồng Bì (realmIndex: 0)
+  3,  // Mộc Thai Cảnh -> Thảo Căn (realmIndex: 3)
+  6,  // Thủy Ngân Cảnh -> Liễu Cân (realmIndex: 6)
+  9,  // Anh Hồn Cảnh -> Khí Cốt (realmIndex: 9)
+  12, // Hùng Phách Cảnh -> Trúc Thể (realmIndex: 12)
+  15, // Võ Đảm Cảnh -> Động Phủ (realmIndex: 15)
+  21, // Kim Thân Cảnh -> Kim Đan (realmIndex: 21)
+  24, // Viễn Du Cảnh -> Nguyên Anh (realmIndex: 24)
+  27, // Sơn Điên Cảnh -> Ngọc Phác (realmIndex: 27)
+  30, // Chỉ Cảnh -> Tiên Nhân (realmIndex: 30)
+  39, // Võ Thần Cảnh -> Thập Ngũ Cảnh (realmIndex: 39)
+]
+
 export function getRealm(state: GameState): RealmStage {
   return REALMS[Math.min(state.realmIndex, REALMS.length - 1)]
 }
 
 export function getNextRealm(state: GameState): RealmStage | null {
   return REALMS[state.realmIndex + 1] ?? null
+}
+
+export function getMartialStageInfo(state: GameState): {
+  current: MartialStage
+  next: MartialStage | null
+  index: number
+} {
+  const index = Math.min(state.martialStageIndex ?? 0, MARTIAL_STAGES.length - 1)
+  const current = MARTIAL_STAGES[index]
+  const next = index < MARTIAL_STAGES.length - 1 ? MARTIAL_STAGES[index + 1] : null
+  return { current, next, index }
 }
 
 export function getLifespanDays(state: GameState): number {
@@ -36,6 +63,10 @@ export function getQiRate(state: GameState): number {
 
 /** Effective success chance for the next attempt, including techniques and pending pill bonus. */
 export function getBreakthroughChance(state: GameState): number {
+  if (state.cultivationPath === 'martial') {
+    // Võ phu dựa vào khổ luyện, đạt số quyền là đột phá 100%, không bị ảnh hưởng thiên đạo trừng phạt
+    return 1.0
+  }
   const realm = getRealm(state)
   if (realm.terminal) return 0
   if (realm.breakthroughChance >= 1) return 1
@@ -46,12 +77,24 @@ export function getBreakthroughChance(state: GameState): number {
 }
 
 export function getBreakthroughProgress(state: GameState): number {
+  if (state.cultivationPath === 'martial') {
+    const { current, next } = getMartialStageInfo(state)
+    if (!next) return 1
+    const needed = next.minPunches - current.minPunches
+    if (needed <= 0) return 1
+    const progress = state.punches - current.minPunches
+    return Math.max(0, Math.min(1, progress / needed))
+  }
   const req = getRealm(state).qiRequired
   if (req <= 0) return 1
   return Math.min(1, state.qi / req)
 }
 
 export function canBreakthrough(state: GameState): boolean {
+  if (state.cultivationPath === 'martial') {
+    const { next } = getMartialStageInfo(state)
+    return next !== null && state.punches >= next.minPunches
+  }
   const realm = getRealm(state)
   return !realm.terminal && state.qi >= realm.qiRequired
 }
@@ -69,6 +112,46 @@ export interface BreakthroughResult {
 
 export function attemptBreakthrough(state: GameState, rng: Rng): BreakthroughResult {
   const from = getRealm(state)
+
+  if (state.cultivationPath === 'martial') {
+    const { current, next: toStage, index } = getMartialStageInfo(state)
+    if (!toStage || !canBreakthrough(state)) {
+      return { state, success: false, from, to: null, qiLost: 0, stonesGained: 0, tribulation: false }
+    }
+
+    const nextIdx = index + 1
+    const equivRealmIdx = MARTIAL_REALM_INDEX_EQUIV[nextIdx] ?? state.realmIndex
+    const stonesGained = (nextIdx + 1) * 200
+
+    let next: GameState = {
+      ...state,
+      martialStageIndex: nextIdx,
+      realmIndex: Math.max(state.realmIndex, equivRealmIdx),
+      stones: state.stones + stonesGained,
+      stats: {
+        ...state.stats,
+        breakthroughs: state.stats.breakthroughs + 1,
+        stonesTotal: state.stats.stonesTotal + stonesGained,
+      },
+    }
+
+    next = pushLog(
+      next,
+      `Hám Sơn Quyền Ý bùng nổ! Đột phá từ ${current.name} tiến vào ${toStage.name}! Nhặt được ${stonesGained} linh thạch.`,
+      'success',
+    )
+
+    return {
+      state: next,
+      success: true,
+      from,
+      to: REALMS[equivRealmIdx] ?? from,
+      qiLost: 0,
+      stonesGained,
+      tribulation: false,
+    }
+  }
+
   if (!canBreakthrough(state)) {
     return { state, success: false, from, to: null, qiLost: 0, stonesGained: 0, tribulation: false }
   }
@@ -117,8 +200,15 @@ export function attemptBreakthrough(state: GameState, rng: Rng): BreakthroughRes
   return { state: next, success: false, from, to: null, qiLost, stonesGained: 0, tribulation: false }
 }
 
-/** Active play: a tap grants a burst of qi so early game is not pure waiting. */
+/** Active play: a tap grants a burst of qi (or punches for martial artists). */
 export function meditate(state: GameState): GameState {
+  if (state.cultivationPath === 'martial') {
+    const gain = Math.max(1, Math.round(1 * getModifiers(state).meditateSeconds))
+    return {
+      ...state,
+      punches: state.punches + gain,
+    }
+  }
   const gain = getQiRate(state) * getModifiers(state).meditateSeconds
   if (gain <= 0) return state
   return {

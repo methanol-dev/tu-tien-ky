@@ -23,26 +23,42 @@ export interface CombatStats {
   attackMs: number
   /** Fraction of damage dealt returned as HP. */
   lifesteal: number
+  /** Cự ly chiến đấu: cận chiến (melee) hay tầm xa (ranged). */
+  combatRange: 'melee' | 'ranged'
+  /** Hệ số áp chế cận chiến (ví dụ 1.35 theo công thức áp chế 10 trượng trong docs.md). */
+  meleeSuppressionMult: number
 }
 
 /** Baseline combat stats grow with realm; equipped gear affixes and martial realm multiply them. */
 export function getCombatStats(state: GameState): CombatStats {
   const b = baselineStats(state.realmIndex)
   const t = getAffixTotals(state)
-  const punches = getMartialPunches(state.stats)
+  const punches = Math.max(state.punches, getMartialPunches(state.stats))
   const martial = getMartialRealm(punches)
   const mb = martial.bonus
   const classDef = CLASS_BY_ID[state.classId] ?? CLASS_BY_ID['kiem-tu']
   const cm = classDef.multipliers
+  const isMelee = classDef.combatRange === 'melee' || state.cultivationPath === 'martial'
+
+  // Công thức Áp Chế 10 Trượng từ GDD Kiếm Lai (docs.md): M_martial = 1 + 0.35 * (1 - d/10)
+  // Khi áp sát cự ly 0 trượng (cận chiến), hệ số là 1.35 (+35% Atk).
+  const meleeSuppressionMult = isMelee ? 1.35 : 1.0
+
+  // Đặc trưng môn phái bổ trợ theo GDD
+  const classCritBonus = 0
+  const classCritMultBonus = state.classId === 'kiem-tu' ? 0.2 : 0
+  const classLifestealBonus = state.classId === 'binh-gia' ? 0.15 : 0
 
   return {
     hp: Math.round(b.hp * (1 + t.hp + mb.hpPercent) * (cm.hp ?? 1)),
-    atk: Math.round(b.atk * (1 + t.atk + mb.atkPercent) * (cm.atk ?? 1)),
+    atk: Math.round(b.atk * (1 + t.atk + mb.atkPercent) * (cm.atk ?? 1) * meleeSuppressionMult),
     def: Math.round(b.def * (1 + t.def + mb.defPercent) * (cm.def ?? 1)),
-    crit: Math.min(MAX_CRIT_CHANCE, BASE_CRIT_CHANCE + t.crit + (cm.crit ?? 0)),
-    critMult: BASE_CRIT_MULT + t.critDmg,
+    crit: Math.min(MAX_CRIT_CHANCE, BASE_CRIT_CHANCE + t.crit + (cm.crit ?? 0) + classCritBonus),
+    critMult: BASE_CRIT_MULT + t.critDmg + classCritMultBonus,
     attackMs: Math.round(PLAYER_ATTACK_MS / Math.min(MAX_ATTACK_SPEED_MULT, (1 + t.atkSpeed) * (cm.atkSpeed ?? 1))),
-    lifesteal: Math.min(MAX_LIFESTEAL, t.lifesteal),
+    lifesteal: Math.min(MAX_LIFESTEAL, t.lifesteal + classLifestealBonus),
+    combatRange: isMelee ? 'melee' : 'ranged',
+    meleeSuppressionMult,
   }
 }
 
