@@ -74,10 +74,12 @@ describe('Combat Power (Lực Chiến Tổng Hợp - CP ⚔️)', () => {
     it('identifies upgrade correctly when forged gear has higher stats', () => {
       const s = createInitialState()
       // Forging with forced high seed for good affixes
-      const { gear } = forgeGear(s, () => 0.99)
-      expect(gear).not.toBeNull()
+      const res = forgeGear(s, () => 0.99)
+      expect(res.ok).toBe(true)
 
-      if (gear) {
+      if (res.ok) {
+        const gear = res.state.gear
+        expect(gear).not.toBeNull()
         const deltaRes = calculateGearDelta(s, gear)
         expect(deltaRes.currentCP).toBeGreaterThan(0)
         expect(deltaRes.newCP).toBeGreaterThan(0)

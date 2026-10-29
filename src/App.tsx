@@ -18,7 +18,7 @@ import {
 import { formatNumber } from '@/lib/format'
 import { startGameLoop } from '@/store/gameLoop'
 import { useGameStore } from '@/store/gameStore'
-import { CLASS_ICONS, IconDaoistBody, IconFlyingSword } from '@/ui/atoms/icons'
+import { CLASS_ICONS, IconFlyingSword } from '@/ui/atoms/icons'
 import { InkSplash } from '@/ui/atoms/InkSplash'
 import { NavBar } from '@/ui/molecules/NavBar'
 import { Toast } from '@/ui/molecules/Toast'
