@@ -11,9 +11,6 @@ importers:
       '@fontsource/noto-serif':
         specifier: ^5.3.0
         version: 5.3.0
-      '@fontsource/noto-serif-sc':
-        specifier: ^5.3.1
-        version: 5.3.1
       react:
         specifier: ^19.3.1
         version: 19.3.1
@@ -858,9 +855,6 @@ packages:
     peerDependenciesMeta:
       '@noble/hashes':
         optional: true
-
-  '@fontsource/noto-serif-sc@5.3.1':
-    resolution: {integrity: sha512-nIK2HyNGcUi2TGwIfrk2MItkh0O3Y5+TI8iPfPSzoNY6uyXYfQ9qqch8czk3aa1VhV4EU52uwCYCe1UDKJELpg==}
 
   '@fontsource/noto-serif@5.3.0':
     resolution: {integrity: sha512-ZrMzjuQlBIcw+qma1slZQdU3YDJvrjLG+9CWU1bxSf3YTkucwqd3EYa/Kfo4Ts19w8IMTGAmtOE3d6wWlgnBtA==}
@@ -3829,8 +3823,6 @@ snapshots:
       levn: 0.4.1
 
   '@exodus/bytes@1.16.0': {}
-
-  '@fontsource/noto-serif-sc@5.3.1': {}
 
   '@fontsource/noto-serif@5.3.0': {}
 
