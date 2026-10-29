@@ -48,7 +48,7 @@ describe('Admin Dev Tools', () => {
     expect(Object.keys(s3.journey.cleared).length).toBeGreaterThanOrEqual(9)
   })
 
-  it('equips full 12神 gear items', () => {
+  it('equips full 12 than gear items', () => {
     const s0 = createInitialState(0)
     const s1 = adminGiveFullGear(s0)
     for (const slot of GEAR_SLOTS) {

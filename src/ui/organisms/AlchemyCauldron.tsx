@@ -27,9 +27,9 @@ export function AlchemyCauldron({
       {/* Khí tràng bát quái mờ phía sau */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 flex items-center justify-center font-han text-[10rem] leading-none text-gold-500/[0.03] select-none"
+        className="pointer-events-none absolute inset-0 flex items-center justify-center text-[10rem] leading-none text-gold-500/[0.03] select-none"
       >
-        鼎
+        ☯
       </div>
 
       <div className="relative z-10 flex flex-col items-center text-center">

@@ -45,14 +45,14 @@ export function RealmPanel({
 
   return (
     <section className="relative overflow-hidden rounded-lg border border-gold-500/20 bg-ink-800/70 p-5 sm:p-6 shadow-ink">
-      {/* Thủy mặc thư pháp chữ Đạo hoặc Võ nền sau */}
+      {/* Khí tràng bát quái thủy mặc nền sau */}
       <div
         aria-hidden
-        className={`pointer-events-none absolute inset-0 flex items-center justify-center font-han text-[11rem] leading-none select-none ${
+        className={`pointer-events-none absolute inset-0 flex items-center justify-center text-[11rem] leading-none select-none ${
           isMartial ? 'text-vermilion-500/[0.045]' : 'text-paper-100/[0.035]'
         }`}
       >
-        {isMartial ? '武' : '道'}
+        ☯
       </div>
 
       <QiMotes progress={progress} />

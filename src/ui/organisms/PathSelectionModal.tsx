@@ -79,7 +79,7 @@ export function PathSelectionModal({ open, onClose }: Props) {
               <div className="flex items-center justify-between">
                 <span className="font-han text-base sm:text-lg font-bold text-vermilion-400 flex items-center gap-2">
                   <span className="inline-block px-1.5 py-0.5 rounded bg-vermilion-500/20 text-xs border border-vermilion-500/40">
-                    武
+                    👊
                   </span>
                   THUẦN TÚY VÕ ĐẠO
                 </span>
@@ -135,7 +135,7 @@ export function PathSelectionModal({ open, onClose }: Props) {
               <div className="flex items-center justify-between">
                 <span className="font-han text-base sm:text-lg font-bold text-gold-400 flex items-center gap-2">
                   <span className="inline-block px-1.5 py-0.5 rounded bg-gold-500/20 text-xs border border-gold-500/40">
-                    仙
+                    ✨
                   </span>
                   LUYỆN KHÍ TIÊN ĐẠO
                 </span>

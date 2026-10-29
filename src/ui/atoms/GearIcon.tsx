@@ -3,7 +3,7 @@ import type { Rarity } from '@/content/affixes'
 
 interface GearIconProps {
   slot: GearType | GearSlot
-  glyph: string
+  glyph?: string
   rarity: Rarity
   gearId?: string
   size?: 'sm' | 'md' | 'lg'
@@ -17,7 +17,7 @@ const RARITY_COLORS: Record<Rarity, { main: string; glow: string; border: string
   than: { main: '#f59e0b', glow: 'rgba(245, 158, 11, 0.6)', border: '#d97706' },
 }
 
-export function GearIcon({ slot, glyph, rarity, gearId, size = 'md' }: GearIconProps) {
+export function GearIcon({ slot, rarity, gearId, size = 'md' }: GearIconProps) {
   const isFlyingSword = gearId === 'phi-kiem-tu-vi'
   const isBambooArmor = gearId === 'huyen-quy-giap'
   const isHairpin = gearId === 'bang-tam-chau'
@@ -233,14 +233,6 @@ export function GearIcon({ slot, glyph, rarity, gearId, size = 'md' }: GearIconP
           </g>
         )}
       </svg>
-
-      {/* Glyph chữ Hán dạng ấn triện nhỏ ở góc dưới phải */}
-      <span
-        className="pointer-events-none absolute bottom-0.5 right-1 z-20 font-han text-[9px] font-black opacity-85 select-none"
-        style={{ color: theme.main }}
-      >
-        {glyph}
-      </span>
 
       {/* Hiệu ứng Ring lấp lánh cho Thần Phẩm & Tiên Phẩm */}
       {(rarity === 'than' || rarity === 'tien') && (

@@ -1,5 +1,5 @@
 /**
- * Hệ thống 15 Cảnh Giới Luyện Khí Sĩ chuẩn nguyên tác Kiếm Lai (烽火戏诸侯).
+ * Hệ thống 15 Cảnh Giới Luyện Khí Sĩ chuẩn nguyên tác Kiếm Lai (Phong Hỏa Hí Chư Hầu).
  *
  * Phân tầng Tam Đại Giai Đoạn:
  * - 0. Phàm Tục (Ngõ Nê Bình)

@@ -136,12 +136,12 @@ export default function App() {
           onClick={handleSecretLogoClick}
           role="button"
           tabIndex={0}
-          title="劍來 · Tu Tiên Ký"
+          title="Kiếm Lai · Tu Tiên Ký"
         >
           <h1 className="font-han text-3xl font-black tracking-widest text-paper-100 transition-transform active:scale-95 group-hover:text-gold-300">
-            劍來
+            Kiếm Lai
           </h1>
-          <span className="hidden font-han text-sm text-gold-400 sm:inline">Kiếm Lai · Tu Tiên Ký</span>
+          <span className="hidden font-han text-sm text-gold-400 sm:inline">· Tu Tiên Ký</span>
         </div>
         <div className="flex items-center gap-3">
           {(() => {
@@ -169,7 +169,7 @@ export default function App() {
             className="flex min-h-8 items-center gap-1.5 rounded-md border border-jade-500/30 bg-ink-800/80 px-2.5 py-1 text-xs text-jade-300 transition-colors hover:border-jade-400 hover:text-jade-200"
             title="Khí Phủ Kiếm Thai - Xem và uẩn dưỡng Phi Kiếm Bản Mệnh"
           >
-            <span aria-hidden className="font-han text-sm text-jade-400">劍</span>
+            <span aria-hidden className="text-sm">🗡️</span>
             <span className="hidden sm:inline">Kiếm Thai</span>
             <span className="text-[10px] font-mono text-jade-400">({state.natalSwords?.length ?? 0})</span>
           </button>
@@ -179,7 +179,7 @@ export default function App() {
             className="flex min-h-8 items-center gap-1.5 rounded-md border border-gold-500/30 bg-ink-800/80 px-2.5 py-1 text-xs text-paper-200 transition-colors hover:border-gold-500 hover:text-gold-400"
             title="Xem chỉ số nhân vật (Đạo thân)"
           >
-            <span aria-hidden className="font-han text-sm text-gold-400">身</span>
+            <span aria-hidden className="text-sm">👤</span>
             <span>Chỉ số</span>
           </button>
           <p className="font-han text-sm text-paper-300 tabular-nums" title="Linh thạch">

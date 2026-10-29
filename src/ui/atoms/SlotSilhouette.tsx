@@ -187,3 +187,4 @@ export function SlotSilhouette({ slot, className = 'h-8 w-8 opacity-30 text-pape
     </svg>
   )
 }
+

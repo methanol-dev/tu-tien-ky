@@ -242,7 +242,7 @@ export function forgeNatalSword(state: GameState, swordDefId: string): ActionRes
 
   next = pushLog(
     next,
-    `Uẩn dưỡng thành công phi kiếm bản mệnh ${def.name} (${def.chineseName})! Đạt danh vị kiếm đạo: ${newRank.title}.`,
+    `Uẩn dưỡng thành công phi kiếm bản mệnh ${def.name}! Đạt danh vị kiếm đạo: ${newRank.title}.`,
     'success',
   )
 
@@ -302,8 +302,7 @@ export function temperNatalSword(state: GameState, swordUid: string): ActionResu
 
   next = pushLog(
     next,
-    `Tôi luyện ${sword.name} thành công tiến lên cấp ${newLevel}!${
-      awakenedTalentName ? ` Thức tỉnh thêm thần thông mới: [${awakenedTalentName}]!` : ''
+    `Tôi luyện ${sword.name} thành công tiến lên cấp ${newLevel}!${awakenedTalentName ? ` Thức tỉnh thêm thần thông mới: [${awakenedTalentName}]!` : ''
     }`,
     'success',
   )

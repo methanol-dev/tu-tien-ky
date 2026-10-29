@@ -1,13 +1,13 @@
 import type { Screen } from '@/store/gameStore'
 
 const TABS: { id: Screen; label: string; glyph: string }[] = [
-  { id: 'cultivate', label: 'Động phủ', glyph: '洞' },
-  { id: 'techniques', label: 'Công pháp', glyph: '法' },
-  { id: 'inventory', label: 'Túi đồ', glyph: '囊' },
-  { id: 'alchemy', label: 'Luyện đan', glyph: '丹' },
-  { id: 'journey', label: 'Hành tẩu', glyph: '行' },
-  { id: 'legacy', label: 'Luân hồi', glyph: '輪' },
-  { id: 'settings', label: 'Cài đặt', glyph: '設' },
+  { id: 'cultivate', label: 'Động phủ', glyph: '🏛️' },
+  { id: 'techniques', label: 'Công pháp', glyph: '📜' },
+  { id: 'inventory', label: 'Túi đồ', glyph: '🎒' },
+  { id: 'alchemy', label: 'Luyện đan', glyph: '⚗️' },
+  { id: 'journey', label: 'Hành tẩu', glyph: '⚔️' },
+  { id: 'legacy', label: 'Luân hồi', glyph: '☯️' },
+  { id: 'settings', label: 'Cài đặt', glyph: '⚙️' },
 ]
 
 interface NavBarProps {
@@ -37,7 +37,7 @@ export function NavBar({ current, onChange, alchemyReady, journeyAlert, legacyAl
                   active ? 'text-gold-400 md:bg-ink-700' : 'text-paper-400 hover:text-paper-100'
                 }`}
               >
-                <span aria-hidden className="font-han text-lg leading-none md:text-base">
+                <span aria-hidden className="text-lg leading-none md:text-base">
                   {t.glyph}
                 </span>
                 <span className="text-[10px] leading-tight md:text-sm">{t.label}</span>

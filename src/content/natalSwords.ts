@@ -145,7 +145,7 @@ export const SWORD_TALENT_BY_ID: Readonly<Record<string, SwordTalentDef>> = Obje
 export interface NatalSwordDef {
   id: string
   name: string
-  chineseName: string
+  chineseName?: string
   originLore: string
   element: string
   color: string
@@ -160,7 +160,6 @@ export const NATAL_SWORDS: readonly NatalSwordDef[] = [
   {
     id: 'so-thap',
     name: 'Sơ Thập',
-    chineseName: '初十',
     originLore: 'Bản mệnh phi kiếm đầu tiên của Trần Bình An ngưng tụ trong lò rồng trấn nhỏ. Thân kiếm như sợi tơ vàng rực, tốc độ xé rách hư không.',
     element: 'Thuần Dương Phong Lôi',
     color: '#e0bf4a',
@@ -173,7 +172,6 @@ export const NATAL_SWORDS: readonly NatalSwordDef[] = [
   {
     id: 'thap-ngu',
     name: 'Thập Ngũ',
-    chineseName: '十五',
     originLore: 'Bản mệnh phi kiếm thứ hai của Trần Bình An, màu mực thẫm, nặng tựa núi Thái Sơn. Khí phách trầm hùng, uy áp vạn dặm.',
     element: 'Trầm Trọng Sơn Nhạc',
     color: '#7f7fb3',
@@ -186,7 +184,6 @@ export const NATAL_SWORDS: readonly NatalSwordDef[] = [
   {
     id: 'tinh-de',
     name: 'Tỉnh Để',
-    chineseName: '井底',
     originLore: 'Phi kiếm không gian bí ẩn sinh ra từ đạo tâm "Tọa tỉnh quan thiên", có thể phong ấn cấm cố không gian chiến trường.',
     element: 'Hư Không Cấm Giới',
     color: '#38bdf8',
@@ -199,7 +196,6 @@ export const NATAL_SWORDS: readonly NatalSwordDef[] = [
   {
     id: 'mach-thuong',
     name: 'Mạch Thượng',
-    chineseName: '陌上',
     originLore: 'Phi kiếm mộc linh tràn trề sinh mệnh lực, kiếm ý tựa như hoa nở ven đường xuân, chuyển thương thế thành sinh cơ.',
     element: 'Trường Xuân Mộc Ý',
     color: '#5aa391',
@@ -212,7 +208,6 @@ export const NATAL_SWORDS: readonly NatalSwordDef[] = [
   {
     id: 'anh-tuyet',
     name: 'Ánh Tuyết',
-    chineseName: '映雪',
     originLore: 'Phi kiếm hàn băng rèn từ tuyết ngàn năm trên đỉnh Bắc Câu Lô Châu, kiếm phong lạnh thấu tâm can, phong bế sát khí đối thủ.',
     element: 'Cực Hàn Băng Sương',
     color: '#a9ccff',
@@ -225,7 +220,6 @@ export const NATAL_SWORDS: readonly NatalSwordDef[] = [
   {
     id: 'huyen-hoang-tram-tien',
     name: 'Huyền Hoàng Trảm Tiên',
-    chineseName: '玄黄斩仙',
     originLore: 'Phi kiếm viễn cổ xuất xứ từ Kiếm Khí Trường Thành, hấp thu vạn kiếm oán khí và máu đại yêu viễn cổ, sát phạt đỉnh phong cửu châu.',
     element: 'Hồng Hoang Viễn Cổ',
     color: '#ef4444',

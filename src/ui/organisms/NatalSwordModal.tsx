@@ -52,10 +52,10 @@ export function NatalSwordModal() {
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-3">
               <div
-                className="flex h-12 w-12 items-center justify-center rounded-xl border border-gold-400/60 bg-ink-950 font-han font-black text-2xl shadow-inner"
+                className="flex h-12 w-12 items-center justify-center rounded-xl border border-gold-400/60 bg-ink-950 text-2xl shadow-inner"
                 style={{ color: rank.color, borderColor: rank.color }}
               >
-                劍
+                🗡️
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
@@ -147,10 +147,10 @@ export function NatalSwordModal() {
                         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-paper-400/10 pb-2.5">
                           <div className="flex items-center gap-2.5">
                             <span
-                              className="flex h-9 w-9 items-center justify-center rounded-lg border font-han font-black text-lg shadow-sm"
+                              className="flex h-9 w-9 items-center justify-center rounded-lg border text-base shadow-sm"
                               style={{ color: def?.color ?? '#f59e0b', borderColor: def?.color ?? '#f59e0b' }}
                             >
-                              {def?.chineseName ?? '劍'}
+                              🗡️
                             </span>
                             <div>
                               <div className="flex items-center gap-2">
@@ -285,10 +285,10 @@ export function NatalSwordModal() {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <span
-                              className="flex h-8 w-8 items-center justify-center rounded-lg border font-han font-black text-sm"
+                              className="flex h-8 w-8 items-center justify-center rounded-lg border text-sm"
                               style={{ color: def.color, borderColor: def.color }}
                             >
-                              {def.chineseName}
+                              🗡️
                             </span>
                             <div>
                               <h4 className="font-han text-sm font-bold text-paper-100">{def.name}</h4>

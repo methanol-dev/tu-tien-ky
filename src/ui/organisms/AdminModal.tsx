@@ -49,7 +49,7 @@ export function AdminModal({ open, onClose }: AdminModalProps) {
       footer={
         <div className="flex items-center justify-between w-full">
           <span className="text-[11px] text-paper-400 font-serif">
-            Mẹo: Click 5 lần vào chữ 劍來 hoặc nhấn Ctrl+Shift+D để mở lại bảng này.
+            Mẹo: Click 5 lần vào logo Kiếm Lai hoặc nhấn Ctrl+Shift+D để mở lại bảng này.
           </span>
           <Button variant="primary" onClick={onClose} autoFocus>
             Đóng bảng
