@@ -105,8 +105,12 @@ export function GameScreen() {
           </Button>
         </div>
 
-        {/* Mini Ticker Nhật Ký (Chỉ 1 dòng trên Mobile, bấm vào bung BottomSheet) */}
-        <MiniTicker entries={state.log} onOpenFullHistory={() => setLogSheetOpen(true)} />
+        {/* Mini Ticker Nhật Ký (Chỉ hiện trên Mobile, ẩn trên Desktop vì đã có bảng CultivationLog ở cột phải) */}
+        <MiniTicker
+          className="md:hidden"
+          entries={state.log}
+          onOpenFullHistory={() => setLogSheetOpen(true)}
+        />
 
         {buffs.length > 0 && (
           <ul className="flex flex-wrap gap-2 text-xs">

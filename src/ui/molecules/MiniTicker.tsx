@@ -3,6 +3,7 @@ import type { LogEntry } from '@/engine/types'
 interface MiniTickerProps {
   entries: LogEntry[]
   onOpenFullHistory: () => void
+  className?: string
 }
 
 const KIND_COLORS: Record<string, string> = {
@@ -19,7 +20,7 @@ const KIND_ICONS: Record<string, string> = {
   event: '📜',
 }
 
-export function MiniTicker({ entries, onOpenFullHistory }: MiniTickerProps) {
+export function MiniTicker({ entries, onOpenFullHistory, className = '' }: MiniTickerProps) {
   const latest = entries.length > 0 ? entries[entries.length - 1] : null
 
   return (
@@ -27,7 +28,7 @@ export function MiniTicker({ entries, onOpenFullHistory }: MiniTickerProps) {
       onClick={onOpenFullHistory}
       role="button"
       tabIndex={0}
-      className="group relative flex items-center justify-between gap-2 rounded-lg border border-paper-400/15 bg-ink-900/80 px-3 py-2 text-xs backdrop-blur transition-all hover:border-gold-500/30 active:scale-[0.99] cursor-pointer"
+      className={`group relative flex items-center justify-between gap-2 rounded-lg border border-paper-400/15 bg-ink-900/80 px-3 py-2 text-xs backdrop-blur transition-all hover:border-gold-500/30 active:scale-[0.99] cursor-pointer ${className}`}
       title="Bấm để xem toàn bộ Nhật ký tu luyện"
     >
       <div className="flex items-center gap-2 overflow-hidden flex-1">

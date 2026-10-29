@@ -23,13 +23,12 @@ const MOBILE_TABS: { id: Screen; label: string }[] = [
 /** Tabs chi tiết trên màn hình rộng Desktop */
 const DESKTOP_TABS: { id: Screen; label: string }[] = [
   { id: 'cultivate', label: 'Động phủ' },
-  { id: 'techniques', label: 'Công pháp' },
+  { id: 'journey', label: 'Hành tẩu' },
   { id: 'inventory', label: 'Túi đồ' },
   { id: 'forge', label: 'Luyện khí' },
   { id: 'alchemy', label: 'Luyện đan' },
-  { id: 'journey', label: 'Hành tẩu' },
+  { id: 'techniques', label: 'Công pháp' },
   { id: 'legacy', label: 'Luân hồi' },
-  { id: 'settings', label: 'Cài đặt' },
 ]
 
 interface NavBarProps {
@@ -117,25 +116,25 @@ export function NavBar({
       )
     }
 
-    // Render Tab trên Desktop: Thẻ ngang thoáng đãng, sang trọng, không bao giờ bẻ dòng
+    // Render Tab trên Desktop: Dải Sub-Nav Strip thanh mảnh, tao nhã, phong vị thủy mặc
     return (
       <li key={t.id} className="relative shrink-0">
         <button
           type="button"
           onClick={handleClick}
           aria-current={active ? 'page' : undefined}
-          className={`flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-serif font-medium whitespace-nowrap rounded-lg transition-all ${
+          className={`group flex items-center gap-2 px-3.5 pb-2.5 pt-1.5 text-sm font-serif transition-all border-b-2 -mb-[1px] cursor-pointer ${
             active
-              ? 'bg-ink-800 text-gold-400 font-bold border border-gold-500/40 shadow-sm'
+              ? 'border-gold-400 text-gold-300 font-bold drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]'
               : isLocked
-                ? 'text-paper-500 opacity-60 hover:opacity-90 hover:text-paper-300 border border-transparent'
-                : 'text-paper-400 hover:text-paper-100 hover:bg-ink-900/60 border border-transparent'
+                ? 'border-transparent text-paper-500/60 hover:text-paper-400'
+                : 'border-transparent text-paper-400 hover:text-paper-100 hover:border-paper-400/40'
           }`}
         >
           {TabIcon && (
             <TabIcon
-              className={`h-4 w-4 shrink-0 transition-transform ${
-                active ? 'stroke-[2] drop-shadow-[0_0_6px_rgba(245,158,11,0.5)]' : 'stroke-[1.6]'
+              className={`h-4 w-4 shrink-0 transition-transform group-hover:scale-105 ${
+                active ? 'stroke-[2] text-gold-400 drop-shadow-[0_0_6px_rgba(245,158,11,0.5)]' : 'stroke-[1.6]'
               }`}
               aria-hidden
             />
@@ -147,7 +146,7 @@ export function NavBar({
           {hasAlert && (
             <span
               aria-label="Sẵn sàng"
-              className="h-1.5 w-1.5 animate-pulse rounded-full bg-gold-400"
+              className="h-1.5 w-1.5 animate-pulse rounded-full bg-vermilion-500"
             />
           )}
         </button>
@@ -165,8 +164,8 @@ export function NavBar({
         {MOBILE_TABS.map((t) => renderTabItem(t, true))}
       </ul>
 
-      {/* Tabs thanh lịch trải rộng trên Desktop */}
-      <ul className="mx-auto hidden w-full max-w-5xl items-center justify-center gap-1.5 rounded-xl border border-gold-500/20 bg-ink-950/80 p-1.5 shadow-lg backdrop-blur md:flex">
+      {/* Tabs thanh lịch trải rộng trên Desktop - Dải Sub-Nav Strip Thủy Mặc */}
+      <ul className="mx-auto hidden w-full max-w-5xl items-center justify-center gap-4 sm:gap-6 border-b border-paper-400/15 md:flex">
         {DESKTOP_TABS.map((t) => renderTabItem(t, false))}
       </ul>
     </nav>

@@ -226,7 +226,12 @@ describe('App smoke', () => {
       }))
     })
 
-    // Click Bố trận button on header
+    // Switch to Journey screen where Bố trận is located
+    await act(async () => {
+      button('Hành tẩu').click()
+    })
+
+    // Click Bố trận button
     await act(async () => {
       button('Bố trận').click()
     })

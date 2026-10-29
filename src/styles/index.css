@@ -1,10 +1,12 @@
 @import 'tailwindcss';
 
 /* Self-hosted fonts (unicode-range chunked; browsers fetch only the glyph ranges they render). */
-@import '@fontsource/noto-serif-sc/400.css';
-@import '@fontsource/noto-serif-sc/900.css';
 @import '@fontsource/noto-serif/400.css';
+@import '@fontsource/noto-serif/400-italic.css';
+@import '@fontsource/noto-serif/500.css';
 @import '@fontsource/noto-serif/600.css';
+@import '@fontsource/noto-serif/700.css';
+@import '@fontsource/noto-serif/900.css';
 
 /* Ink-wash (thủy mặc) design tokens. Dark "ink" surface by default. */
 @theme {
@@ -28,8 +30,9 @@
   --color-qi-500: #7fb3ff;
   --color-qi-400: #a9ccff;
 
-  --font-han: 'Noto Serif', 'Noto Serif SC', Georgia, 'Times New Roman', serif;
-  --font-body: 'Noto Serif', Georgia, 'Times New Roman', serif;
+  --font-han: 'Noto Serif', 'Times New Roman', serif;
+  --font-body: 'Noto Serif', 'Times New Roman', serif;
+  --font-serif: 'Noto Serif', 'Times New Roman', serif;
 
   --shadow-ink: 0 10px 40px -10px rgb(0 0 0 / 0.6);
 }
