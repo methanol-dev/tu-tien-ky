@@ -132,6 +132,20 @@ export type JourneyEventKind =
   | 'loot-stone'
   | 'loot-item'
   | 'loot-manual'
+  | 'natal-sword'
+
+export interface SwordTalentInstance {
+  id: string
+  level: number
+}
+
+export interface NatalSwordInstance {
+  uid: string
+  swordDefId: string
+  name: string
+  level: number
+  talents: SwordTalentInstance[]
+}
 
 /** Short-lived facts for the UI (damage numbers, flashes). Ring buffer, see JOURNEY_EVENT_LIMIT. */
 export interface JourneyEvent {
@@ -201,6 +215,8 @@ export interface GameState {
   gear: GearInstance[]
   equipped: Record<GearSlot, string | null>
   nextGearUid: number
+  /** Phi kiếm bản mệnh uẩn dưỡng trong khí phủ của kiếm tu */
+  natalSwords: NatalSwordInstance[]
   buffs: Buff[]
   /** One-shot bonus consumed by the next breakthrough attempt. */
   pendingBreakthroughBonus: number

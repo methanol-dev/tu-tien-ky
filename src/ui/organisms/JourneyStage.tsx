@@ -2,6 +2,7 @@ import { useState, type CSSProperties } from 'react'
 import { AVATARS, AVATAR_BY_ID } from '@/content/avatars'
 import { CLASS_BY_ID } from '@/content/classes'
 import { ITEM_BY_ID } from '@/content/items'
+import { NATAL_SWORD_BY_ID } from '@/content/natalSwords'
 import { REALMS } from '@/content/realms'
 import { DIFFICULTY_NAMES, STAGES_PER_REGION, type SilhouetteId } from '@/content/regions'
 import { type GameState, getPhaseProgress, getRegion, isRegionUnlocked } from '@/engine'
@@ -297,6 +298,36 @@ export function JourneyStage({ state, compact = false }: Props) {
         ) : (
           <HeroSilhouette className="h-full w-full aspect-square text-ink-950" />
         )}
+        {/* Bản Mệnh Phi Kiếm lượn quanh đạo thân */}
+        {(state.natalSwords ?? []).map((sword, sIdx) => {
+          const sDef = NATAL_SWORD_BY_ID[sword.swordDefId]
+          const color = sDef?.color ?? '#f59e0b'
+          const orbitOffsets = [
+            { x: '-16px', y: '25%' },
+            { x: '100%', y: '15%' },
+            { x: '-8px', y: '60%' },
+            { x: '90%', y: '50%' },
+          ]
+          const pos = orbitOffsets[sIdx % orbitOffsets.length]
+          return (
+            <div
+              key={sword.uid}
+              className="pointer-events-none absolute z-20 animate-pulse transition-all duration-300"
+              style={{
+                left: pos.x,
+                top: pos.y,
+                filter: `drop-shadow(0 0 6px ${color})`,
+              }}
+              title={`${sword.name} (Bản Mệnh Phi Kiếm)`}
+            >
+              <svg viewBox="0 0 24 24" className="h-6 w-6 -rotate-45" fill="none" stroke={color} strokeWidth="2">
+                <path d="M12 2 L14 8 L13 20 L12 22 L11 20 L10 8 Z" fill={`${color}88`} />
+                <line x1="8" y1="16" x2="16" y2="16" stroke={color} strokeWidth="2" />
+              </svg>
+            </div>
+          )
+        })}
+
         {/* Bóng đổ & vệt hào quang dưới chân người chơi */}
         <div className="pointer-events-none absolute -bottom-1 left-1/2 h-2.5 w-4/5 -translate-x-1/2 rounded-full bg-ink-950/70 blur-[3px]" />
         <div
@@ -356,7 +387,8 @@ export function JourneyStage({ state, compact = false }: Props) {
       {recent.map((e, idx) => {
         const isCombat = e.kind === 'hit' || e.kind === 'crit' || e.kind === 'hurt'
         const isLoot = e.kind === 'loot-stone' || e.kind === 'loot-item' || e.kind === 'loot-manual'
-        if (!isCombat && !isLoot) return null
+        const isSword = e.kind === 'natal-sword'
+        if (!isCombat && !isLoot && !isSword) return null
 
         const x = e.target === 'player' ? '16%' : ENEMY_X[typeof e.target === 'number' ? e.target : 0] ?? '70%'
 
@@ -429,6 +461,21 @@ export function JourneyStage({ state, compact = false }: Props) {
               aria-hidden
             >
               📜 [Bí Tịch] {itemDef?.name ?? ''}!
+            </span>
+          )
+        }
+
+        if (e.kind === 'natal-sword') {
+          return (
+            <span
+              key={`natal-sword-${e.atMs}-${idx}`}
+              className={`journey-float pointer-events-none absolute bottom-[55%] z-30 font-han font-black text-amber-300 drop-shadow-[0_0_12px_#f59e0b] animate-pulse ${
+                compact ? 'text-[9px]' : 'text-xs md:text-sm'
+              }`}
+              style={{ left: x, animationDelay: `-${Math.min(FLOAT_MS, now - e.atMs)}ms` }}
+              aria-hidden
+            >
+              ⚡ [{e.label ?? 'Phi Kiếm'} · Xuất Kiếm]
             </span>
           )
         }

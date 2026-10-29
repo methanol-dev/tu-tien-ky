@@ -1,6 +1,6 @@
 # HƯỚNG DẪN KIẾN TRÚC & HỆ THỐNG GAME KIẾM LAI · TU TIÊN KÝ
 > **Dự án**: Kiếm Lai · Tu Tiên Ký (`tu-tien-ky`)  
-> **Phiên bản tài liệu**: 2.0 (Đồng bộ Save v10 & GDD Kiếm Lai)  
+> **Phiên bản tài liệu**: 2.1 (Đồng bộ Save v11 & Hệ Thống Phi Kiếm Bản Mệnh Kiếm Lai)  
 > **Cập nhật ngày**: 29/10/2026  
 > **Tác giả**: Multi-Agent Architecture Team (`meth`)
 
@@ -137,16 +137,61 @@ Phiên bản đại tu chiến lợi phẩm hành tẩu giúp người chơi kh�
 
 ---
 
-## 🧪 V. QUY TRÌNH KIỂM THỬ & GIÁM SÁT HIỆU NĂNG
+## 🗡️ VI. HỆ THỐNG PHI KIẾM BẢN MỆNH & KIẾM TU BẢNG
+
+Dành riêng cho phái **Kiếm Tu** (hoặc sau khi giác ngộ Kiếm Đạo), hệ thống mô phỏng chân thực khí phủ uẩn dưỡng kiếm thai trong tiểu thuyết Kiếm Lai:
+
+```mermaid
+flowchart LR
+    Forge["Uẩn Dưỡng Kiếm Thai<br/>(Tối đa 4 Phi Kiếm)"] --> Temper["Tôi Kiếm Tinh Thuần<br/>(Cấp 1..10)"]
+    Temper --> Awaken["Thức Tỉnh Thần Thông<br/>(Cấp 3 & Cấp 6)"]
+    Awaken --> Upgrade["Ngộ Đạo Thần Thông<br/>(Tầng 1..10)"]
+    Upgrade --> Power["Điểm Kiếm Đạo Khí Số<br/>(Sword Dao Power)"]
+    Power --> Rank["Xếp Hạng Kiếm Tu Bảng<br/>(7 Bậc Danh Xưng)"]
+```
+
+### 1. Danh Sách 6 Phi Kiếm Bản Mệnh Kiếm Lai
+| Tên Phi Kiếm | Đạo Uẩn & Ngũ Hành | Cảnh Giới Yêu Cầu | Điển Tích & Nguồn Gốc Lore | Thần Thông Mặc Định & Thức Tỉnh |
+| :--- | :--- | :--- | :--- | :--- |
+| **Sơ Thập (初十)** | Thuần Dương Phong Lôi | Đồng Bì Cảnh (Cấp 0) | Sợi tơ vàng rực thai nghén trong lò rồng trấn nhỏ của Trần Bình An, tốc độ xé rách hư không. | • *Bôn Lôi Tật Hành* (Tốc đánh +10%..30%)<br/>• Cấp 3: *Phá Không Sát Giáp* (Xuyên giáp 15%..45%) |
+| **Thập Ngũ (十五)** | Trầm Trọng Sơn Nhạc | Khí Cốt Cảnh | Phi kiếm màu mực thẫm nặng tựa Thái Sơn, uy áp vạn dặm. | • *Thiên Quân Áp Đỉnh* (Sát thương nặng theo % HP địch)<br/>• Cấp 3: *Khí Phủ Uẩn Khí* (Tăng tốc nạp linh khí) |
+| **Tỉnh Để (井底)** | Hư Không Cấm Giới | Trúc Thể Cảnh | Sinh ra từ đạo tâm "Tọa tỉnh quan thiên", phong tỏa chiến trường. | • *Tọa Tỉnh Cấm Giới* (Giảm sát thương nhận vào 10%..30%)<br/>• Cấp 3: *Kính Hoa Thủy Nguyệt* (Né tránh đòn 10%..28%) |
+| **Mạch Thượng (陌上)**| Trường Xuân Mộc Ý | Động Phủ Cảnh | Mộc linh tràn trề sinh cơ, chuyển sát thương thành huyết dịch. | • *Xuân Phong Hóa Vũ* (Hút máu 8%..26%)<br/>• Cấp 3: *Bôn Lôi Tật Hành* |
+| **Ánh Tuyết (映雪)** | Cực Hàn Băng Sương | Quan Hải Cảnh | Rèn từ tuyết ngàn năm Bắc Câu Lô Châu, buốt lạnh thấu tâm can. | • *Băng Phách Tuyết Hồn* (Bạo kích +12%..37%)<br/>• Cấp 3: *Phá Không Sát Giáp* |
+| **Huyền Hoàng Trảm Tiên (玄黄斩仙)** | Hồng Hoang Viễn Cổ | Kim Đan Cảnh | Rèn từ máu đại yêu trên Kiếm Khí Trường Thành, vô địch sát phạt. | • *Nhất Kiếm Phá Vạn Pháp* (Tổng sát thương +25%..75%)<br/>• Cấp 3: *Tuyệt Cảnh Trảm Thần* (Hành quyết boss < 15% HP) |
+
+### 2. Thức Tỉnh & Đa Thần Thông Trên Mỗi Phi Kiếm
+- Mỗi phi kiếm khi uẩn dưỡng sẽ sở hữu ngay **1 Thần Thông Bản Mệnh sơ khởi**.
+- Khi người chơi dùng Linh Thạch **Tôi Kiếm** lên **Cấp 3** và **Cấp 6**, kiếm ý viên mãn sẽ tự động **Thức Tỉnh thêm Thần Thông mới**.
+- Người chơi có thể tiêu hao linh thạch để **Ngộ Đạo** thăng tầng (Tầng 1 $\rightarrow$ 10) cho từng Thần Thông, gia tăng mạnh mẽ các chỉ số chiến đấu độc bản (xuyên giáp, bạo kích, hút máu, né tránh, sát thương nặng, trảm sát hành quyết).
+
+### 3. Xếp Hạng Kiếm Tu Bảng Thiên Hạ (7 Bậc Danh Xưng)
+Dựa trên công thức tính **Kiếm Đạo Khí Số**:
+$$\text{Power} = \sum (\text{Tier}_{\text{Kiếm}} \times 100 + \text{Level} \times 25) + \sum (\text{Tier}_{\text{Thần Thông}} \times 50 + \text{Level} \times 15)$$
+
+| Bậc | Danh Hiệu Kiếm Tu Bảng | Điều Kiện Số Kiếm & Khí Số | Đặc Quyền Gia Trì Chiến Lực |
+| :---: | :--- | :--- | :--- |
+| **1** | **Kiếm Đồ Sơ Khởi** | 0 Kiếm, 0 điểm | Mới bước chân vào kiếm đạo, kiếm ý còn sơ khai. |
+| **2** | **Khí Phủ Kiếm Sĩ** | $\ge 1$ Kiếm, $\ge 150$ điểm | +5% Tổng Sát Thương Công Kích. |
+| **3** | **Trảm Cương Kiếm Hiệp** | $\ge 1$ Kiếm, $\ge 350$ điểm | +10% Sát Thương, +5% Tốc Độ Ra Đòn. |
+| **4** | **Song Tuyệt Kiếm Tiên** | $\ge 2$ Kiếm, $\ge 700$ điểm | +20% Sát Thương, +10% Tỷ Lệ Bạo Kích. |
+| **5** | **Tam Kiếm Đại Kiếm Tiên**| $\ge 3$ Kiếm, $\ge 1.200$ điểm | +30% Sát Thương, +15% Xuyên Giáp Bỏ Qua Phòng Ngự. |
+| **6** | **Ẩn Quan Kiếm Tôn** | $\ge 3$ Kiếm, $\ge 2.000$ điểm | +45% Sát Thương, +20% Bạo Kích. (Danh hiệu Trưởng quan Kiếm Khí Trường Thành). |
+| **7** | **Thập Tứ Cảnh Tuyệt Đỉnh Kiếm Tiên** | 4 Kiếm Viên Mãn, $\ge 3.000$ điểm | +70% Sát Thương, +30% Xuyên Giáp Tuyệt Đối! |
+
+---
+
+## 🧪 VII. QUY TRÌNH KIỂM THỬ & GIÁM SÁT HIỆU NĂNG
 
 Mọi thay đổi trong codebase phải vượt qua bộ kiểm thử tự động Vitest:
-- `tests/migration.test.ts`: Kiểm tra toàn vẹn chuỗi nâng cấp save từ v1 đến v10.
+- `tests/migration.test.ts`: Kiểm tra toàn vẹn chuỗi nâng cấp save từ v1 đến v11 (Save v11 Migration an toàn tuyệt đối).
+- `tests/natalSwords.test.ts`: Kiểm tra toàn bộ cơ chế uẩn dưỡng phi kiếm, tôi kiếm cấp 1..10, thức tỉnh thần thông cấp 3, ngộ đạo và xếp hạng Kiếm Tu Bảng.
 - `tests/cultivationPath.test.ts`: Kiểm tra logic phân nhánh Võ Phu vs Luyện Khí Sĩ và công thức áp chế 10 trượng.
-- `tests/journeyLoot.test.ts`: Kiểm tra toàn bộ cơ chế rơi tiền thần tiên, yêu đan, tàn quyển bí kíp và sử dụng sách trong túi đồ.
+- `tests/journeyLoot.test.ts`: Kiểm tra cơ chế rơi tiền thần tiên, yêu đan, tàn quyển bí kíp.
 - `tests/sim.test.ts`: Giả lập bot 24h chạy liên tục, đảm bảo tiến trình cân bằng và không bị lạm phát chỉ số (Power Creep).
 
 ```bash
-pnpm test       # Chạy 33 test suites (166 tests pass 100%)
+pnpm test       # Chạy 34 test suites (173 tests pass 100%)
 pnpm lint       # Kiểm tra 0 lỗi ESLint
 pnpm build      # Kiểm tra type-check TypeScript và build PWA
 ```

@@ -54,6 +54,7 @@ export function createInitialState(now: number = Date.now()): GameState {
       'bong-tai-2': null,
     },
     nextGearUid: 1,
+    natalSwords: [],
     buffs: [],
     pendingBreakthroughBonus: 0,
     alchemy: null,

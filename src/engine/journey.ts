@@ -209,9 +209,30 @@ function fightStep(state: GameState, now: number, ctx: StepContext, rng: Rng): G
     const idx = enemies.findIndex((e) => e.hp > 0)
     if (idx >= 0) {
       const e = enemies[idx]
-      const { dmg, crit } = rollDamage(stats.atk, e.def, rng, stats.crit, stats.critMult)
+      // Đòn đánh hưởng lợi từ xuyên giáp của phi kiếm bản mệnh
+      const { dmg: baseDmg, crit } = rollDamage(stats.atk, e.def, rng, stats.crit, stats.critMult, stats.armorPen)
+      let dmg = baseDmg
+
+      // Thần thông trọng lực (Thiên Quân Áp Đỉnh): cộng sát thương theo máu đối thủ
+      if (stats.heavyDmgPct > 0) {
+        dmg += Math.round(e.maxHp * stats.heavyDmgPct * 0.05)
+      }
+
+      // Thần thông hành quyết (Tuyệt Cảnh Trảm Thần): trảm sát khi mục tiêu suy kiệt máu
+      const hpRatio = e.hp / e.maxHp
+      if (stats.executeThreshold > 0 && hpRatio <= stats.executeThreshold) {
+        dmg = e.hp
+      }
+
       e.hp = Math.max(0, e.hp - dmg)
       j = pushEvent(j, { atMs: now, kind: crit ? 'crit' : 'hit', amount: dmg, target: idx })
+
+      // Hiệu ứng phát động phi kiếm bản mệnh
+      if ((s.natalSwords?.length ?? 0) > 0 && rng() < 0.45) {
+        const randomSword = s.natalSwords[Math.floor(rng() * s.natalSwords.length)]
+        j = pushEvent(j, { atMs: now, kind: 'natal-sword', label: randomSword.name, target: idx })
+      }
+
       if (stats.lifesteal > 0) player.hp = Math.min(player.maxHp, player.hp + Math.round(dmg * stats.lifesteal))
       if (state.cultivationPath === 'martial') {
         s = { ...s, punches: s.punches + 1 }
@@ -299,7 +320,16 @@ function fightStep(state: GameState, now: number, ctx: StepContext, rng: Rng): G
   // Enemies strike back.
   for (const e of enemies) {
     if (e.hp <= 0 || player.hp <= 0 || now < e.nextAttackAtMs) continue
-    const { dmg } = rollDamage(e.atk, stats.def, rng)
+    // Kiểm tra thần thông né tránh ảo ảnh (Kính Hoa Thủy Nguyệt)
+    if (stats.dodgeChance > 0 && rng() < stats.dodgeChance) {
+      e.nextAttackAtMs = Math.max(e.nextAttackAtMs + ENEMY_ATTACK_MS, now + ENEMY_ATTACK_MS / 2)
+      continue
+    }
+    let { dmg } = rollDamage(e.atk, stats.def, rng)
+    // Giảm sát thương nhận vào từ thần thông kết giới (Tọa Tỉnh Cấm Giới)
+    if (stats.damageReduction > 0) {
+      dmg = Math.max(1, Math.round(dmg * (1 - stats.damageReduction)))
+    }
     player.hp = Math.max(0, player.hp - dmg)
     j = pushEvent(j, { atMs: now, kind: 'hurt', amount: dmg, target: 'player' })
     e.nextAttackAtMs = Math.max(e.nextAttackAtMs + ENEMY_ATTACK_MS, now + ENEMY_ATTACK_MS / 2)

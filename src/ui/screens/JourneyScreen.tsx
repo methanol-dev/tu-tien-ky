@@ -24,6 +24,7 @@ export function JourneyScreen() {
   const equip = useGameStore((s) => s.equip)
   const salvage = useGameStore((s) => s.salvage)
   const setCharacterModalOpen = useGameStore((s) => s.setCharacterModalOpen)
+  const setNatalSwordModalOpen = useGameStore((s) => s.setNatalSwordModalOpen)
 
   const j = state.journey
   const stats = getCombatStats(state)
@@ -39,13 +40,22 @@ export function JourneyScreen() {
       <header className="space-y-3">
         <div className="flex items-baseline justify-between">
           <h2 className="font-han text-2xl text-gold-400">Hành tẩu</h2>
-          <button
-            type="button"
-            onClick={() => setCharacterModalOpen(true)}
-            className="text-xs text-gold-400 hover:text-gold-300 hover:underline"
-          >
-            Chi tiết chỉ số ›
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setNatalSwordModalOpen(true)}
+              className="text-xs text-jade-400 hover:text-jade-300 hover:underline flex items-center gap-1"
+            >
+              <span>🗡️ Kiếm Thai ({state.natalSwords?.length ?? 0}/4) ›</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setCharacterModalOpen(true)}
+              className="text-xs text-gold-400 hover:text-gold-300 hover:underline"
+            >
+              Chi tiết chỉ số ›
+            </button>
+          </div>
         </div>
         <JourneyStage state={state} />
         <StatRow

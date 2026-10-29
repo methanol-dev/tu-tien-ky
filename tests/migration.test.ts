@@ -174,10 +174,11 @@ describe('v5 -> v6 (Phase 9: journey + gear)', () => {
   })
 
   it('migrates v9 to v10 assigning cultivationPath and preserving/calculating martial punches', () => {
-    const { punches: _p, cultivationPath: _c, martialStageIndex: _m, ...baseV9 } = createInitialState(0)
+    const { punches: _p, cultivationPath: _c, martialStageIndex: _m, natalSwords: _ns, ...baseV9 } = createInitialState(0)
     void _p
     void _c
     void _m
+    void _ns
 
     const v9Qi = {
       ...baseV9,
@@ -187,9 +188,11 @@ describe('v5 -> v6 (Phase 9: journey + gear)', () => {
     const rQi = deserialize(JSON.stringify(v9Qi))
     expect(rQi.ok).toBe(true)
     if (!rQi.ok) return
-    expect(rQi.state.version).toBe(10)
+    expect(rQi.state.version).toBe(SAVE_VERSION)
     expect(rQi.state.cultivationPath).toBe('qi')
     expect(rQi.state.punches).toBe(0)
+    expect(rQi.state.natalSwords).toHaveLength(1)
+    expect(rQi.state.natalSwords[0].swordDefId).toBe('so-thap')
 
     const v9Martial = {
       ...baseV9,
@@ -205,9 +208,27 @@ describe('v5 -> v6 (Phase 9: journey + gear)', () => {
     const rMartial = deserialize(JSON.stringify(v9Martial))
     expect(rMartial.ok).toBe(true)
     if (!rMartial.ok) return
-    expect(rMartial.state.version).toBe(10)
+    expect(rMartial.state.version).toBe(SAVE_VERSION)
     expect(rMartial.state.cultivationPath).toBe('martial')
     // 100 + 5*10 + 20*5 = 250 punches
     expect(rMartial.state.punches).toBe(250)
+  })
+
+  it('migrates v10 to v11 initializing natalSwords for sword cultivators', () => {
+    const { natalSwords: _ns, ...baseV10 } = createInitialState(0)
+    void _ns
+
+    const v10 = {
+      ...baseV10,
+      version: 10,
+      classId: 'kiem-tu',
+    }
+    const r = deserialize(JSON.stringify(v10))
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.state.version).toBe(11)
+    expect(r.state.natalSwords).toHaveLength(1)
+    expect(r.state.natalSwords[0].name).toBe('Sơ Thập')
+    expect(r.state.natalSwords[0].talents[0].id).toBe('bon-loi-tat-hanh')
   })
 })

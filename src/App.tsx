@@ -9,6 +9,7 @@ import { NavBar } from '@/ui/molecules/NavBar'
 import { Toast } from '@/ui/molecules/Toast'
 import { AdminModal } from '@/ui/organisms/AdminModal'
 import { CharacterModal } from '@/ui/organisms/CharacterModal'
+import { NatalSwordModal } from '@/ui/organisms/NatalSwordModal'
 import { EventModal } from '@/ui/organisms/EventModal'
 import { StoryModal } from '@/ui/organisms/StoryModal'
 import { ChestModal } from '@/ui/organisms/ChestModal'
@@ -56,6 +57,7 @@ export default function App() {
   const state = useGameStore((s) => s.state)
   const characterModalOpen = useGameStore((s) => s.characterModalOpen)
   const setCharacterModalOpen = useGameStore((s) => s.setCharacterModalOpen)
+  const setNatalSwordModalOpen = useGameStore((s) => s.setNatalSwordModalOpen)
   const pendingEvent = useGameStore((s) => getPendingEvent(s.state))
   const pendingStory = getPendingStoryScene(state)
   const resolveStoryScene = useGameStore((s) => s.resolveStoryScene)
@@ -163,6 +165,16 @@ export default function App() {
           })()}
           <button
             type="button"
+            onClick={() => setNatalSwordModalOpen(true)}
+            className="flex min-h-8 items-center gap-1.5 rounded-md border border-jade-500/30 bg-ink-800/80 px-2.5 py-1 text-xs text-jade-300 transition-colors hover:border-jade-400 hover:text-jade-200"
+            title="Khí Phủ Kiếm Thai - Xem và uẩn dưỡng Phi Kiếm Bản Mệnh"
+          >
+            <span aria-hidden className="font-han text-sm text-jade-400">劍</span>
+            <span className="hidden sm:inline">Kiếm Thai</span>
+            <span className="text-[10px] font-mono text-jade-400">({state.natalSwords?.length ?? 0})</span>
+          </button>
+          <button
+            type="button"
             onClick={() => setCharacterModalOpen(true)}
             className="flex min-h-8 items-center gap-1.5 rounded-md border border-gold-500/30 bg-ink-800/80 px-2.5 py-1 text-xs text-paper-200 transition-colors hover:border-gold-500 hover:text-gold-400"
             title="Xem chỉ số nhân vật (Đạo thân)"
@@ -194,6 +206,7 @@ export default function App() {
         onClose={() => setCharacterModalOpen(false)}
         state={state}
       />
+      <NatalSwordModal />
       <AdminModal
         open={adminModalOpen}
         onClose={() => setAdminModalOpen(false)}

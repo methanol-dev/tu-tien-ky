@@ -33,6 +33,9 @@ import {
   deserialize,
   equip as engineEquip,
   exportSave as engineExportSave,
+  forgeNatalSword as engineForgeNatalSword,
+  temperNatalSword as engineTemperNatalSword,
+  upgradeSwordTalent as engineUpgradeSwordTalent,
   gather as engineGather,
   type GameState,
   type GearInstance,
@@ -98,6 +101,12 @@ export interface GameStore {
   /** Whether the full character stats sheet dialog is open. */
   characterModalOpen: boolean
   setCharacterModalOpen: (open: boolean) => void
+  /** Whether the Natal Sword Pavilion modal is open. */
+  natalSwordModalOpen: boolean
+  setNatalSwordModalOpen: (open: boolean) => void
+  forgeNatalSword: (swordDefId: string) => boolean
+  temperNatalSword: (swordUid: string) => boolean
+  upgradeSwordTalent: (swordUid: string, talentId: string) => boolean
   hydrate: (now?: number) => void
   tick: (dtMs: number) => void
   resume: (now?: number) => void
@@ -191,6 +200,8 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       tribulationResult: null,
       characterModalOpen: false,
       setCharacterModalOpen: (open) => set({ characterModalOpen: open }),
+      natalSwordModalOpen: false,
+      setNatalSwordModalOpen: (open) => set({ natalSwordModalOpen: open }),
 
       hydrate: (now = Date.now()) => {
         const raw = storage.load()
@@ -267,6 +278,9 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       },
 
       upgradeTechnique: (id) => apply(engineUpgradeTechnique(get().state, id)),
+      forgeNatalSword: (swordDefId) => apply(engineForgeNatalSword(get().state, swordDefId)),
+      temperNatalSword: (swordUid) => apply(engineTemperNatalSword(get().state, swordUid)),
+      upgradeSwordTalent: (swordUid, talentId) => apply(engineUpgradeSwordTalent(get().state, swordUid, talentId)),
       useItem: (id) => apply(engineUsePill(get().state, id)),
       buyItem: (id, qty = 1) => apply(engineBuyItem(get().state, id, qty)),
       startAlchemy: (recipeId) => apply(engineStartAlchemy(get().state, recipeId)),

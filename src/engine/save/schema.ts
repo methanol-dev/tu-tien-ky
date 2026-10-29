@@ -74,7 +74,21 @@ const journeySchema = z.object({
     .array(
       z.object({
         atMs: z.number().nonnegative(),
-        kind: z.enum(['hit', 'crit', 'hurt', 'kill', 'boss-kill', 'death', 'stage', 'chest', 'region']),
+        kind: z.enum([
+          'hit',
+          'crit',
+          'hurt',
+          'kill',
+          'boss-kill',
+          'death',
+          'stage',
+          'chest',
+          'region',
+          'loot-stone',
+          'loot-item',
+          'loot-manual',
+          'natal-sword',
+        ]),
         amount: z.number().optional(),
         target: z.union([z.literal('player'), z.number().int().nonnegative()]).optional(),
       }),
@@ -82,9 +96,22 @@ const journeySchema = z.object({
     .max(JOURNEY_EVENT_LIMIT),
 })
 
+const swordTalentSchema = z.object({
+  id: z.string().max(64),
+  level: z.number().int().min(1).max(20),
+})
+
+const natalSwordSchema = z.object({
+  uid: z.string().max(64),
+  swordDefId: z.string().max(64),
+  name: z.string().max(64),
+  level: z.number().int().min(1).max(20),
+  talents: z.array(swordTalentSchema).max(10),
+})
+
 /** Schema for the CURRENT save version. Older versions go through migrations first. */
 export const gameStateSchema = z.object({
-  version: z.literal(10),
+  version: z.literal(11),
   createdAt: z.number().int().nonnegative(),
   lastSavedAt: z.number().int().nonnegative(),
   playedMs: z.number().nonnegative(),
@@ -126,6 +153,7 @@ export const gameStateSchema = z.object({
     'bong-tai-2': z.string().max(32).nullable(),
   }),
   nextGearUid: z.number().int().positive(),
+  natalSwords: z.array(natalSwordSchema).default([]),
   buffs: z.array(buffSchema).max(50),
   pendingBreakthroughBonus: z.number().min(0).max(1),
   alchemy: alchemyJobSchema.nullable(),

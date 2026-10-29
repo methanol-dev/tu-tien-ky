@@ -32,6 +32,28 @@ function mapLegacyRealmIndex(oldIdx: unknown): number {
  * Bump SAVE_VERSION, add `MIGRATIONS[old] = ...`, update schema.ts. No exceptions.
  */
 export const MIGRATIONS: Record<number, Migration> = {
+  // 10 -> 11: Bổ sung hệ thống Phi Kiếm Bản Mệnh & Bản Mệnh Thần Thông Kiếm Tu
+  10: (raw) => {
+    const classId = (raw.classId as string) || 'kiem-tu'
+    const isSword = classId === 'kiem-tu'
+    const defaultSwords = isSword
+      ? [
+          {
+            uid: 'so-thap-1',
+            swordDefId: 'so-thap',
+            name: 'Sơ Thập',
+            level: 1,
+            talents: [{ id: 'bon-loi-tat-hanh', level: 1 }],
+          },
+        ]
+      : []
+
+    return {
+      ...raw,
+      version: 11,
+      natalSwords: Array.isArray(raw.natalSwords) ? raw.natalSwords : defaultSwords,
+    }
+  },
   // 9 -> 10: Phân định 2 Đại Đạo Lộ: Thuần Túy Võ Phu vs Luyện Khí Sĩ (cultivationPath, martialStageIndex, punches).
   9: (raw) => {
     const oldClass = (raw.classId as string) || 'kiem-tu'
