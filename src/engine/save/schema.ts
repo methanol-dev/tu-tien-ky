@@ -202,6 +202,7 @@ export const gameStateSchema = z.object({
     timeScale: z.number().positive().max(1000),
     pauseOnEvent: z.boolean(),
     avatarId: z.string().optional(),
+    battleSpeed: z.union([z.literal(1), z.literal(2), z.literal(4)]).optional(),
   }),
 })
 

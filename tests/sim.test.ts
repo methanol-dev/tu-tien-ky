@@ -33,8 +33,8 @@ describe('balance simulation (24h active bot, seed 1)', () => {
     expect(at('nguyen-anh-1')).toBeLessThanOrEqual(12 * HOUR)
   })
 
-  it('does not reach Tiên Nhân in a day, and passes at least one tribulation', () => {
-    expect(at('tien-nhan-1')).toBeUndefined()
+  it('does not reach Thập Tứ Cảnh in a day, and passes at least one tribulation', () => {
+    expect(at('thap-tu-1')).toBeUndefined()
     expect(r.final.stats.tribulationsPassed).toBeGreaterThanOrEqual(1)
     expect(r.final.stats.bossesSlain).toBeGreaterThan(0)
   })

@@ -26,9 +26,11 @@ export function JourneyScreen() {
   const salvage = useGameStore((s) => s.salvage)
   const setCharacterModalOpen = useGameStore((s) => s.setCharacterModalOpen)
   const setNatalSwordModalOpen = useGameStore((s) => s.setNatalSwordModalOpen)
+  const setBattleSpeed = useGameStore((s) => s.setBattleSpeed)
 
   const j = state.journey
   const stats = getCombatStats(state)
+  const battleSpeed = state.settings.battleSpeed ?? 1
   const chests = j.chests.normal + j.chests.red
   const recentGear = state.gear.slice(-4).reverse()
   const [selectedWorld, setSelectedWorld] = useState<WorldId | 'all'>('all')
@@ -40,7 +42,26 @@ export function JourneyScreen() {
     <div className="space-y-6">
       <header className="space-y-3">
         <div className="flex items-baseline justify-between">
-          <h2 className="font-han text-2xl text-gold-400">Hành tẩu</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="font-han text-2xl text-gold-400">Hành tẩu</h2>
+            <div className="flex items-center rounded-md border border-paper-400/20 bg-ink-950/80 p-0.5 text-xs">
+              {([1, 2, 4] as const).map((spd) => (
+                <button
+                  key={spd}
+                  type="button"
+                  onClick={() => setBattleSpeed(spd)}
+                  className={`px-2 py-0.5 rounded font-mono font-bold transition-all ${
+                    battleSpeed === spd
+                      ? 'bg-gold-500/20 text-gold-300 border border-gold-500/40 shadow-sm'
+                      : 'text-paper-400 hover:text-paper-200 border border-transparent'
+                  }`}
+                  title={`Tốc độ chiến đấu ${spd}x`}
+                >
+                  {spd}x
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="flex items-center gap-3">
             <button
               type="button"

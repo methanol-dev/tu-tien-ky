@@ -84,6 +84,6 @@ export function createInitialState(now: number = Date.now()): GameState {
       chestsOpened: 0,
       gearFound: 0,
     },
-    settings: { timeScale: 1, pauseOnEvent: false },
+    settings: { timeScale: 1, pauseOnEvent: false, battleSpeed: 1 },
   }
 }

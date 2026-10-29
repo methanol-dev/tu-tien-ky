@@ -13,6 +13,8 @@ export interface LogEntry {
   text: string
 }
 
+export type BattleSpeed = 1 | 2 | 4
+
 export interface GameSettings {
   /** In-game days elapsed per real second. */
   timeScale: number
@@ -20,6 +22,8 @@ export interface GameSettings {
   pauseOnEvent: boolean
   /** Selected character avatar ID (defaults to 'tran-binh-an'). */
   avatarId?: string
+  /** Combat simulation multiplier for journey (1x, 2x, 4x). */
+  battleSpeed?: BattleSpeed
 }
 
 export interface GameStats {

@@ -17,16 +17,16 @@ describe('technique milestone multipliers', () => {
     expect(TECHNIQUE_MILESTONES.map((m) => m.mult)).toEqual([2, 3, 5, 10, 50])
   })
 
-  it('calculates cumulative milestone multipliers across levels', () => {
+  it('calculates milestone multipliers across levels', () => {
     expect(getTechniqueMilestoneMultiplier(0)).toBe(1)
     expect(getTechniqueMilestoneMultiplier(4)).toBe(1)
     expect(getTechniqueMilestoneMultiplier(5)).toBe(2)
     expect(getTechniqueMilestoneMultiplier(9)).toBe(2)
-    expect(getTechniqueMilestoneMultiplier(10)).toBe(6) // 2 * 3
-    expect(getTechniqueMilestoneMultiplier(24)).toBe(6)
-    expect(getTechniqueMilestoneMultiplier(25)).toBe(30) // 6 * 5
-    expect(getTechniqueMilestoneMultiplier(50)).toBe(300) // 30 * 10
-    expect(getTechniqueMilestoneMultiplier(100)).toBe(15000) // 300 * 50
+    expect(getTechniqueMilestoneMultiplier(10)).toBe(3)
+    expect(getTechniqueMilestoneMultiplier(24)).toBe(3)
+    expect(getTechniqueMilestoneMultiplier(25)).toBe(5)
+    expect(getTechniqueMilestoneMultiplier(50)).toBe(10)
+    expect(getTechniqueMilestoneMultiplier(100)).toBe(50)
   })
 
   it('tracks next and current milestones accurately', () => {
@@ -49,8 +49,8 @@ describe('technique milestone multipliers', () => {
     expect(getTechniqueEffectiveValue(def, 4)).toBeCloseTo(0.4)
     // At level 5, 0.1 * 5 * 2 = 1.0
     expect(getTechniqueEffectiveValue(def, 5)).toBeCloseTo(1.0)
-    // At level 10, 0.1 * 10 * 6 = 6.0
-    expect(getTechniqueEffectiveValue(def, 10)).toBeCloseTo(6.0)
+    // At level 10, 0.1 * 10 * 3 = 3.0
+    expect(getTechniqueEffectiveValue(def, 10)).toBeCloseTo(3.0)
   })
 
   it('caps fail penalty reduction safely at 0.95', () => {

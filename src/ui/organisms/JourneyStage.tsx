@@ -8,6 +8,7 @@ import { DIFFICULTY_NAMES, STAGES_PER_REGION, type SilhouetteId } from '@/conten
 import { type GameState, getPhaseProgress, getRegion, isRegionUnlocked } from '@/engine'
 import { formatDurationMs, formatNumber } from '@/lib/format'
 import { resolveAsset } from '@/lib/assets'
+import { useGameStore } from '@/store/gameStore'
 import { EnemySilhouette, HeroSilhouette } from '@/ui/silhouettes'
 
 interface Props {
@@ -70,6 +71,8 @@ function EnemyFigure({
 }
 
 export function JourneyStage({ state, compact = false }: Props) {
+  const setBattleSpeed = useGameStore((s) => s.setBattleSpeed)
+  const battleSpeed = state.settings.battleSpeed ?? 1
   const j = state.journey
   const region = getRegion(state)
   const p = region.palette
@@ -128,9 +131,9 @@ export function JourneyStage({ state, compact = false }: Props) {
       role="img"
       aria-label={`${region.name}, ${phaseText}`}
     >
-      <Layer d={FAR} color={p.far} duration={60} running={walking} opacity={0.9} />
-      <Layer d={MID} color={p.mid} duration={32} running={walking} opacity={0.95} />
-      <Layer d={NEAR} color={p.near} duration={16} running={walking} opacity={1} />
+      <Layer d={FAR} color={p.far} duration={60 / battleSpeed} running={walking} opacity={0.9} />
+      <Layer d={MID} color={p.mid} duration={32 / battleSpeed} running={walking} opacity={0.95} />
+      <Layer d={NEAR} color={p.near} duration={16 / battleSpeed} running={walking} opacity={1} />
       <div className="absolute inset-x-0 bottom-0 h-[12%]" style={{ background: p.ground }} aria-hidden />
 
       {/* Lớp tranh nền thủy mặc phong cảnh vùng đất */}
@@ -498,6 +501,31 @@ export function JourneyStage({ state, compact = false }: Props) {
             }`}
             style={{ width: `${getPhaseProgress(state) * 100}%` }}
           />
+        </div>
+      )}
+
+      {/* Bộ điều tốc hành tẩu 1x / 2x / 4x (QoL) */}
+      {!compact && (
+        <div className="absolute bottom-2 right-2 z-30 flex items-center gap-1 rounded-md border border-gold-500/30 bg-ink-950/85 p-1 backdrop-blur-sm shadow-md">
+          <span className="text-[10px] text-paper-400 font-serif px-1 hidden sm:inline">Tốc độ:</span>
+          {([1, 2, 4] as const).map((spd) => {
+            const active = battleSpeed === spd
+            return (
+              <button
+                key={spd}
+                type="button"
+                onClick={() => setBattleSpeed(spd)}
+                className={`px-1.5 py-0.5 text-[11px] font-mono font-bold rounded transition-all ${
+                  active
+                    ? 'bg-gold-500/30 text-gold-300 border border-gold-400/50 shadow-[0_0_8px_rgba(234,179,8,0.25)]'
+                    : 'text-paper-400 hover:text-paper-200 hover:bg-ink-900 border border-transparent'
+                }`}
+                title={`Điều tốc chiến đấu ${spd}x`}
+              >
+                {spd}x
+              </button>
+            )
+          })}
         </div>
       )}
     </div>

@@ -28,6 +28,7 @@ import {
   reincarnate as engineReincarnate,
   resolveBolt as engineResolveBolt,
   type TribulationAction,
+  type BattleSpeed,
   collectAlchemy as engineCollectAlchemy,
   createHybridStorage,
   createInitialState,
@@ -125,6 +126,7 @@ export interface GameStore {
   resolveStoryScene: (sceneId: string, choiceId?: string) => void
   setPauseOnEvent: (value: boolean) => void
   setAvatar: (avatarId: string) => void
+  setBattleSpeed: (speed: BattleSpeed) => void
   startRegion: (regionId: string, difficulty: Difficulty) => boolean
   setAutoAdvance: (value: boolean) => void
   openChests: (kind: ChestKind, count: number) => boolean
@@ -248,7 +250,8 @@ export function createGameStore(deps: GameStoreDeps = {}) {
 
       tick: (dtMs) =>
         set((s) => {
-          const ticked = journeyTick(engineTick(s.state, dtMs), dtMs, rng)
+          const speed = s.state.settings.battleSpeed ?? 1
+          const ticked = journeyTick(engineTick(s.state, dtMs), dtMs * speed, rng)
           return { state: shouldRollEvent(ticked) ? rollEvent(ticked, rng) : ticked }
         }),
 
@@ -397,6 +400,11 @@ export function createGameStore(deps: GameStoreDeps = {}) {
 
       setAvatar: (avatarId) => {
         set((s) => ({ state: { ...s.state, settings: { ...s.state.settings, avatarId } } }))
+        get().save()
+      },
+
+      setBattleSpeed: (speed) => {
+        set((s) => ({ state: { ...s.state, settings: { ...s.state.settings, battleSpeed: speed } } }))
         get().save()
       },
 

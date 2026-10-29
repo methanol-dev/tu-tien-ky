@@ -39,7 +39,7 @@ import {
   KILL_STONE_SECONDS,
 } from './constants'
 import { getRealm } from './cultivation'
-import { DAYS_PER_YEAR, STONE_RATE_FACTOR } from './constants'
+import { DAYS_PER_YEAR, STONE_RATE_EXPONENT, STONE_RATE_FACTOR } from './constants'
 import { isGearFull, openChests } from './gear'
 import { addItems } from './inventory'
 import { pushLog } from './log'
@@ -394,19 +394,20 @@ function autoOpen(state: GameState, rng: Rng): GameState {
   return s
 }
 
-function step(state: GameState, now: number, rng: Rng): GameState {
-  const region = getRegion(state)
+interface CachedJourneyStepContext {
+  region: RegionDef
+  lifespanDays: number
+  stats: CombatStats
+  ctx: StepContext
+  unlocked: boolean
+}
+
+function stepWithContext(state: GameState, now: number, rng: Rng, cached: CachedJourneyStepContext): GameState {
   let j = state.journey
-  // One modifier pass per step: it walks techniques, legacy and gear, so avoid repeating it.
-  const mods: Modifiers = getModifiers(state)
-  const realm = getRealm(state)
-  const lifespanDays = (realm.lifespanYears + state.lifespanBonusYears + mods.lifespanBonusYears) * DAYS_PER_YEAR
-  if (!isRegionUnlocked(state, region) || state.ageDays >= lifespanDays) {
+  if (!cached.unlocked || state.ageDays >= cached.lifespanDays) {
     return j.phase === 'rest' ? state : { ...state, journey: { ...j, phase: 'rest', enemies: [] } }
   }
-  const stats = getCombatStats(state)
-  const ctx: StepContext = { stats, stoneRate: Math.sqrt(realm.qiRate) * STONE_RATE_FACTOR * mods.stoneRateMult, lootChanceMult: mods.lootChanceMult }
-  j = syncPlayer(j, stats)
+  j = syncPlayer(j, cached.stats)
   let s: GameState = j === state.journey ? state : { ...state, journey: j }
 
   switch (j.phase) {
@@ -418,16 +419,28 @@ function step(state: GameState, now: number, rng: Rng): GameState {
       break
     case 'walk':
       if (now >= j.phaseUntilMs) {
-        const enemies = spawnEnemies(region, j.stage, j.difficulty, now, rng)
-        const party = [{ ...j.party[0], nextAttackAtMs: now + Math.round(stats.attackMs / 2) }, ...j.party.slice(1)]
+        const enemies = spawnEnemies(cached.region, j.stage, j.difficulty, now, rng)
+        const party = [{ ...j.party[0], nextAttackAtMs: now + Math.round(cached.stats.attackMs / 2) }, ...j.party.slice(1)]
         s = { ...s, journey: { ...j, phase: 'fight', enemies, party } }
       }
       break
     case 'fight':
-      s = fightStep(s, now, ctx, rng)
+      s = fightStep(s, now, cached.ctx, rng)
       break
   }
   return autoOpen(s, rng)
+}
+
+export function step(state: GameState, now: number, rng: Rng): GameState {
+  const region = getRegion(state)
+  const mods: Modifiers = getModifiers(state)
+  const realm = getRealm(state)
+  const lifespanDays = (realm.lifespanYears + state.lifespanBonusYears + mods.lifespanBonusYears) * DAYS_PER_YEAR
+  const unlocked = isRegionUnlocked(state, region)
+  const stats = getCombatStats(state)
+  const stoneRate = Math.pow(Math.max(0, realm.qiRate), STONE_RATE_EXPONENT) * STONE_RATE_FACTOR * mods.stoneRateMult
+  const ctx: StepContext = { stats, stoneRate, lootChanceMult: mods.lootChanceMult }
+  return stepWithContext(state, now, rng, { region, lifespanDays, stats, ctx, unlocked })
 }
 
 /**
@@ -441,9 +454,21 @@ export function journeyTick(state: GameState, dtMs: number, rng: Rng): GameState
   const steps = Math.floor(acc / JOURNEY_STEP_MS)
   const rest = acc - steps * JOURNEY_STEP_MS
   let s: GameState = { ...state, journey: { ...state.journey, accMs: rest } }
+
+  const region = getRegion(state)
+  const mods: Modifiers = getModifiers(state)
+  const realm = getRealm(state)
+  const lifespanDays = (realm.lifespanYears + state.lifespanBonusYears + mods.lifespanBonusYears) * DAYS_PER_YEAR
+  const unlocked = isRegionUnlocked(state, region)
+  const stats = getCombatStats(state)
+  const stoneRate = Math.pow(Math.max(0, realm.qiRate), STONE_RATE_EXPONENT) * STONE_RATE_FACTOR * mods.stoneRateMult
+  const ctx: StepContext = { stats, stoneRate, lootChanceMult: mods.lootChanceMult }
+
+  const cached: CachedJourneyStepContext = { region, lifespanDays, stats, ctx, unlocked }
+
   for (let i = 0; i < steps; i++) {
     const now = state.playedMs - rest - (steps - 1 - i) * JOURNEY_STEP_MS
-    s = step(s, Math.max(0, now), rng)
+    s = stepWithContext(s, Math.max(0, now), rng, cached)
   }
   return s
 }

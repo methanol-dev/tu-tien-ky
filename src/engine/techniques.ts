@@ -36,12 +36,12 @@ export function canUpgradeTechnique(state: GameState, id: string): boolean {
   return level < def.maxLevel && state.stones >= getTechniqueCost(def, level)
 }
 
-/** Returns the cumulative milestone multiplier for a given level. */
+/** Returns the milestone multiplier for a given level (highest achieved milestone). */
 export function getTechniqueMilestoneMultiplier(level: number): number {
   let mult = 1
   for (const m of TECHNIQUE_MILESTONES) {
     if (level >= m.level) {
-      mult *= m.mult
+      mult = m.mult
     }
   }
   return mult
@@ -103,7 +103,7 @@ export function upgradeTechnique(state: GameState, id: string): ActionResult {
   if (level === 0) {
     logMsg = `Lĩnh ngộ ${def.name}.`
   } else if (hitMilestone) {
-    logMsg = `⚡ ${def.name} đột phá mốc ${hitMilestone.label} (tầng ${nextLevel})! Hiệu quả bùng nổ x${hitMilestone.mult} (Tổng x${nextMult})!`
+    logMsg = `⚡ ${def.name} đột phá mốc ${hitMilestone.label} (tầng ${nextLevel})! Hiệu quả bùng nổ x${hitMilestone.mult}!`
   } else {
     logMsg = `${def.name} tiến lên tầng ${nextLevel}.`
   }
