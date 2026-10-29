@@ -45,6 +45,7 @@ export function ForgeScreen() {
 
   const [isAutoForging, setIsAutoForging] = useState(false)
   const [showRarityTable, setShowRarityTable] = useState(false)
+  const [lastAutoLog, setLastAutoLog] = useState<string | null>(null)
   const autoIntervalRef = useRef<number | null>(null)
 
   const forge = state.forge
@@ -91,7 +92,7 @@ export function ForgeScreen() {
     }
   }, [])
 
-  // Xử lý vòng lặp Auto-Forge
+  // Xử lý vòng lặp Auto-Forge nguyên tử (Atomic Auto-Forge Loop - Zero Layout Shift)
   useEffect(() => {
     if (!isAutoForging) {
       if (autoIntervalRef.current) {
@@ -102,44 +103,80 @@ export function ForgeScreen() {
     }
 
     autoIntervalRef.current = window.setInterval(() => {
-      const currentPending = useGameStore.getState().state.forge.pendingGear
-      const currentFire = useGameStore.getState().state.forge.fireCount
+      const curState = useGameStore.getState().state
+      const currentPending = curState.forge.pendingGear
 
-      // Hết chân hỏa thì dừng
-      if (currentFire <= 0 && !currentPending) {
-        setIsAutoForging(false)
-        return
-      }
-
-      // Nếu đang có pendingGear từ nhịp trước
+      // 1. Nếu có pendingGear tồn đọng từ trước (do người chơi rèn tay hoặc pause)
       if (currentPending) {
-        const slot = getTargetSlotForGear(useGameStore.getState().state, currentPending)
-        const curUid = useGameStore.getState().state.equipped[slot]
-        const curGear = curUid ? useGameStore.getState().state.gear.find((g) => g.uid === curUid) ?? null : null
+        const slot = getTargetSlotForGear(curState, currentPending)
+        const curUid = curState.equipped[slot]
+        const curGear = curUid ? curState.gear.find((g) => g.uid === curUid) ?? null : null
         const comp = compareGearStats(curGear, currentPending)
 
-        const filterStop = useGameStore.getState().state.forge.autoFilters
+        const filterStop = curState.forge.autoFilters
         const isBetter = comp.scoreDiff > 0
         const rarityRank = RARITIES.indexOf(currentPending.rarity)
         const minRank = RARITIES.indexOf(filterStop.minRarity)
         const meetsRarity = rarityRank >= minRank
 
-        // Nếu thoả mãn điều kiện dừng: giữ nguyên món đó và dừng Auto
         if ((filterStop.stopOnHigherScore && isBetter) || meetsRarity) {
           setIsAutoForging(false)
+          const def = GEAR_DEF_BY_ID[currentPending.defId]
+          setLastAutoLog(`✨ Bảo vật xuất thế: [${RARITY_NAME[currentPending.rarity]}] ${def?.name ?? currentPending.defId}!`)
           return
         }
 
-        // Nếu không thoả mãn: phân giải món rác này đi và tiếp tục nhịp sau
+        // Đồ rác tồn đọng: phân giải luôn
         salvagePendingGear()
         return
       }
 
-      // Nếu chưa có pendingGear: đập 1 món mới
+      // 2. Kiểm tra Chân Hỏa
+      if (curState.forge.fireCount <= 0) {
+        setIsAutoForging(false)
+        setLastAutoLog('Đã cạn kiệt Chân Hỏa! Hãy nạp thêm.')
+        return
+      }
+
+      // 3. Tiến hành Khai Lò
       const ok = forgeGear()
       if (!ok) {
         setIsAutoForging(false)
+        return
       }
+
+      // 4. Đánh giá món vừa rèn ngay lập tức
+      const freshState = useGameStore.getState().state
+      const newGear = freshState.forge.pendingGear
+      if (!newGear) return
+
+      const slot = getTargetSlotForGear(freshState, newGear)
+      const curUid = freshState.equipped[slot]
+      const curGear = curUid ? freshState.gear.find((g) => g.uid === curUid) ?? null : null
+      const comp = compareGearStats(curGear, newGear)
+
+      const filterStop = freshState.forge.autoFilters
+      const isBetter = comp.scoreDiff > 0
+      const rarityRank = RARITIES.indexOf(newGear.rarity)
+      const minRank = RARITIES.indexOf(filterStop.minRarity)
+      const meetsRarity = rarityRank >= minRank
+
+      const def = GEAR_DEF_BY_ID[newGear.defId]
+      const gearName = def?.name ?? newGear.defId
+      const rName = RARITY_NAME[newGear.rarity]
+
+      if ((filterStop.stopOnHigherScore && isBetter) || meetsRarity) {
+        // Trúng bảo vật hoặc trang bị tăng LC: DỪNG AUTO, GIỮ NGUYÊN PENDING GEAR ĐỂ HIỆN SO SÁNH!
+        setIsAutoForging(false)
+        setLastAutoLog(`✨ Bảo vật xuất thế: [${rName}] ${gearName}!`)
+        return
+      }
+
+      // Đồ yếu: TỰ ĐỘNG PHÂN GIẢI NGAY TRONG CÙNG TICK!
+      // React 19 sẽ tự động batch update này với forgeGear(), pendingGear trở lại null ngay lập tức.
+      // Khung Lò không hề bị chớp tắt sang Khung So Sánh!
+      salvagePendingGear()
+      setLastAutoLog(`♻️ Đã phân giải [${rName}] ${gearName} (+EXP Lò)`)
     }, 450)
 
     return () => {
@@ -256,71 +293,73 @@ export function ForgeScreen() {
         )}
       </div>
 
-      {/* 2. KHUNG TRUNG TÂM: SO SÁNH TRANG BỊ SIDE-BY-SIDE GỌN GÀNG */}
+      {/* 2. KHUNG TRUNG TÂM: CỐ ĐỊNH CHIỀU CAO (ZERO LAYOUT SHIFT) */}
       {pendingGear && comparison ? (
-        <div className="rounded-2xl border border-gold-500/40 bg-ink-900/90 p-3.5 sm:p-5 backdrop-blur-md shadow-2xl animate-fade-in">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-1 text-center sm:text-left border-b border-paper-400/15 pb-2.5 mb-3">
-            <span className="inline-block rounded-full bg-vermilion-500/20 border border-vermilion-500/40 px-2.5 py-0.5 text-xs font-serif text-vermilion-300">
-              🔥 Bảo Vật Vừa Xuất Lò · Ô {targetSlot ? SLOT_NAME[targetSlot] : ''}
-            </span>
+        <div className="flex min-h-[410px] sm:min-h-[430px] flex-col justify-between rounded-2xl border border-gold-500/40 bg-ink-900/90 p-3.5 sm:p-5 backdrop-blur-md shadow-2xl animate-fade-in">
+          <div>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-1 text-center sm:text-left border-b border-paper-400/15 pb-2.5 mb-3">
+              <span className="inline-block rounded-full bg-vermilion-500/20 border border-vermilion-500/40 px-2.5 py-0.5 text-xs font-serif text-vermilion-300">
+                🔥 Bảo Vật Vừa Xuất Lò · Ô {targetSlot ? SLOT_NAME[targetSlot] : ''}
+              </span>
 
-            {/* Tag Chênh Lệch Lực Chiến Tổng Hợp (CP Delta) */}
-            {formattedDelta && (
-              <div className="flex items-center gap-1.5">
-                <span
-                  className={`rounded-full px-2.5 py-0.5 font-mono text-xs font-bold border shadow ${
-                    formattedDelta.isPositive
-                      ? 'bg-emerald-950/90 border-emerald-500/60 text-emerald-400 animate-pulse'
-                      : formattedDelta.isZero
-                        ? 'bg-ink-800 border-paper-500/30 text-paper-300'
-                        : 'bg-vermilion-950/90 border-vermilion-500/60 text-vermilion-400'
-                  }`}
-                >
-                  {formattedDelta.text}
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Bố Cục Side-by-Side 2 Cột Song Song Ngay Cả Trên Mobile */}
-          <div className="grid grid-cols-2 gap-2 sm:gap-4">
-            {/* Cột Trái: Đang mặc trên người */}
-            <div className="rounded-xl border border-paper-400/20 bg-ink-950/70 p-2.5 sm:p-4 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between border-b border-paper-400/10 pb-1.5 mb-1.5">
-                  <span className="text-[10px] sm:text-xs font-serif text-paper-400">Đang mặc</span>
-                  {equippedGear && (
-                    <span className="font-mono text-[10px] sm:text-xs text-gold-400">
-                      LC: {formatNumber(gearScore(equippedGear))}
-                    </span>
-                  )}
+              {/* Tag Chênh Lệch Lực Chiến Tổng Hợp (CP Delta) */}
+              {formattedDelta && (
+                <div className="flex items-center gap-1.5">
+                  <span
+                    className={`rounded-full px-2.5 py-0.5 font-mono text-xs font-bold border shadow ${
+                      formattedDelta.isPositive
+                        ? 'bg-emerald-950/90 border-emerald-500/60 text-emerald-400 animate-pulse'
+                        : formattedDelta.isZero
+                          ? 'bg-ink-800 border-paper-500/30 text-paper-300'
+                          : 'bg-vermilion-950/90 border-vermilion-500/60 text-vermilion-400'
+                    }`}
+                  >
+                    {formattedDelta.text}
+                  </span>
                 </div>
-
-                {equippedGear ? (
-                  <GearCardItem gear={equippedGear} />
-                ) : (
-                  <div className="flex h-24 sm:h-36 items-center justify-center text-[11px] text-paper-500 italic text-center">
-                    Ô này đang trống
-                  </div>
-                )}
-              </div>
+              )}
             </div>
 
-            {/* Cột Phải: Món Mới Xuất Lò */}
-            <div
-              className={`rounded-xl border ${RARITY_BORDER_CLASSES[pendingGear.rarity]} ${RARITY_BG_CLASSES[pendingGear.rarity]} p-2.5 sm:p-4 relative overflow-hidden flex flex-col justify-between`}
-            >
-              <div>
-                <div className="flex items-center justify-between border-b border-paper-400/20 pb-1.5 mb-1.5">
-                  <span className="text-[10px] sm:text-xs font-serif font-semibold text-paper-200">
-                    Vừa rèn
-                  </span>
-                  <span className="font-mono text-[10px] sm:text-xs font-bold text-gold-300">
-                    LC: {formatNumber(gearScore(pendingGear))}
-                  </span>
-                </div>
+            {/* Bố Cục Side-by-Side 2 Cột Song Song Ngay Cả Trên Mobile */}
+            <div className="grid grid-cols-2 gap-2 sm:gap-4">
+              {/* Cột Trái: Đang mặc trên người */}
+              <div className="rounded-xl border border-paper-400/20 bg-ink-950/70 p-2.5 sm:p-4 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between border-b border-paper-400/10 pb-1.5 mb-1.5">
+                    <span className="text-[10px] sm:text-xs font-serif text-paper-400">Đang mặc</span>
+                    {equippedGear && (
+                      <span className="font-mono text-[10px] sm:text-xs text-gold-400">
+                        LC: {formatNumber(gearScore(equippedGear))}
+                      </span>
+                    )}
+                  </div>
 
-                <GearCardItem gear={pendingGear} isNew />
+                  {equippedGear ? (
+                    <GearCardItem gear={equippedGear} />
+                  ) : (
+                    <div className="flex h-24 sm:h-36 items-center justify-center text-[11px] text-paper-500 italic text-center">
+                      Ô này đang trống
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Cột Phải: Món Mới Xuất Lò */}
+              <div
+                className={`rounded-xl border ${RARITY_BORDER_CLASSES[pendingGear.rarity]} ${RARITY_BG_CLASSES[pendingGear.rarity]} p-2.5 sm:p-4 relative overflow-hidden flex flex-col justify-between`}
+              >
+                <div>
+                  <div className="flex items-center justify-between border-b border-paper-400/20 pb-1.5 mb-1.5">
+                    <span className="text-[10px] sm:text-xs font-serif font-semibold text-paper-200">
+                      Vừa rèn
+                    </span>
+                    <span className="font-mono text-[10px] sm:text-xs font-bold text-gold-300">
+                      LC: {formatNumber(gearScore(pendingGear))}
+                    </span>
+                  </div>
+
+                  <GearCardItem gear={pendingGear} isNew />
+                </div>
               </div>
             </div>
           </div>
@@ -348,31 +387,69 @@ export function ForgeScreen() {
           </div>
         </div>
       ) : (
-        /* KHI CHƯA CÓ PENDING GEAR: NÚT ĐẬP ĐỒ TO BẢN HOÀNH TRÁNG */
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-paper-400/20 bg-ink-900/60 p-6 sm:p-8 text-center backdrop-blur-md">
+        /* KHI CHƯA CÓ PENDING GEAR: NÚT ĐẬP ĐỒ TO BẢN HOÀNH TRÁNG / TRẠNG THÁI AUTO CỰC ÊM */
+        <div className="flex min-h-[410px] sm:min-h-[430px] flex-col items-center justify-center rounded-2xl border border-paper-400/20 bg-ink-900/60 p-6 sm:p-8 text-center backdrop-blur-md">
           {/* Lò luyện khí khói lửa */}
-          <div className="relative mb-4 sm:mb-6 flex h-28 w-28 sm:h-36 sm:w-36 items-center justify-center rounded-full bg-gradient-to-b from-ink-800 to-ink-950 border-2 border-gold-500/30 shadow-[0_0_30px_rgba(245,158,11,0.15)]">
-            <IconCauldron className="h-16 w-16 sm:h-20 sm:w-20 text-gold-400/80 drop-shadow-[0_0_15px_rgba(245,158,11,0.4)]" />
-            <div className="absolute inset-0 rounded-full border border-gold-500/20 animate-ping opacity-20 pointer-events-none" />
+          <div
+            className={`relative mb-4 sm:mb-5 flex h-28 w-28 sm:h-36 sm:w-36 items-center justify-center rounded-full bg-gradient-to-b from-ink-800 to-ink-950 border-2 transition-all duration-300 ${
+              isAutoForging
+                ? 'border-vermilion-500/70 shadow-[0_0_35px_rgba(239,68,68,0.35)] scale-105'
+                : 'border-gold-500/30 shadow-[0_0_30px_rgba(245,158,11,0.15)]'
+            }`}
+          >
+            <IconCauldron
+              className={`h-16 w-16 sm:h-20 sm:w-20 transition-all duration-300 ${
+                isAutoForging
+                  ? 'text-vermilion-400 drop-shadow-[0_0_20px_rgba(239,68,68,0.6)] animate-pulse'
+                  : 'text-gold-400/80 drop-shadow-[0_0_15px_rgba(245,158,11,0.4)]'
+              }`}
+            />
+            <div
+              className={`absolute inset-0 rounded-full border pointer-events-none ${
+                isAutoForging
+                  ? 'border-vermilion-500/40 animate-ping opacity-30'
+                  : 'border-gold-500/20 animate-ping opacity-20'
+              }`}
+            />
           </div>
 
           <h2 className="font-serif text-base sm:text-lg font-bold text-paper-200">
-            Cửu U Chân Hỏa Lô
+            {isAutoForging ? 'Đang Tự Động Khai Lò... 🔥' : 'Cửu U Chân Hỏa Lô'}
           </h2>
-          <p className="mt-1 max-w-md text-[11px] sm:text-xs text-paper-400">
-            Mỗi lần khai lò tiêu hao 1 Chân Hỏa, rèn ra trang bị ngẫu nhiên 12 ô phù hợp cảnh giới hiện tại (Cấp {getForgeGearTier(state)}).
-          </p>
 
-          <button
-            type="button"
-            onClick={() => forgeGear()}
-            disabled={forge.fireCount <= 0 || isAutoForging}
-            className="mt-5 flex items-center justify-center gap-2 rounded-2xl border-2 border-gold-500/60 bg-gradient-to-r from-amber-600 via-gold-600 to-amber-700 px-6 sm:px-8 py-3 sm:py-3.5 font-serif text-sm sm:text-base font-bold text-ink-950 shadow-[0_0_20px_rgba(245,158,11,0.4)] transition-all active:scale-95 hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <span className="text-lg sm:text-xl">🔥</span>
-            <span>ĐẬP LÔ LUYỆN KHÍ</span>
-            <span className="text-[11px] sm:text-xs font-mono font-normal opacity-90">(-1 🔥)</span>
-          </button>
+          <div className="mt-1 min-h-[2rem] flex items-center justify-center">
+            {isAutoForging ? (
+              <span className="inline-block rounded-full bg-ink-950/80 border border-paper-400/20 px-3 py-1 font-serif text-xs text-paper-200 animate-fade-in shadow">
+                {lastAutoLog ?? 'Đang thiêu đốt Chân Hỏa tôi luyện thiên địa thần binh...'}
+              </span>
+            ) : (
+              <p className="max-w-md text-[11px] sm:text-xs text-paper-400">
+                Mỗi lần khai lò tiêu hao 1 Chân Hỏa, rèn ra trang bị ngẫu nhiên 12 ô phù hợp cảnh giới hiện tại (Cấp {getForgeGearTier(state)}).
+              </p>
+            )}
+          </div>
+
+          {isAutoForging ? (
+            <button
+              type="button"
+              onClick={() => setIsAutoForging(false)}
+              className="mt-5 flex items-center justify-center gap-2 rounded-2xl border-2 border-vermilion-500/70 bg-gradient-to-r from-vermilion-700 via-red-600 to-vermilion-700 px-6 sm:px-8 py-3 sm:py-3.5 font-serif text-sm sm:text-base font-bold text-paper-100 shadow-[0_0_25px_rgba(239,68,68,0.5)] transition-all active:scale-95 hover:brightness-110 animate-pulse"
+            >
+              <span className="text-base sm:text-lg">⏹</span>
+              <span>DỪNG TỰ ĐỘNG</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => forgeGear()}
+              disabled={forge.fireCount <= 0}
+              className="mt-5 flex items-center justify-center gap-2 rounded-2xl border-2 border-gold-500/60 bg-gradient-to-r from-amber-600 via-gold-600 to-amber-700 px-6 sm:px-8 py-3 sm:py-3.5 font-serif text-sm sm:text-base font-bold text-ink-950 shadow-[0_0_20px_rgba(245,158,11,0.4)] transition-all active:scale-95 hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <span className="text-lg sm:text-xl">🔥</span>
+              <span>ĐẬP LÔ LUYỆN KHÍ</span>
+              <span className="text-[11px] sm:text-xs font-mono font-normal opacity-90">(-1 🔥)</span>
+            </button>
+          )}
         </div>
       )}
 
