@@ -1,6 +1,7 @@
+import { simulateAbodeTick } from './abode'
 import { getQiRate } from './cultivation'
 import { getStoneRate } from './economy'
-import type { GameState } from './types'
+import type { GameState, Rng } from './types'
 
 /**
  * Advance the simulation by `dtMs` real milliseconds. Pure; returns a new state.
@@ -10,7 +11,7 @@ import type { GameState } from './types'
  * count for the whole step; acceptable for sub-second live ticks, and offline
  * progress is deliberately generous).
  */
-export function tick(state: GameState, dtMs: number): GameState {
+export function tick(state: GameState, dtMs: number, rng: Rng = Math.random): GameState {
   if (dtMs <= 0) return state
   // Optional: the world holds its breath while a decision is pending.
   if (state.pendingEvent && state.settings.pauseOnEvent) return state
@@ -21,7 +22,7 @@ export function tick(state: GameState, dtMs: number): GameState {
   const buffs = state.buffs.some((b) => b.expiresAtMs <= playedMs)
     ? state.buffs.filter((b) => b.expiresAtMs > playedMs)
     : state.buffs
-  return {
+  const next: GameState = {
     ...state,
     qi: state.qi + qiGain,
     stones: state.stones + stoneGain,
@@ -34,4 +35,5 @@ export function tick(state: GameState, dtMs: number): GameState {
       stonesTotal: state.stats.stonesTotal + stoneGain,
     },
   }
+  return simulateAbodeTick(next, rng)
 }

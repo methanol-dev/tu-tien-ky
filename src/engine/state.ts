@@ -2,7 +2,22 @@ import { REGIONS } from '@/content/regions'
 import { DAYS_PER_YEAR, FIRST_EVENT_AT_MS, JOURNEY_WALK_MS, SAVE_VERSION, STARTING_AGE_YEARS } from './constants'
 import { createInitialForge } from './forge'
 import { createInitialFormation } from './formation'
-import type { GameState, JourneyState } from './types'
+import type { AbodeState, GameState, JourneyState } from './types'
+
+export function createInitialAbode(): AbodeState {
+  return {
+    tier: 1,
+    facilities: {
+      gatheringArray: { level: 0 },
+      herbGarden: { level: 0 },
+      paperPuppets: { level: 0 },
+      spiritSpring: { level: 0 },
+      spiritBeast: { level: 0 },
+    },
+    lastHerbTickMs: 0,
+    storedHerbs: {},
+  }
+}
 
 export function createInitialJourney(regionId: string = REGIONS[0].id): JourneyState {
   return {
@@ -104,5 +119,6 @@ export function createInitialState(now: number = Date.now()): GameState {
       points: 0,
       claimedMilestones: [],
     },
+    abode: createInitialAbode(),
   }
 }

@@ -1,3 +1,4 @@
+import type { AbodeFacilityId } from '@/content/abode'
 import type { AffixKey, Rarity } from '@/content/affixes'
 import type { ClassId, CultivationPath } from '@/content/classes'
 import type { GearSlot } from '@/content/gear'
@@ -235,6 +236,17 @@ export interface WeeklyEventState {
   claimedMilestones: number[]
 }
 
+export interface AbodeFacilityState {
+  level: number
+}
+
+export interface AbodeState {
+  tier: number
+  facilities: Record<AbodeFacilityId, AbodeFacilityState>
+  lastHerbTickMs: number
+  storedHerbs: Record<string, number>
+}
+
 export interface GameState {
   version: number
   /** Epoch ms when this save was created. */
@@ -296,6 +308,7 @@ export interface GameState {
   growthFund: GrowthFundState
   relief: EmergencyReliefState
   weeklyEvent: WeeklyEventState
+  abode: AbodeState
 }
 
 /** Random source in [0, 1). Injected so tests and simulations are deterministic. */

@@ -287,4 +287,22 @@ describe('v5 -> v6 (Phase 9: journey + gear)', () => {
     expect(r.state.weeklyEvent.points).toBe(0)
     expect(r.state.weeklyEvent.cycleWeek).toBe(0)
   })
+
+  it('migrates v14 to v15 initializing abode state with Ngo Ne Binh', () => {
+    const v14 = {
+      ...createInitialState(0),
+      version: 14,
+    }
+    const r = deserialize(JSON.stringify(v14))
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.state.version).toBe(SAVE_VERSION)
+    expect(r.state.abode.tier).toBe(1)
+    expect(r.state.abode.facilities.gatheringArray.level).toBe(0)
+    expect(r.state.abode.facilities.herbGarden.level).toBe(0)
+    expect(r.state.abode.facilities.paperPuppets.level).toBe(0)
+    expect(r.state.abode.facilities.spiritSpring.level).toBe(0)
+    expect(r.state.abode.facilities.spiritBeast.level).toBe(0)
+    expect(r.state.abode.storedHerbs).toEqual({})
+  })
 })

@@ -32,6 +32,26 @@ function mapLegacyRealmIndex(oldIdx: unknown): number {
  * Bump SAVE_VERSION, add `MIGRATIONS[old] = ...`, update schema.ts. No exceptions.
  */
 export const MIGRATIONS: Record<number, Migration> = {
+  // 14 -> 15: Bổ sung Hệ thống Động Phủ Kiếm Lai (AbodeState)
+  14: (raw) => {
+    const playedMs = typeof raw.playedMs === 'number' ? raw.playedMs : 0
+    return {
+      ...raw,
+      version: 15,
+      abode: {
+        tier: 1,
+        facilities: {
+          gatheringArray: { level: 0 },
+          herbGarden: { level: 0 },
+          paperPuppets: { level: 0 },
+          spiritSpring: { level: 0 },
+          spiritBeast: { level: 0 },
+        },
+        lastHerbTickMs: playedMs,
+        storedHerbs: {},
+      },
+    }
+  },
   // 13 -> 14: Bổ sung Quỹ Trưởng Thành (GrowthFund), Gói Cứu Viện (Relief), Sự Kiện Tuần (WeeklyEvent)
   13: (raw) => {
     return {

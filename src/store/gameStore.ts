@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import type { AbodeFacilityId } from '@/content/abode'
 import type { ChestKind, Rarity } from '@/content/affixes'
 import type { ClassId, CultivationPath } from '@/content/classes'
 import type { GearSlot } from '@/content/gear'
@@ -48,6 +49,9 @@ import {
   unlockPremiumGrowthFund as engineUnlockPremiumGrowthFund,
   claimReliefPack as engineClaimReliefPack,
   dismissReliefPack as engineDismissReliefPack,
+  upgradeAbodeTier as engineUpgradeAbodeTier,
+  upgradeFacility as engineUpgradeFacility,
+  harvestAbodeHerbs as engineHarvestAbodeHerbs,
   claimWeeklyMilestone as engineClaimWeeklyMilestone,
   forgeNatalSword as engineForgeNatalSword,
   temperNatalSword as engineTemperNatalSword,
@@ -178,6 +182,9 @@ export interface GameStore {
   equipPendingGear: () => void
   buyFire: (count: number) => boolean
   updateForgeFilters: (filters: Partial<ForgeAutoFilters>) => void
+  upgradeAbodeTier: () => boolean
+  upgradeFacility: (id: AbodeFacilityId) => boolean
+  harvestAbode: () => boolean
   changeClass: (classId: ClassId) => boolean
   setCultivationPath: (path: CultivationPath, classId: ClassId) => boolean
   resolveBolt: (action: TribulationAction) => boolean
@@ -499,6 +506,41 @@ export function createGameStore(deps: GameStoreDeps = {}) {
       updateForgeFilters: (filters: Partial<ForgeAutoFilters>) => {
         set((s) => ({ state: engineUpdateForgeFilters(s.state, filters) }))
         get().save()
+      },
+
+      upgradeAbodeTier: () => {
+        const res = engineUpgradeAbodeTier(get().state)
+        if (!res.ok) {
+          get().notify(res.error, 'error')
+          return false
+        }
+        set({ state: res.state })
+        get().save()
+        get().notify('Động phủ thăng hoa tiến nhập cảnh giới mới!', 'success')
+        return true
+      },
+
+      upgradeFacility: (id: AbodeFacilityId) => {
+        const res = engineUpgradeFacility(get().state, id)
+        if (!res.ok) {
+          get().notify(res.error, 'error')
+          return false
+        }
+        set({ state: res.state })
+        get().save()
+        return true
+      },
+
+      harvestAbode: () => {
+        const res = engineHarvestAbodeHerbs(get().state)
+        if (!res.ok) {
+          get().notify(res.error, 'info')
+          return false
+        }
+        set({ state: res.state.state })
+        get().save()
+        get().notify('Đã thu hoạch toàn bộ dược liệu trong Động Phủ!', 'success')
+        return true
       },
 
       changeClass: (classId) => apply(engineChangeClass(get().state, classId)),

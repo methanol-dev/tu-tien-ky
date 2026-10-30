@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { CLASS_BY_ID } from '@/content/classes'
 import {
   canClaimGrowthFund,
+  canUpgradeAbodeTier,
   checkReliefTrigger,
   formatCombatPower,
   getCombatPower,
@@ -60,6 +61,11 @@ export default function App() {
   const screen = useGameStore((s) => s.screen)
   const setScreen = useGameStore((s) => s.setScreen)
   const stones = useGameStore((s) => s.state.stones)
+  const abodeAlert = useGameStore(
+    (s) =>
+      canUpgradeAbodeTier(s.state).can ||
+      Object.values(s.state.abode?.storedHerbs ?? {}).some((c) => c > 0),
+  )
   const alchemyReady = useGameStore((s) => isAlchemyReady(s.state))
   const forgeAlert = useGameStore((s) => s.state.forge.pendingGear !== null || s.state.forge.fireCount >= 20)
   const journeyAlert = useGameStore((s) => s.state.journey.chests.red > 0 || s.state.journey.chests.normal >= 10)
@@ -286,6 +292,7 @@ export default function App() {
           onChange={setScreen}
           state={state}
           onNotifyLocked={(msg) => notify(msg, 'info')}
+          abodeAlert={abodeAlert}
           alchemyReady={alchemyReady}
           forgeAlert={forgeAlert}
           journeyAlert={journeyAlert}
@@ -304,6 +311,7 @@ export default function App() {
           onChange={setScreen}
           state={state}
           onNotifyLocked={(msg) => notify(msg, 'info')}
+          abodeAlert={abodeAlert}
           alchemyReady={alchemyReady}
           forgeAlert={forgeAlert}
           journeyAlert={journeyAlert}

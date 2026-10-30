@@ -109,6 +109,23 @@ const natalSwordSchema = z.object({
   talents: z.array(swordTalentSchema).max(10),
 })
 
+const abodeFacilitySchema = z.object({
+  level: z.number().int().nonnegative(),
+})
+
+const abodeSchema = z.object({
+  tier: z.number().int().min(1).max(10),
+  facilities: z.object({
+    gatheringArray: abodeFacilitySchema,
+    herbGarden: abodeFacilitySchema,
+    paperPuppets: abodeFacilitySchema,
+    spiritSpring: abodeFacilitySchema,
+    spiritBeast: abodeFacilitySchema,
+  }),
+  lastHerbTickMs: z.number().nonnegative(),
+  storedHerbs: countMap,
+})
+
 /** Schema for the CURRENT save version. Older versions go through migrations first. */
 export const gameStateSchema = z.object({
   version: z.literal(SAVE_VERSION),
@@ -246,6 +263,7 @@ export const gameStateSchema = z.object({
     points: z.number().int().nonnegative(),
     claimedMilestones: z.array(z.number().int().nonnegative()),
   }),
+  abode: abodeSchema,
 })
 
 export type GameStateSchema = z.infer<typeof gameStateSchema>

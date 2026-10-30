@@ -74,10 +74,27 @@ export function getModifiers(state: GameState): Modifiers {
   const classDef = CLASS_BY_ID[state.classId] ?? CLASS_BY_ID['kiem-tu']
   const cm = classDef.multipliers
 
+  if (state.abode?.facilities) {
+    const qLvl = state.abode.facilities.gatheringArray?.level ?? 0
+    const pLvl = state.abode.facilities.paperPuppets?.level ?? 0
+    const sLvl = state.abode.facilities.spiritSpring?.level ?? 0
+    const bLvl = state.abode.facilities.spiritBeast?.level ?? 0
+
+    const puppetQiBonus = pLvl >= 3 ? 0.1 : 0
+    qiAdd += qLvl * 0.05 + puppetQiBonus
+
+    const puppetStoneBonus = pLvl >= 2 ? 0.1 : 0
+    stoneAdd += sLvl * 0.05 + puppetStoneBonus
+
+    if (bLvl > 0) {
+      mods.lootChanceMult += bLvl * 0.02
+    }
+  }
+
   stoneAdd += gear.stoneRate
   mods.qiRateMult = (1 + qiAdd) * (1 + gear.qiRate) * (cm.qiRate ?? 1)
   mods.stoneRateMult = (1 + stoneAdd) * (cm.stoneRate ?? 1)
-  mods.lootChanceMult = (1 + gear.lootChance) * (cm.lootChance ?? 1)
+  mods.lootChanceMult = (mods.lootChanceMult + gear.lootChance) * (cm.lootChance ?? 1)
 
   for (const buff of state.buffs) {
     if (buff.expiresAtMs > state.playedMs) mods.qiRateMult *= buff.qiRateMult

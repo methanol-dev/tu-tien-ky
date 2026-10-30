@@ -36,6 +36,7 @@ interface NavBarProps {
   onChange: (s: Screen) => void
   state?: GameState
   onNotifyLocked?: (msg: string) => void
+  abodeAlert?: boolean
   alchemyReady?: boolean
   forgeAlert?: boolean
   journeyAlert?: boolean
@@ -47,6 +48,7 @@ export function NavBar({
   onChange,
   state,
   onNotifyLocked,
+  abodeAlert,
   alchemyReady,
   forgeAlert,
   journeyAlert,
@@ -63,7 +65,8 @@ export function NavBar({
 
     const hasAlert =
       !isLocked &&
-      ((t.id === 'alchemy' && alchemyReady) ||
+      ((t.id === 'cultivate' && abodeAlert) ||
+        (t.id === 'alchemy' && alchemyReady) ||
         (t.id === 'forge' && forgeAlert) ||
         (t.id === 'journey' && journeyAlert) ||
         (t.id === 'legacy' && legacyAlert) ||
