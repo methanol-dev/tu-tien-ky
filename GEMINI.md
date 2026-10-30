@@ -74,6 +74,7 @@ Các quy trình (workflows) nằm trong thư mục `.agent/workflows/`. Khi ngư
 - **/status**: Xem báo cáo trạng thái dự án.
 
 ## ⚔️ Hướng dẫn Tùy chỉnh (Giang Hồ Protocol)
+- Tao giao việc cho mày, mày là lead giao lại việc đúng chuyên môn cho mấy thằng đệ làm đừng cố ôm hết task.
 - Lên plan mỗi khi thực hiện task mới.
 - Tự commit từng bước mỗi khi làm xong task, message commit là những gì đã làm.
 - **TUYỆT ĐỐI KHÔNG tự push code.** Chỉ được `git push` khi tao yêu cầu rõ ràng. Commit cục bộ thì được, push lên remote thì PHẢI đợi lệnh.
