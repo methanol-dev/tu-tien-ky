@@ -270,16 +270,16 @@ export function ForgeScreen() {
           const pityRemaining = Math.max(0, 10 - pityCount)
           return (
             <div className="mt-3 rounded-xl border border-purple-500/30 bg-purple-950/20 p-2.5 sm:p-3">
-              <div className="flex items-center justify-between text-[11px] sm:text-xs">
-                <span className="font-serif font-bold text-purple-300 flex items-center gap-1.5">
+              <div className="flex items-center justify-between gap-1 text-[11px] sm:text-xs">
+                <span className="font-serif font-bold text-purple-300 flex items-center gap-1 shrink-0">
                   <span>🎁</span>
-                  <span>Khí Vận Đan Lô (Bảo Hiểm)</span>
+                  <span>Bảo Hiểm Khí Vận</span>
                 </span>
-                <span className="font-mono text-[11px] sm:text-xs font-semibold text-purple-200">
+                <span className="font-mono text-[11px] sm:text-xs font-semibold text-purple-200 text-right truncate">
                   {pityRemaining === 0 ? (
-                    <span className="text-amber-300 animate-pulse font-bold">✨ LẦN SAU 100% NỔ BẢO VẬT!</span>
+                    <span className="text-amber-300 animate-pulse font-bold">✨ Lần sau 100% ra Bảo phẩm+</span>
                   ) : (
-                    <span>Còn <strong className="text-gold-400 font-bold">{pityRemaining}</strong> lần chắc chắn ra Bảo phẩm+</span>
+                    <span>Còn <strong className="text-gold-400 font-bold">{pityRemaining}</strong> lần nổ Bảo phẩm+</span>
                   )}
                 </span>
               </div>
@@ -327,11 +327,11 @@ export function ForgeScreen() {
         )}
       </div>
 
-      {/* 2. KHUNG TRUNG TÂM: CỐ ĐỊNH CHIỀU CAO (ZERO LAYOUT SHIFT) */}
+      {/* 2. KHUNG TRUNG TÂM: CỐ ĐỊNH CHIỀU CAO TUYỆT ĐỐI (ZERO LAYOUT SHIFT) */}
       {pendingGear && comparison ? (
-        <div className="flex min-h-[410px] sm:min-h-[430px] flex-col justify-between rounded-2xl border border-gold-500/40 bg-ink-900/90 p-3.5 sm:p-5 backdrop-blur-md shadow-2xl animate-fade-in">
-          <div>
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-1 text-center sm:text-left border-b border-paper-400/15 pb-2.5 mb-3">
+        <div className="flex h-[420px] sm:h-[450px] max-h-[420px] sm:max-h-[450px] flex-col justify-between rounded-2xl border border-gold-500/40 bg-ink-900/90 p-3.5 sm:p-5 backdrop-blur-md shadow-2xl animate-fade-in overflow-hidden">
+          <div className="flex-1 flex flex-col justify-between min-h-0">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-1 text-center sm:text-left border-b border-paper-400/15 pb-2 mb-2 sm:mb-3 shrink-0">
               <span className="inline-block rounded-full bg-vermilion-500/20 border border-vermilion-500/40 px-2.5 py-0.5 text-xs font-serif text-vermilion-300">
                 🔥 Bảo Vật Vừa Xuất Lò · Ô {targetSlot ? SLOT_NAME[targetSlot] : ''}
               </span>
@@ -355,11 +355,11 @@ export function ForgeScreen() {
             </div>
 
             {/* Bố Cục Side-by-Side 2 Cột Song Song Ngay Cả Trên Mobile */}
-            <div className="grid grid-cols-2 gap-2 sm:gap-4">
+            <div className="grid grid-cols-2 gap-2 sm:gap-4 flex-1 min-h-0">
               {/* Cột Trái: Đang mặc trên người */}
-              <div className="rounded-xl border border-paper-400/20 bg-ink-950/70 p-2.5 sm:p-4 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between border-b border-paper-400/10 pb-1.5 mb-1.5">
+              <div className="rounded-xl border border-paper-400/20 bg-ink-950/70 p-2.5 sm:p-3.5 flex flex-col justify-between min-h-0">
+                <div className="flex flex-col min-h-0 flex-1">
+                  <div className="flex items-center justify-between border-b border-paper-400/10 pb-1 mb-1 shrink-0">
                     <span className="text-[10px] sm:text-xs font-serif text-paper-400">Đang mặc</span>
                     {equippedGear && (
                       <span className="font-mono text-[10px] sm:text-xs text-gold-400">
@@ -371,7 +371,7 @@ export function ForgeScreen() {
                   {equippedGear ? (
                     <GearCardItem gear={equippedGear} />
                   ) : (
-                    <div className="flex h-24 sm:h-36 items-center justify-center text-[11px] text-paper-500 italic text-center">
+                    <div className="flex flex-1 items-center justify-center text-[11px] text-paper-500 italic text-center">
                       Ô này đang trống
                     </div>
                   )}
@@ -380,10 +380,10 @@ export function ForgeScreen() {
 
               {/* Cột Phải: Món Mới Xuất Lò */}
               <div
-                className={`rounded-xl border ${RARITY_BORDER_CLASSES[pendingGear.rarity]} ${RARITY_BG_CLASSES[pendingGear.rarity]} p-2.5 sm:p-4 relative overflow-hidden flex flex-col justify-between`}
+                className={`rounded-xl border ${RARITY_BORDER_CLASSES[pendingGear.rarity]} ${RARITY_BG_CLASSES[pendingGear.rarity]} p-2.5 sm:p-3.5 relative overflow-hidden flex flex-col justify-between min-h-0`}
               >
-                <div>
-                  <div className="flex items-center justify-between border-b border-paper-400/20 pb-1.5 mb-1.5">
+                <div className="flex flex-col min-h-0 flex-1">
+                  <div className="flex items-center justify-between border-b border-paper-400/20 pb-1 mb-1 shrink-0">
                     <span className="text-[10px] sm:text-xs font-serif font-semibold text-paper-200">
                       Vừa rèn
                     </span>
@@ -398,12 +398,12 @@ export function ForgeScreen() {
             </div>
           </div>
 
-          {/* STICKY ACTION BAR TRÊN MOBILE (Hoặc inline trên Desktop): Bấm 1 chạm không cần cuộn */}
-          <div className="mt-4 flex gap-2 sm:gap-3">
+          {/* STICKY ACTION BAR TRÊN MOBILE & DESKTOP: Vị trí đáy cố định */}
+          <div className="mt-3 sm:mt-4 flex gap-2 sm:gap-3 shrink-0">
             <button
               type="button"
               onClick={equipPendingGear}
-              className={`flex-[1.4] rounded-xl border py-3 sm:py-3.5 font-serif text-xs sm:text-sm font-bold text-paper-100 shadow-xl transition-all active:scale-95 ${
+              className={`flex-[1.4] rounded-xl border py-2.5 sm:py-3.5 font-serif text-xs sm:text-sm font-bold text-paper-100 shadow-xl transition-all active:scale-95 ${
                 cpDelta?.isUpgrade
                   ? 'border-emerald-400/80 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 animate-pulse'
                   : 'border-emerald-500/50 bg-gradient-to-r from-emerald-700 to-teal-700'
@@ -414,76 +414,81 @@ export function ForgeScreen() {
             <button
               type="button"
               onClick={salvagePendingGear}
-              className="flex-1 rounded-xl border border-paper-400/30 bg-ink-800/90 py-3 sm:py-3.5 font-serif text-xs sm:text-sm font-medium text-paper-300 shadow transition-colors active:scale-95 hover:bg-ink-700 hover:text-paper-100"
+              className="flex-1 rounded-xl border border-paper-400/30 bg-ink-800/90 py-2.5 sm:py-3.5 font-serif text-xs sm:text-sm font-medium text-paper-300 shadow transition-colors active:scale-95 hover:bg-ink-700 hover:text-paper-100"
             >
               ♻️ Phân Giải
             </button>
           </div>
         </div>
       ) : (
-        /* KHI CHƯA CÓ PENDING GEAR: NÚT ĐẬP ĐỒ TO BẢN HOÀNH TRÁNG / TRẠNG THÁI AUTO CỰC ÊM */
-        <div className="flex min-h-[410px] sm:min-h-[430px] flex-col items-center justify-center rounded-2xl border border-paper-400/20 bg-ink-900/60 p-6 sm:p-8 text-center backdrop-blur-md">
-          {/* Lò luyện khí khói lửa */}
-          <div
-            className={`relative mb-4 sm:mb-5 flex h-28 w-28 sm:h-36 sm:w-36 items-center justify-center rounded-full bg-gradient-to-b from-ink-800 to-ink-950 border-2 transition-all duration-300 ${
-              isAutoForging
-                ? 'border-vermilion-500/70 shadow-[0_0_35px_rgba(239,68,68,0.35)] scale-105'
-                : 'border-gold-500/30 shadow-[0_0_30px_rgba(245,158,11,0.15)]'
-            }`}
-          >
-            <IconCauldron
-              className={`h-16 w-16 sm:h-20 sm:w-20 transition-all duration-300 ${
-                isAutoForging
-                  ? 'text-vermilion-400 drop-shadow-[0_0_20px_rgba(239,68,68,0.6)] animate-pulse'
-                  : 'text-gold-400/80 drop-shadow-[0_0_15px_rgba(245,158,11,0.4)]'
-              }`}
-            />
+        /* KHI CHƯA CÓ PENDING GEAR: CÙNG CHIỀU CAO CỐ ĐỊNH, ĐAN LÔ KHÔNG BỊ GIẬT LAYOUT */
+        <div className="flex h-[420px] sm:h-[450px] max-h-[420px] sm:max-h-[450px] flex-col justify-between items-center rounded-2xl border border-paper-400/20 bg-ink-900/60 p-4 sm:p-6 text-center backdrop-blur-md overflow-hidden animate-fade-in">
+          {/* Cụm Lò Luyện Khí Căn Giữa Hoàn Hảo */}
+          <div className="flex-1 flex flex-col items-center justify-center min-h-0">
             <div
-              className={`absolute inset-0 rounded-full border pointer-events-none ${
+              className={`relative mb-3 sm:mb-4 flex h-24 w-24 sm:h-32 sm:w-32 items-center justify-center rounded-full bg-gradient-to-b from-ink-800 to-ink-950 border-2 transition-all duration-300 ${
                 isAutoForging
-                  ? 'border-vermilion-500/40 animate-ping opacity-30'
-                  : 'border-gold-500/20 animate-ping opacity-20'
+                  ? 'border-vermilion-500/70 shadow-[0_0_35px_rgba(239,68,68,0.35)] scale-105'
+                  : 'border-gold-500/30 shadow-[0_0_30px_rgba(245,158,11,0.15)]'
               }`}
-            />
+            >
+              <IconCauldron
+                className={`h-14 w-14 sm:h-18 sm:w-18 transition-all duration-300 ${
+                  isAutoForging
+                    ? 'text-vermilion-400 drop-shadow-[0_0_20px_rgba(239,68,68,0.6)] animate-pulse'
+                    : 'text-gold-400/80 drop-shadow-[0_0_15px_rgba(245,158,11,0.4)]'
+                }`}
+              />
+              <div
+                className={`absolute inset-0 rounded-full border pointer-events-none ${
+                  isAutoForging
+                    ? 'border-vermilion-500/40 animate-ping opacity-30'
+                    : 'border-gold-500/20 animate-ping opacity-20'
+                }`}
+              />
+            </div>
+
+            <h2 className="font-serif text-base sm:text-lg font-bold text-paper-200">
+              {isAutoForging ? 'Đang Tự Động Khai Lò... 🔥' : 'Cửu U Chân Hỏa Lô'}
+            </h2>
+
+            <div className="mt-1 min-h-[1.75rem] flex items-center justify-center px-2">
+              {isAutoForging ? (
+                <span className="inline-block rounded-full bg-ink-950/80 border border-paper-400/20 px-3 py-1 font-serif text-xs text-paper-200 animate-fade-in shadow truncate max-w-sm">
+                  {lastAutoLog ?? 'Đang thiêu đốt Chân Hỏa tôi luyện thiên địa thần binh...'}
+                </span>
+              ) : (
+                <p className="max-w-md text-[11px] sm:text-xs text-paper-400">
+                  Mỗi lần khai lò tiêu hao 1 Chân Hỏa, rèn ra trang bị ngẫu nhiên 12 ô phù hợp cảnh giới hiện tại (Cấp {getForgeGearTier(state)}).
+                </p>
+              )}
+            </div>
           </div>
 
-          <h2 className="font-serif text-base sm:text-lg font-bold text-paper-200">
-            {isAutoForging ? 'Đang Tự Động Khai Lò... 🔥' : 'Cửu U Chân Hỏa Lô'}
-          </h2>
-
-          <div className="mt-1 min-h-[2rem] flex items-center justify-center">
+          {/* Nút Khai Lò Ghim Đáy - Cùng Vị Trí & Kích Thước với Hàng Nút Hành Động */}
+          <div className="w-full max-w-md mt-3 sm:mt-4 shrink-0">
             {isAutoForging ? (
-              <span className="inline-block rounded-full bg-ink-950/80 border border-paper-400/20 px-3 py-1 font-serif text-xs text-paper-200 animate-fade-in shadow">
-                {lastAutoLog ?? 'Đang thiêu đốt Chân Hỏa tôi luyện thiên địa thần binh...'}
-              </span>
+              <button
+                type="button"
+                onClick={() => setIsAutoForging(false)}
+                className="w-full flex items-center justify-center gap-2 rounded-xl border-2 border-vermilion-500/70 bg-gradient-to-r from-vermilion-700 via-red-600 to-vermilion-700 py-2.5 sm:py-3.5 font-serif text-xs sm:text-sm font-bold text-paper-100 shadow-[0_0_25px_rgba(239,68,68,0.5)] transition-all active:scale-95 hover:brightness-110 animate-pulse"
+              >
+                <span className="text-base sm:text-lg">⏹</span>
+                <span>DỪNG TỰ ĐỘNG</span>
+              </button>
             ) : (
-              <p className="max-w-md text-[11px] sm:text-xs text-paper-400">
-                Mỗi lần khai lò tiêu hao 1 Chân Hỏa, rèn ra trang bị ngẫu nhiên 12 ô phù hợp cảnh giới hiện tại (Cấp {getForgeGearTier(state)}).
-              </p>
+              <button
+                type="button"
+                onClick={() => forgeGear()}
+                disabled={forge.fireCount <= 0}
+                className="w-full flex items-center justify-center gap-2 rounded-xl border-2 border-gold-500/60 bg-gradient-to-r from-amber-600 via-gold-600 to-amber-700 py-2.5 sm:py-3.5 font-serif text-xs sm:text-sm font-bold text-ink-950 shadow-[0_0_20px_rgba(245,158,11,0.4)] transition-all active:scale-95 hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <span className="text-base sm:text-lg">🔥</span>
+                <span>ĐẬP LÔ LUYỆN KHÍ</span>
+                <span className="text-[11px] font-mono font-normal opacity-90">(-1 🔥)</span>
+              </button>
             )}
           </div>
-
-          {isAutoForging ? (
-            <button
-              type="button"
-              onClick={() => setIsAutoForging(false)}
-              className="mt-5 flex items-center justify-center gap-2 rounded-2xl border-2 border-vermilion-500/70 bg-gradient-to-r from-vermilion-700 via-red-600 to-vermilion-700 px-6 sm:px-8 py-3 sm:py-3.5 font-serif text-sm sm:text-base font-bold text-paper-100 shadow-[0_0_25px_rgba(239,68,68,0.5)] transition-all active:scale-95 hover:brightness-110 animate-pulse"
-            >
-              <span className="text-base sm:text-lg">⏹</span>
-              <span>DỪNG TỰ ĐỘNG</span>
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => forgeGear()}
-              disabled={forge.fireCount <= 0}
-              className="mt-5 flex items-center justify-center gap-2 rounded-2xl border-2 border-gold-500/60 bg-gradient-to-r from-amber-600 via-gold-600 to-amber-700 px-6 sm:px-8 py-3 sm:py-3.5 font-serif text-sm sm:text-base font-bold text-ink-950 shadow-[0_0_20px_rgba(245,158,11,0.4)] transition-all active:scale-95 hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <span className="text-lg sm:text-xl">🔥</span>
-              <span>ĐẬP LÔ LUYỆN KHÍ</span>
-              <span className="text-[11px] sm:text-xs font-mono font-normal opacity-90">(-1 🔥)</span>
-            </button>
-          )}
         </div>
       )}
 
@@ -554,7 +559,7 @@ const GearCardItem: FC<{ gear: GearInstance; isNew?: boolean }> = ({ gear, isNew
         <span className="flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-lg bg-ink-900 border border-paper-400/20 text-xs sm:text-sm font-serif">
           {def?.glyph ?? '⚔️'}
         </span>
-        <div className="overflow-hidden">
+        <div className="overflow-hidden min-w-0 flex-1">
           <div className="font-serif text-xs sm:text-sm font-bold text-paper-100 truncate" title={def?.name ?? gear.defId}>
             {def?.name ?? gear.defId}
           </div>
@@ -564,7 +569,7 @@ const GearCardItem: FC<{ gear: GearInstance; isNew?: boolean }> = ({ gear, isNew
         </div>
       </div>
 
-      <div className="mt-1 space-y-0.5 rounded-lg bg-ink-950/60 p-1.5 sm:p-2 text-[10px] sm:text-xs">
+      <div className="mt-1 space-y-0.5 rounded-lg bg-ink-950/60 p-1.5 sm:p-2 text-[10px] sm:text-xs max-h-24 sm:max-h-32 overflow-y-auto">
         {gear.affixes.map((affix, idx) => (
           <div key={idx} className="flex justify-between text-paper-300">
             <span className="truncate pr-1">{affix.key.toUpperCase()}</span>
