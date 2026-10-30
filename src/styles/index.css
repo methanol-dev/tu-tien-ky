@@ -47,6 +47,12 @@ body,
   min-height: 100dvh;
 }
 
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 body {
   @apply bg-ink-900 text-paper-200 font-body antialiased;
   background-image:

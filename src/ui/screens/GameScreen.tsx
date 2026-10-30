@@ -67,14 +67,15 @@ export function GameScreen() {
           <button
             type="button"
             onClick={() => setViewMode('abode')}
-            className={`relative flex flex-1 items-center justify-center gap-1.5 py-2 px-3 text-xs sm:text-sm font-serif font-medium rounded-md transition-all cursor-pointer ${
+            className={`relative flex flex-1 items-center justify-center gap-1.5 py-1.5 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm font-serif font-medium rounded-md transition-all cursor-pointer whitespace-nowrap ${
               viewMode === 'abode'
                 ? 'bg-ink-700 text-gold-400 shadow-sm border border-gold-500/30 font-bold'
                 : 'text-paper-400 hover:text-paper-200'
             }`}
           >
             <span>🏛️</span>
-            <span>Động Phủ Tiên Gia</span>
+            <span>Động Phủ</span>
+            <span className="hidden sm:inline">Tiên Gia</span>
             {hasAbodeAlert && (
               <span className="h-1.5 w-1.5 rounded-full bg-vermilion-500 animate-pulse ring-1 ring-ink-900" />
             )}
@@ -82,14 +83,15 @@ export function GameScreen() {
           <button
             type="button"
             onClick={() => setViewMode('cultivate')}
-            className={`relative flex flex-1 items-center justify-center gap-1.5 py-2 px-3 text-xs sm:text-sm font-serif font-medium rounded-md transition-all cursor-pointer ${
+            className={`relative flex flex-1 items-center justify-center gap-1.5 py-1.5 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm font-serif font-medium rounded-md transition-all cursor-pointer whitespace-nowrap ${
               viewMode === 'cultivate'
                 ? 'bg-ink-700 text-gold-400 shadow-sm border border-gold-500/30 font-bold'
                 : 'text-paper-400 hover:text-paper-200'
             }`}
           >
             <span>🧘</span>
-            <span>Đạo Thân Đả Tọa</span>
+            <span>Đạo Thân</span>
+            <span className="hidden sm:inline">Đả Tọa</span>
             {ready && (
               <span className="h-1.5 w-1.5 rounded-full bg-vermilion-500 animate-pulse ring-1 ring-ink-900" />
             )}
@@ -99,8 +101,8 @@ export function GameScreen() {
 
       {viewMode === 'abode' ? (
         /* GIAO DIỆN ĐỘNG PHỦ TIÊN GIA (CHÍNH THỐNG KIẾM LAI) */
-        <div className="grid gap-6 md:grid-cols-[1.25fr_1fr] md:items-start">
-          <section className="space-y-4">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-[1.25fr_1fr] md:items-start min-w-0 w-full">
+          <section className="space-y-4 min-w-0 w-full">
             <AbodePanel />
 
             {/* Bồ Đoàn Đả Tọa Tại Động Phủ */}
@@ -214,8 +216,8 @@ export function GameScreen() {
         </div>
       ) : (
         /* GIAO DIỆN ĐẠO THÂN ĐẢ TỌA TOÀN DIỆN */
-        <div className="grid gap-6 md:grid-cols-[1.25fr_1fr] md:items-start">
-          <section className="space-y-4">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-[1.25fr_1fr] md:items-start min-w-0 w-full">
+          <section className="space-y-4 min-w-0 w-full">
             {/* Khối Cảnh Giới & Đạo Thân */}
             <RealmPanel
               realm={realm}

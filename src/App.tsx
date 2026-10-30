@@ -181,19 +181,19 @@ export default function App() {
   const combatPower = getCombatPower(state)
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col gap-5 px-4 pt-5 pb-24 md:pb-8">
+    <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col gap-4 sm:gap-5 px-3 sm:px-4 pt-3 sm:pt-5 pb-24 md:pb-8 min-w-0 overflow-x-hidden">
       {/* 1. Single-Row Master Header (Logo, Đạo Thân, CP & Quick Actions) */}
-      <header className="flex items-center justify-between gap-2 sm:gap-4 border-b border-paper-400/15 pb-2.5">
+      <header className="flex items-center justify-between gap-1.5 sm:gap-4 border-b border-paper-400/15 pb-2 sm:pb-2.5 min-w-0 w-full">
         {/* Nhóm Trái: Thương hiệu Kiếm Lai & Lệnh Bài Đạo Thân */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           <div
-            className="flex items-baseline gap-1.5 cursor-pointer select-none group"
+            className="flex items-baseline gap-1 sm:gap-1.5 cursor-pointer select-none group"
             onClick={handleSecretLogoClick}
             role="button"
             tabIndex={0}
             title="Kiếm Lai · Tu Tiên Ký"
           >
-            <h1 className="font-han text-xl sm:text-2xl font-black tracking-widest text-paper-100 transition-transform active:scale-95 group-hover:text-gold-300 whitespace-nowrap">
+            <h1 className="font-han text-lg sm:text-2xl font-black tracking-wider sm:tracking-widest text-paper-100 transition-transform active:scale-95 group-hover:text-gold-300 whitespace-nowrap">
               Kiếm Lai
             </h1>
             <span className="hidden font-han text-xs text-gold-400/80 sm:inline whitespace-nowrap">· Tu Tiên Ký</span>
@@ -207,12 +207,12 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setCharacterModalOpen(true)}
-                className="flex items-center gap-1.5 sm:gap-2 rounded-full border border-gold-500/30 bg-ink-950/70 px-2 sm:px-2.5 py-1 text-xs text-paper-200 transition-all hover:border-gold-400 hover:bg-ink-800/80 active:scale-95 shadow-sm shrink-0 whitespace-nowrap cursor-pointer"
+                className="flex items-center gap-1 sm:gap-1.5 rounded-full border border-gold-500/30 bg-ink-950/70 px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-xs text-paper-200 transition-all hover:border-gold-400 hover:bg-ink-800/80 active:scale-95 shadow-sm shrink-0 whitespace-nowrap cursor-pointer"
                 title={`Đạo Thống: ${curClass.name} — Bấm xem hồ sơ Đạo Thân & Chỉ số`}
               >
                 {ClassIcon && (
                   <ClassIcon
-                    className="h-3.5 w-3.5 shrink-0"
+                    className="h-3 sm:h-3.5 w-3 sm:w-3.5 shrink-0"
                     style={{ color: curClass.accentColor }}
                   />
                 )}
@@ -220,8 +220,8 @@ export default function App() {
                   {curClass.name}
                 </span>
                 <span className="text-[10px] text-paper-400 font-sans ml-0.5 hidden sm:inline">Chỉ số</span>
-                <span className="flex items-center gap-1 rounded-full bg-gold-500/15 px-1.5 sm:px-2 py-0.5 font-mono font-bold text-gold-300 text-[11px]">
-                  <span className="text-xs">⚔️</span>
+                <span className="flex items-center gap-0.5 sm:gap-1 rounded-full bg-gold-500/15 px-1 sm:px-2 py-0.5 font-mono font-bold text-gold-300 text-[10px] sm:text-[11px]">
+                  <span className="text-[10px] sm:text-xs">⚔️</span>
                   <span>{formatCombatPower(combatPower)}</span>
                 </span>
               </button>
@@ -230,10 +230,10 @@ export default function App() {
         </div>
 
         {/* Nhóm Phải: Linh Thạch & Tiện Ích */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {/* Linh thạch */}
           <div
-            className="flex items-center gap-1 rounded-full border border-paper-400/15 bg-ink-950/60 px-2.5 py-1 font-serif text-xs sm:text-sm text-paper-200 tabular-nums shadow-sm shrink-0 whitespace-nowrap"
+            className="flex items-center gap-1 rounded-full border border-paper-400/15 bg-ink-950/60 px-2 sm:px-2.5 py-0.5 sm:py-1 font-serif text-xs sm:text-sm text-paper-200 tabular-nums shadow-sm shrink-0 whitespace-nowrap"
             title="Linh thạch"
           >
             <span aria-hidden className="text-gold-400 font-bold">◆</span>
@@ -244,10 +244,10 @@ export default function App() {
           <button
             type="button"
             onClick={() => setGrowthFundModalOpen(true)}
-            className="relative flex h-8 w-8 sm:h-8 sm:w-auto items-center justify-center sm:gap-1.5 rounded-full sm:rounded-md border border-amber-500/30 bg-ink-800/80 px-0 sm:px-2.5 text-xs text-paper-200 transition-colors hover:border-amber-400 hover:text-amber-300 shrink-0 cursor-pointer"
+            className="relative flex h-7 w-7 sm:h-8 sm:w-auto items-center justify-center sm:gap-1.5 rounded-full sm:rounded-md border border-amber-500/30 bg-ink-800/80 px-0 sm:px-2.5 text-xs text-paper-200 transition-colors hover:border-amber-400 hover:text-amber-300 shrink-0 cursor-pointer"
             title="Quỹ Trưởng Thành · Đạo Đồ Cơ Duyên"
           >
-            <span className="text-sm">🎁</span>
+            <span className="text-xs sm:text-sm">🎁</span>
             <span className="hidden sm:inline font-serif font-medium">Quỹ</span>
             {hasFundReward && (
               <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-vermilion-500 ring-2 ring-ink-950 animate-pulse" />
@@ -258,10 +258,10 @@ export default function App() {
           <button
             type="button"
             onClick={() => setWeeklyEventModalOpen(true)}
-            className="relative flex h-8 w-8 sm:h-8 sm:w-auto items-center justify-center sm:gap-1.5 rounded-full sm:rounded-md border border-gold-500/30 bg-ink-800/80 px-0 sm:px-2.5 text-xs text-paper-200 transition-colors hover:border-gold-400 hover:text-gold-300 shrink-0 cursor-pointer"
+            className="relative flex h-7 w-7 sm:h-8 sm:w-auto items-center justify-center sm:gap-1.5 rounded-full sm:rounded-md border border-gold-500/30 bg-ink-800/80 px-0 sm:px-2.5 text-xs text-paper-200 transition-colors hover:border-gold-400 hover:text-gold-300 shrink-0 cursor-pointer"
             title="Sự Kiện Tuần Hoàn & Bảng Vinh Danh"
           >
-            <span className="text-sm">🏆</span>
+            <span className="text-xs sm:text-sm">🏆</span>
             <span className="hidden sm:inline font-serif font-medium">Sự Kiện</span>
             {hasWeeklyReward && (
               <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-vermilion-500 ring-2 ring-ink-950 animate-pulse" />
@@ -272,14 +272,14 @@ export default function App() {
           <button
             type="button"
             onClick={() => setScreen('settings')}
-            className={`flex h-8 w-8 sm:h-8 sm:w-auto items-center justify-center sm:gap-1.5 rounded-full sm:rounded-md border px-0 sm:px-2.5 text-xs transition-colors shrink-0 cursor-pointer ${
+            className={`flex h-7 w-7 sm:h-8 sm:w-auto items-center justify-center sm:gap-1.5 rounded-full sm:rounded-md border px-0 sm:px-2.5 text-xs transition-colors shrink-0 cursor-pointer ${
               screen === 'settings'
                 ? 'border-gold-400 bg-gold-500/20 text-gold-300'
                 : 'border-paper-400/20 bg-ink-800/80 text-paper-300 hover:border-paper-300 hover:text-paper-100'
             }`}
             title="Cài đặt hệ thống & Âm thanh"
           >
-            <span className="text-sm">⚙️</span>
+            <span className="text-xs sm:text-sm">⚙️</span>
             <span className="hidden sm:inline font-serif font-medium">Cài đặt</span>
           </button>
         </div>
@@ -300,7 +300,7 @@ export default function App() {
         />
       </div>
 
-      <main className="flex-1">
+      <main className="flex-1 min-w-0 w-full">
         <Screen />
       </main>
 
