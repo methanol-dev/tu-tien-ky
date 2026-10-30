@@ -230,6 +230,7 @@ export const gameStateSchema = z.object({
       stopOnHigherScore: z.boolean(),
       minRarity: z.enum(['pham', 'linh', 'bao', 'tien', 'than']),
     }),
+    pityCount: z.number().int().nonnegative().optional().default(0),
   }),
   formation: z.object({
     playerSlot: z.enum([

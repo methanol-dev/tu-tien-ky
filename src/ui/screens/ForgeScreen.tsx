@@ -263,6 +263,40 @@ export function ForgeScreen() {
           </div>
         </div>
 
+        {/* Thanh Bảo Hiểm Khí Vận Đan Lô (Dopamine Pity Loop) */}
+        {(() => {
+          const pityCount = forge.pityCount ?? 0
+          const pityPercent = Math.min(100, Math.floor((pityCount / 10) * 100))
+          const pityRemaining = Math.max(0, 10 - pityCount)
+          return (
+            <div className="mt-3 rounded-xl border border-purple-500/30 bg-purple-950/20 p-2.5 sm:p-3">
+              <div className="flex items-center justify-between text-[11px] sm:text-xs">
+                <span className="font-serif font-bold text-purple-300 flex items-center gap-1.5">
+                  <span>🎁</span>
+                  <span>Khí Vận Đan Lô (Bảo Hiểm)</span>
+                </span>
+                <span className="font-mono text-[11px] sm:text-xs font-semibold text-purple-200">
+                  {pityRemaining === 0 ? (
+                    <span className="text-amber-300 animate-pulse font-bold">✨ LẦN SAU 100% NỔ BẢO VẬT!</span>
+                  ) : (
+                    <span>Còn <strong className="text-gold-400 font-bold">{pityRemaining}</strong> lần chắc chắn ra Bảo phẩm+</span>
+                  )}
+                </span>
+              </div>
+              <div className="mt-1.5 h-1.5 sm:h-2 w-full overflow-hidden rounded-full bg-ink-950/90 border border-purple-500/20">
+                <div
+                  className={`h-full transition-all duration-300 ${
+                    pityRemaining === 0
+                      ? 'bg-gradient-to-r from-amber-400 via-purple-500 to-amber-300 animate-pulse'
+                      : 'bg-gradient-to-r from-purple-600 via-indigo-500 to-purple-400'
+                  }`}
+                  style={{ width: `${pityPercent}%` }}
+                />
+              </div>
+            </div>
+          )
+        })()}
+
         {/* Nút bật popup bảng tỷ lệ */}
         <div className="mt-2 flex justify-end">
           <button

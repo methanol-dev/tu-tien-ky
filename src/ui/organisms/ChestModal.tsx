@@ -18,6 +18,9 @@ export function ChestModal({ result, state, onEquip, onSalvage, onOpenMore, onCl
   if (!result) return null
   const stillOwned = result.filter((g) => state.gear.some((x) => x.uid === g.uid))
   const remaining = state.journey.chests.normal + state.journey.chests.red
+  const hasJackpot = stillOwned.some((g) => g.rarity === 'than' || g.rarity === 'tien')
+  const hasRare = stillOwned.some((g) => g.rarity === 'bao')
+
   return (
     <Modal
       open
@@ -36,6 +39,16 @@ export function ChestModal({ result, state, onEquip, onSalvage, onOpenMore, onCl
         </>
       }
     >
+      {hasJackpot ? (
+        <div className="mb-3 rounded-xl border border-amber-400/60 bg-gradient-to-r from-amber-950/60 via-gold-950/40 to-amber-950/60 p-2.5 text-center text-xs text-amber-300 font-serif font-bold animate-pulse shadow-[0_0_15px_rgba(251,191,36,0.2)]">
+          ✨ THIÊN ĐỊA DỊ TƯỢNG! Khai mở được Thần Binh Tiên Giáp xuất thế!
+        </div>
+      ) : hasRare ? (
+        <div className="mb-3 rounded-xl border border-purple-500/40 bg-purple-950/30 p-2 text-center text-xs text-purple-300 font-serif font-bold">
+          🌟 KHÍ VẬN HANH THÔNG! Mở ra bảo vật trân quý!
+        </div>
+      ) : null}
+
       {stillOwned.length === 0 ? (
         <p className="text-sm text-paper-400">Đã xử lý hết.</p>
       ) : (

@@ -43,4 +43,11 @@ describe('offline progress', () => {
     expect(applyOfflineProgress(s0, 30_000).state.log).toHaveLength(0)
     expect(applyOfflineProgress(s0, 5 * 60_000).state.log).toHaveLength(1)
   })
+
+  it('does not consume lifespan during offline progress (bế quan trú nhan)', () => {
+    const s0 = createInitialState(0)
+    const initialAge = s0.ageDays
+    const { state } = applyOfflineProgress(s0, 8 * HOUR)
+    expect(state.ageDays).toBe(initialAge)
+  })
 })

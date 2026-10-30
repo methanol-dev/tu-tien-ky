@@ -159,4 +159,40 @@ describe('Forge Engine (Đan Lô Luyện Khí)', () => {
     expect(s.forge.autoFilters.minRarity).toBe('tien')
     expect(s.forge.autoFilters.stopOnHigherScore).toBe(false)
   })
+
+  it('triggers pity system guaranteeing Bao or higher when threshold reached', () => {
+    const s = createInitialState()
+    s.forge.pityCount = 9 // At threshold - 1
+
+    // Rng that would normally produce 'pham' (0.1)
+    const res = forgeGear(s, () => 0.1)
+    expect(res.ok).toBe(true)
+    if (res.ok) {
+      expect(res.state.isPity).toBe(true)
+      expect(['bao', 'tien', 'than']).toContain(res.state.gear.rarity)
+      // Pity count should reset to 0 after hitting high rarity
+      expect(res.state.state.forge.pityCount).toBe(0)
+    }
+  })
+
+  it('awards lucky crit refunding fire and granting stones', () => {
+    const s = createInitialState()
+    const initialFire = s.forge.fireCount
+    const initialStones = s.stones
+
+    // Rng sequence where rng() < 0.05 triggers luckyCrit
+    let call = 0
+    const rng = () => {
+      call++
+      if (call === 2) return 0.01 // triggers luckyCrit
+      return 0.5
+    }
+
+    const res = forgeGear(s, rng)
+    expect(res.ok).toBe(true)
+    if (res.ok && res.state.luckyCrit) {
+      expect(res.state.state.forge.fireCount).toBe(initialFire) // Refunded!
+      expect(res.state.state.stones).toBe(initialStones + 200)
+    }
+  })
 })

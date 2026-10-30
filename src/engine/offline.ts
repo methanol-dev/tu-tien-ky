@@ -29,10 +29,11 @@ export function applyOfflineProgress(
 ): { state: GameState; report: OfflineReport } {
   const elapsedMs = Math.max(0, now - state.lastSavedAt)
   const appliedMs = Math.min(elapsedMs, capMs)
-  const after = journeyTick(tick(state, appliedMs), appliedMs, rng)
+  // Bế quan trú nhan: Khi offline AFK, tu sĩ nhập định thai tức, đóng băng hoàn toàn hao tổn thọ nguyên!
+  const after = journeyTick(tick(state, appliedMs, rng, true), appliedMs, rng)
   const qiGained = after.qi - state.qi
   const stonesGained = after.stones - state.stones
-  const daysPassed = after.ageDays - state.ageDays
+  const daysPassed = Math.floor((appliedMs / 1000) * state.settings.timeScale)
   const chestsBefore = state.journey.chests.normal + state.journey.chests.red
   const chestsAfter = after.journey.chests.normal + after.journey.chests.red
   const fireBefore = state.forge?.fireCount ?? 0
@@ -56,7 +57,7 @@ export function applyOfflineProgress(
     const journey = report.stagesCleared > 0 ? ` Hành tẩu vượt ${report.stagesCleared} ải, nhặt ${report.chestsGained} rương${fireText}.` : ''
     next = pushLog(
       next,
-      `Bế quan ${Math.floor(daysPassed)} ngày, hấp thu ${Math.round(qiGained)} linh khí, nhặt được ${Math.floor(stonesGained)} linh thạch.${journey}`,
+      `Bế quan ${Math.floor(daysPassed)} ngày (Trú nhan định tức), hấp thu ${Math.round(qiGained)} linh khí, nhặt được ${Math.floor(stonesGained)} linh thạch.${journey}`,
       'info',
     )
   }

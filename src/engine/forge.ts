@@ -71,6 +71,8 @@ export const FORGE_EXP_BY_RARITY: Record<Rarity, number> = {
   than: 50,
 }
 
+export const FORGE_PITY_THRESHOLD = 10
+
 export function createInitialForge(): ForgeState {
   return {
     level: 1,
@@ -81,14 +83,25 @@ export function createInitialForge(): ForgeState {
       stopOnHigherScore: true,
       minRarity: 'bao',
     },
+    pityCount: 0,
   }
 }
 
-/** Tỷ lệ quay phẩm chất dựa trên cấp Đan Lô */
-export function rollForgeRarity(level: number, rng: Rng): Rarity {
+/** Tỷ lệ quay phẩm chất dựa trên cấp Đan Lô (hỗ trợ ép phẩm chất tối thiểu từ Bảo Hiểm Pity) */
+export function rollForgeRarity(level: number, rng: Rng, forceMinRarity?: Rarity): Rarity {
   const tableIndex = Math.min(FORGE_MAX_LEVEL - 1, Math.max(0, level - 1))
-  const weights = FORGE_RARITY_TABLE[tableIndex]
+  const weights = [...FORGE_RARITY_TABLE[tableIndex]]
+
+  if (forceMinRarity) {
+    const minIdx = RARITIES.indexOf(forceMinRarity)
+    for (let i = 0; i < minIdx; i++) {
+      weights[i] = 0
+    }
+  }
+
   const total = weights.reduce((a, b) => a + b, 0)
+  if (total <= 0) return forceMinRarity ?? 'bao'
+
   let roll = Math.min(total - 1e-9, rng() * total)
   let lastNonZero = 0
   for (let i = 0; i < weights.length; i++) {
@@ -138,6 +151,8 @@ export interface ForgeResult {
   slot: GearSlot
   isUpgrade: boolean
   scoreDiff: number
+  isPity: boolean
+  luckyCrit: boolean
 }
 
 /**
@@ -155,7 +170,17 @@ export function forgeGear(state: GameState, rng: Rng): ActionResult<ForgeResult>
   }
 
   const level = state.forge.level
-  const rarity = rollForgeRarity(level, rng)
+  const currentPity = state.forge.pityCount ?? 0
+  const isPity = currentPity >= FORGE_PITY_THRESHOLD - 1
+  const rarity = isPity ? rollForgeRarity(level, rng, 'bao') : rollForgeRarity(level, rng)
+  const isHighRarity = rarity === 'bao' || rarity === 'tien' || rarity === 'than'
+  const newPityCount = isHighRarity ? 0 : currentPity + 1
+
+  // 5% tỉ lệ nổ "Đại Bạo Kích Luyện Khí" (Lucky Forge Jackpot)
+  const luckyCrit = rng() < 0.05
+  const fireDelta = luckyCrit ? 0 : -1 // Hoàn trả 1 Chân Hỏa khi đại bạo kích
+  const bonusStones = luckyCrit ? 200 : 0
+
   const type = GEAR_TYPES[Math.floor(rng() * GEAR_TYPES.length)]
   const tier = getForgeGearTier(state)
   const uid = `forge_${Date.now()}_${state.nextGearUid}`
@@ -169,25 +194,30 @@ export function forgeGear(state: GameState, rng: Rng): ActionResult<ForgeResult>
 
   let next: GameState = {
     ...state,
+    stones: state.stones + bonusStones,
     nextGearUid: state.nextGearUid + 1,
     forge: {
       ...state.forge,
-      fireCount: state.forge.fireCount - 1,
+      fireCount: state.forge.fireCount + fireDelta,
       pendingGear: gear,
+      pityCount: newPityCount,
     },
     stats: {
       ...state.stats,
+      stonesTotal: state.stats.stonesTotal + bonusStones,
       gearFound: state.stats.gearFound + 1,
     },
   }
 
-  const rarityColor = rarity === 'than' || rarity === 'tien' ? 'event' : 'info'
+  const rarityColor = rarity === 'than' || rarity === 'tien' || luckyCrit ? 'event' : 'info'
   const pts = rarity === 'than' || rarity === 'tien' || rarity === 'bao' ? 30 : 10
   next = addWeeklyEventPoints(next, 0, pts)
 
+  const pityText = isPity ? ' [🎁 BẢO HIỂM NỔ HŨ]' : ''
+  const critText = luckyCrit ? ' [🎉 ĐẠI BẠO KÍCH: Hoàn Chân Hỏa + 200 Linh Thạch!]' : ''
   next = pushLog(
     next,
-    `🔥 Đan Lô bùng nổ, rèn ra [${RARITY_NAME[rarity]}] phẩm trang bị! (${isUpgrade ? `+${comp.scoreDiff} Lực Chiến` : `${comp.scoreDiff} Lực Chiến`})`,
+    `🔥 Đan Lô bùng nổ${pityText}${critText}, rèn ra [${RARITY_NAME[rarity]}] phẩm trang bị! (${isUpgrade ? `+${comp.scoreDiff} Lực Chiến` : `${comp.scoreDiff} Lực Chiến`})`,
     rarityColor,
   )
 
@@ -199,6 +229,8 @@ export function forgeGear(state: GameState, rng: Rng): ActionResult<ForgeResult>
       slot,
       isUpgrade,
       scoreDiff: comp.scoreDiff,
+      isPity,
+      luckyCrit,
     },
   }
 }

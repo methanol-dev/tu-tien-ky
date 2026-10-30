@@ -27,6 +27,7 @@ export interface ForgeState {
   fireCount: number
   pendingGear: GearInstance | null
   autoFilters: ForgeAutoFilters
+  pityCount: number
 }
 
 export type FormationSlot =

@@ -26,6 +26,10 @@ export function OfflineModal({ report, onClose }: OfflineModalProps) {
             Ngươi đã bế quan <span className="text-paper-100">{formatDurationMs(report.appliedMs)}</span>
             {' '}({Math.floor(report.daysPassed)} ngày trong tu tiên giới).
           </p>
+          <div className="rounded-xl border border-jade-500/40 bg-jade-950/30 px-3 py-2 text-xs text-jade-300 flex items-center gap-2">
+            <span>✨</span>
+            <span><strong>Trú Nhan Thai Tức:</strong> Thọ nguyên được bảo tồn nguyên vẹn khi AFK bế quan.</span>
+          </div>
           <p>
             Hấp thu được{' '}
             <span className="font-han text-xl text-qi-400">{formatNumber(report.qiGained)}</span> linh khí, nhặt được{' '}

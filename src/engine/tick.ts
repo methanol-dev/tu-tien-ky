@@ -11,7 +11,7 @@ import type { GameState, Rng } from './types'
  * count for the whole step; acceptable for sub-second live ticks, and offline
  * progress is deliberately generous).
  */
-export function tick(state: GameState, dtMs: number, rng: Rng = Math.random): GameState {
+export function tick(state: GameState, dtMs: number, rng: Rng = Math.random, freezeAging = false): GameState {
   if (dtMs <= 0) return state
   // Optional: the world holds its breath while a decision is pending.
   if (state.pendingEvent && state.settings.pauseOnEvent) return state
@@ -26,7 +26,7 @@ export function tick(state: GameState, dtMs: number, rng: Rng = Math.random): Ga
     ...state,
     qi: state.qi + qiGain,
     stones: state.stones + stoneGain,
-    ageDays: state.ageDays + dtSec * state.settings.timeScale,
+    ageDays: freezeAging ? state.ageDays : state.ageDays + dtSec * state.settings.timeScale,
     playedMs,
     buffs,
     stats: {
